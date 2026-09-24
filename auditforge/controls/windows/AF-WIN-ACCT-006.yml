@@ -1,0 +1,49 @@
+control_id: AF-WIN-ACCT-006
+title: Minimum local password length meets current NIST guidance (>=15 characters)
+description: >
+  Local account passwords must be at least 15 characters long when used as a
+  single (non-MFA) authentication factor.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: high
+benchmark: "NIST SP 800-63B-4"
+benchmark_version: "SP 800-63B-4, final, July 2025 (supersedes SP 800-63B of 2020-03-02) -- verified via docs/SOURCES.md"
+external_reference: "https://csrc.nist.gov/pubs/sp/800/63/b/4/final"
+rationale: >
+  NIST SP 800-63B-4 Sec. 3.1.1.1-3.1.1.2 (verified by direct PDF read, see
+  docs/SOURCES.md) SHALL requires verifiers to enforce a minimum of 15
+  characters for passwords used as a single authentication factor (8
+  characters minimum is only acceptable when the password is one factor of
+  MFA), SHOULD support at least 64 characters, and explicitly SHALL NOT
+  impose composition/complexity rules beyond a compromised-password
+  blocklist check. This supersedes the older, widely-cited "8-14 chars plus
+  complexity" guidance -- see section 3 of the project spec ("do not blindly
+  implement old hardening advice") and AF-WIN-ACCT-007's notes.
+audit:
+  primitive: win_secedit_policy
+  params:
+    key: MinimumPasswordLength
+expected_value: {"min": 15}
+remediation:
+  primitive: win_secedit_policy
+  params:
+    key: MinimumPasswordLength
+    value: 15
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Users with shorter existing passwords must change them at next reset, not immediately."
+frameworks:
+  nist_800_53: ["IA-5"]
+  nist_800_63b: ["3.1.1.1"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy"]
+notes: >
+  This setting only governs LOCAL accounts; domain account policy is set via
+  Active Directory and is out of scope. If this device relies on a local
+  account protected by MFA, 8 characters would satisfy SP 800-63B-4 -- but
+  Windows' local secedit policy has no concept of "this account uses MFA",
+  so AuditForge conservatively audits the single-factor minimum (15) and
+  leaves the MFA-adjusted judgment call to the administrator (MANUAL_REVIEW
+  in spirit, though technically reported as PASS/FAIL for the 15-char bar).

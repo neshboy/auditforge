@@ -1,0 +1,42 @@
+control_id: AF-WIN-AUTH-003
+title: WDigest credential caching is disabled
+description: >
+  WDigest authentication must not cache reversible plaintext-equivalent
+  credentials in LSASS memory.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "Default-disabled since KB2871997/KB2928120 (2014); verified current status via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks"
+rationale: >
+  When enabled, WDigest keeps a reversible copy of the user's plaintext
+  password in LSASS memory, a favorite target for credential-dumping tools.
+  Verified research (docs/SOURCES.md) confirms this has been disabled by
+  default since the 2014-era KB2871997/KB2928120 updates; this control is a
+  regression check, not a change most current systems will need.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest'
+    name: UseLogonCredential
+    default_if_absent: 0
+expected_value: 0
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest'
+    name: UseLogonCredential
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks any legacy WDigest/HTTP Digest authentication scheme that specifically needs plaintext-equivalent credentials (rare)."
+frameworks:
+  nist_800_53: ["IA-5", "SC-28"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "credential-protection"]
+notes: ""

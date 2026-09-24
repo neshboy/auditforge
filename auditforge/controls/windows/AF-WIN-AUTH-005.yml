@@ -1,0 +1,30 @@
+control_id: AF-WIN-AUTH-005
+title: Credential Guard is running (audit only)
+description: >
+  Reports whether Virtualization-Based Security Credential Guard is active,
+  isolating derived domain credentials in a protected VBS enclave.
+os: windows
+applies_to: ["windows_11", "windows_server_2022", "windows_server_2025"]
+category: authentication
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "Default-on since Windows 11 22H2 / Windows Server 2025 on qualifying domain-joined hosts; verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/"
+rationale: >
+  Credential Guard significantly raises the cost of pass-the-hash and
+  similar credential-theft techniques. AuditForge does not attempt to
+  enable it automatically -- doing so safely depends on hardware/VBS
+  readiness, licensing (Enterprise/Education), and role (must NOT be
+  enabled on domain controllers or Exchange Server per Microsoft guidance)
+  that this tool cannot fully verify unattended.
+audit:
+  primitive: win_credential_guard_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; enabling Credential Guard is a manual decision requiring hardware/role review."
+frameworks:
+  nist_800_53: ["SC-39"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "credential-protection", "manual-review"]
+notes: "NOT_APPLICABLE is reported when the Device Guard WMI class is unavailable (e.g. unsupported edition/hardware)."

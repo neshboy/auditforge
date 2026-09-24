@@ -1,0 +1,38 @@
+control_id: AF-WIN-FW-004
+title: Public profile default inbound action is Block
+description: >
+  The Public firewall profile's default inbound action should be Block,
+  so any inbound rule must be an explicit, deliberate allow.
+os: windows
+applies_to: ["all"]
+category: firewall
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/"
+rationale: >
+  Default-block for unsolicited inbound traffic on untrusted networks is a
+  foundational network-exposure control.
+audit:
+  primitive: win_firewall_profile
+  params:
+    profile: Public
+    property: DefaultInboundAction
+    value_type: string_enum
+expected_value: {"one_of": ["Block"]}
+remediation:
+  primitive: win_firewall_profile
+  params:
+    profile: Public
+    property: DefaultInboundAction
+    value_type: string_enum
+    value: Block
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Any inbound-listening application without an explicit allow rule will stop being reachable from the network while on a Public profile."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["firewall"]
+notes: ""

@@ -1,0 +1,32 @@
+control_id: AF-WIN-ASR-003
+title: NetBIOS over TCP/IP is disabled where not required
+description: >
+  NetBIOS name resolution/session services should be disabled on network
+  adapters; like LLMNR, it has weak/no authentication and is a common
+  credential-relay target.
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: low
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks"
+rationale: >
+  NetBIOS is a legacy name-resolution protocol superseded by DNS; leaving
+  it enabled widens the same credential-relay attack surface as LLMNR.
+audit:
+  primitive: win_netbios_status
+  params: {}
+expected_value: true
+remediation:
+  primitive: win_netbios_status
+  params: {}
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks name resolution on networks that still rely on NetBIOS/WINS rather than DNS for some legacy hosts."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["attack-surface", "network", "netbios"]
+notes: ""

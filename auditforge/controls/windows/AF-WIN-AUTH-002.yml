@@ -1,0 +1,44 @@
+control_id: AF-WIN-AUTH-002
+title: LAN Manager authentication level restricts legacy LM/NTLMv1
+description: >
+  The LAN Manager authentication level should be set to "Send NTLMv2
+  response only, refuse LM & NTLM" (level 5).
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks"
+rationale: >
+  LM and NTLMv1 use weak, crackable challenge/response schemes. Requiring
+  NTLMv2-only (and refusing the legacy variants) removes an easy downgrade
+  target, while stopping short of Microsoft's broader in-progress NTLM
+  deprecation roadmap (see docs/SOURCES.md), which is not yet default-on for
+  currently supported releases and is out of scope for this control.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Lsa'
+    name: LmCompatibilityLevel
+    default_if_absent: 3
+expected_value: {"min": 5}
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Lsa'
+    name: LmCompatibilityLevel
+    value: 5
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Breaks authentication to very old (pre-Windows 2000/legacy SMB/NAS)
+  systems that only understand LM or NTLMv1.
+frameworks:
+  nist_800_53: ["IA-5"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "legacy-protocols", "ntlm"]
+notes: "Direct Lsa-key setting; see AF-WIN-AUTH-001 notes on GPO-attribution limitations."

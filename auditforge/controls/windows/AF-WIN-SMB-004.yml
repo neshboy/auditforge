@@ -1,0 +1,41 @@
+control_id: AF-WIN-SMB-004
+title: SMB encryption is enabled where supported
+description: >
+  SMB traffic to/from this server is encrypted (AES-GCM/CCM), not merely
+  signed.
+os: windows
+applies_to: ["all"]
+category: legacy_protocols
+severity: low
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "SMB encryption is NOT enabled by default in any current release -- verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security"
+rationale: >
+  Verified research confirms SMB encryption is opt-in, not a Windows
+  default, on every currently supported release. This is an optional
+  hardening step (low severity: a mismatch reports WARNING, not FAIL) --
+  enabling it is a deliberate choice with real compatibility/performance
+  trade-offs, not a "should always be on" baseline expectation.
+audit:
+  primitive: win_smb_server_config
+  params:
+    property: EncryptData
+    value_type: bool
+expected_value: true
+remediation:
+  primitive: win_smb_server_config
+  params:
+    property: EncryptData
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Rejects clients that do not support SMB 3.x encryption once
+  RejectUnencryptedAccess is also in effect; adds modest CPU overhead.
+frameworks:
+  nist_800_53: ["SC-8", "SC-13"]
+management_detection: false
+high_impact: false
+tags: ["smb", "encryption"]
+notes: ""

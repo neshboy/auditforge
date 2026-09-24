@@ -1,0 +1,39 @@
+control_id: AF-WIN-ASR-001
+title: AutoRun/AutoPlay is disabled for all drive types
+description: >
+  Windows should not automatically execute or prompt to run content from
+  newly connected removable/fixed drives.
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings"
+rationale: >
+  AutoRun/AutoPlay from removable media is a classic malware propagation
+  vector (USB drop attacks).
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    name: NoDriveTypeAutoRun
+    default_if_absent: 145
+expected_value: {"min": 255}
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    name: NoDriveTypeAutoRun
+    value: 255
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Removable media will no longer auto-launch installers/menus; users must open drives manually."
+frameworks:
+  nist_800_53: ["CM-7", "MP-7"]
+management_detection: true
+high_impact: false
+tags: ["attack-surface", "removable-media"]
+notes: ""

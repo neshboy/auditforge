@@ -1,0 +1,28 @@
+control_id: AF-WIN-AUTH-008
+title: LAPS (local administrator password management) is present
+description: >
+  Detects whether Windows LAPS or the legacy Microsoft LAPS policy is
+  configured, which rotates and vaults local administrator passwords.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview"
+rationale: >
+  Without LAPS, local administrator passwords are often identical across
+  many machines, so compromising one grants lateral movement to many
+  others. AuditForge only detects LAPS presence; deploying LAPS requires
+  AD schema/Entra configuration decisions outside this tool's scope.
+audit:
+  primitive: win_laps_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted for this control."
+frameworks:
+  nist_800_53: ["IA-5"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "local-admin", "manual-review"]
+notes: "Most relevant to domain-joined fleets; a single standalone workstation may reasonably report FAIL/WARNING here without it being a real gap."

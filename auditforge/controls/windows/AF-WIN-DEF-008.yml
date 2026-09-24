@@ -1,0 +1,31 @@
+control_id: AF-WIN-DEF-008
+title: An antivirus engine is active (audit only)
+description: >
+  Reports whether an antivirus engine (Defender, in "AntivirusEnabled")
+  is currently active. A FAIL here often means a third-party AV has taken
+  over, not necessarily that the machine is unprotected -- treat as a
+  prompt to verify the actual AV in use, not a confirmed gap.
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: critical
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/microsoft-defender-antivirus-windows"
+rationale: >
+  Some antivirus protection should always be active. AuditForge cannot
+  currently enumerate third-party AV engines, so a FAIL here is reported
+  as a prompt for manual confirmation rather than an automatic remediation
+  target.
+audit:
+  primitive: win_defender_status
+  params:
+    property: AntivirusEnabled
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted for this control."
+frameworks:
+  nist_800_53: ["SI-3"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "manual-review"]
+notes: "If a supported third-party AV is installed and active, Windows Security Center normally shows Defender in passive mode -- this control does not yet cross-check the Security Center provider list."

@@ -1,0 +1,34 @@
+control_id: AF-WIN-LOG-004
+title: Process Creation auditing is enabled
+description: >
+  The "Process Creation" audit subcategory (Success and Failure) should be
+  enabled so process-launch events (4688) are generated at all -- a
+  prerequisite for AF-WIN-LOG-001's command-line detail to have any effect.
+os: windows
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing"
+rationale: >
+  Without this audit subcategory enabled, no 4688 process-creation events
+  are generated regardless of the command-line-inclusion setting.
+audit:
+  primitive: win_audit_policy
+  params:
+    subcategory: "Process Creation"
+expected_value: true
+remediation:
+  primitive: win_audit_policy
+  params:
+    subcategory: "Process Creation"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Increases Security event log volume, particularly on hosts that spawn many short-lived processes."
+frameworks:
+  nist_800_53: ["AU-2", "AU-12"]
+management_detection: false
+high_impact: false
+tags: ["logging", "audit-policy"]
+notes: ""

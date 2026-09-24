@@ -1,0 +1,39 @@
+control_id: AF-WIN-PS-003
+title: PowerShell Module Logging is enabled
+description: >
+  PowerShell should log pipeline execution details for every module it
+  loads (Event ID 4103).
+os: windows
+applies_to: ["all"]
+category: logging
+severity: low
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "not enabled by default -- verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+rationale: >
+  Module logging complements Script Block Logging with additional pipeline
+  execution detail, useful for detection and incident response.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+    name: EnableModuleLogging
+    default_if_absent: 0
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+    name: EnableModuleLogging
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Increases Windows PowerShell/Operational event log volume."
+frameworks:
+  nist_800_53: ["AU-2", "AU-12"]
+management_detection: true
+high_impact: false
+tags: ["powershell", "logging"]
+notes: ""

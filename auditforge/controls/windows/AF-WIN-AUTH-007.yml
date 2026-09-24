@@ -1,0 +1,40 @@
+control_id: AF-WIN-AUTH-007
+title: Automatic logon is disabled
+description: >
+  The machine must not be configured to automatically log a user on at boot
+  without a password prompt.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/identity-protection/"
+rationale: >
+  Automatic logon stores a plaintext (or weakly obfuscated) password in the
+  registry and grants anyone with physical/console access to the machine
+  an authenticated session with no prompt.
+audit:
+  primitive: win_registry_string
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    name: AutoAdminLogon
+    default_if_absent: "0"
+expected_value: "0"
+remediation:
+  primitive: win_registry_string
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    name: AutoAdminLogon
+    value: "0"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Kiosk-mode or single-purpose devices intentionally using auto-logon will start prompting for credentials."
+frameworks:
+  nist_800_53: ["IA-5", "AC-11"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "physical-access"]
+notes: "Does not clear any DefaultPassword value that may remain in the registry; flag for manual cleanup if present."

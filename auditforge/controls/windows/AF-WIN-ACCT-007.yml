@@ -1,0 +1,34 @@
+control_id: AF-WIN-ACCT-007
+title: Password history remembers at least 5 previous passwords
+description: >
+  Prevents immediate reuse of a small rotation of previous passwords.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings"
+rationale: >
+  A small password-history requirement stops the common "change it and
+  change it right back" workaround without imposing NIST 800-63B's
+  discouraged practice of frequent forced rotation.
+audit:
+  primitive: win_secedit_policy
+  params:
+    key: PasswordHistorySize
+expected_value: {"min": 5}
+remediation:
+  primitive: win_secedit_policy
+  params:
+    key: PasswordHistorySize
+    value: 10
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Users cannot immediately reuse a recent password."
+frameworks:
+  nist_800_53: ["IA-5"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy"]
+notes: "Low severity: a mismatch here reports WARNING, not FAIL."

@@ -1,0 +1,41 @@
+control_id: AF-WIN-UAC-003
+title: UAC prompts administrators for consent on elevation
+description: >
+  Administrators in Admin Approval Mode should be prompted for consent (or
+  credentials) before an operation runs elevated, rather than elevating
+  silently.
+os: windows
+applies_to: ["all"]
+category: uac
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/"
+rationale: >
+  Setting ConsentPromptBehaviorAdmin to "silently elevate" (0) defeats the
+  purpose of UAC by letting any process request admin rights with no user
+  interaction at all.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    name: ConsentPromptBehaviorAdmin
+    default_if_absent: 5
+expected_value: {"min": 1}
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    name: ConsentPromptBehaviorAdmin
+    value: 2
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Administrators will see a consent/credential prompt on elevation instead of silent elevation; workflows relying on unattended elevation will break."
+frameworks:
+  nist_800_53: ["AC-6"]
+management_detection: true
+high_impact: false
+tags: ["uac"]
+notes: ""

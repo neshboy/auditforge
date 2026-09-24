@@ -1,0 +1,37 @@
+control_id: AF-WIN-SMB-003
+title: Insecure SMB guest logons are disabled
+description: >
+  The SMB client must not silently downgrade to unauthenticated guest
+  access when connecting to a share that rejects normal credentials.
+os: windows
+applies_to: ["all"]
+category: legacy_protocols
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security"
+rationale: >
+  Insecure guest logons silently fall back to unauthenticated access,
+  which both weakens security and can leak credentials-adjacent traffic to
+  a malicious/spoofed server.
+audit:
+  primitive: win_smb_client_config
+  params:
+    property: EnableInsecureGuestLogons
+    value_type: bool
+expected_value: false
+remediation:
+  primitive: win_smb_client_config
+  params:
+    property: EnableInsecureGuestLogons
+    value_type: bool
+    value: false
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks connectivity to older/consumer NAS devices whose shares only offer unauthenticated guest access."
+frameworks:
+  nist_800_53: ["AC-2", "IA-2"]
+management_detection: false
+high_impact: false
+tags: ["smb", "authentication"]
+notes: ""

@@ -1,0 +1,35 @@
+control_id: AF-WIN-DEF-003
+title: Potentially Unwanted Application (PUA) protection is enabled
+description: >
+  Defender should block or audit potentially unwanted applications
+  (adware, bundled toolbars, etc.).
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: low
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus"
+rationale: >
+  PUA protection reduces adware/bundleware noise that otherwise degrades
+  both security posture and user experience.
+audit:
+  primitive: win_defender_preference
+  params:
+    pref_property: PUAProtection
+expected_value: {"one_of": [1, 2]}
+remediation:
+  primitive: win_defender_preference
+  params:
+    set_param: PUAProtection
+    value_type: int
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "May flag/block legitimately bundled optional software some users intentionally installed."
+frameworks:
+  nist_800_53: ["SI-3"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "defender"]
+notes: ""

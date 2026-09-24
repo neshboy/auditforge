@@ -1,0 +1,41 @@
+control_id: AF-WIN-ASR-002
+title: LLMNR is disabled
+description: >
+  Link-Local Multicast Name Resolution should be disabled; it has no
+  authentication and is routinely abused for network credential-relay
+  attacks (e.g. Responder-style tooling).
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks"
+rationale: >
+  LLMNR broadcasts name-resolution requests to the entire local segment
+  with no authentication, letting any host on the network respond and
+  potentially capture/relay authentication attempts.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Policies\Microsoft\Windows NT\DNSClient'
+    name: EnableMulticast
+    default_if_absent: 1
+expected_value: 0
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Policies\Microsoft\Windows NT\DNSClient'
+    name: EnableMulticast
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Name resolution on networks without proper DNS for all hosts (some small/home networks) may stop working for unregistered hostnames."
+frameworks:
+  nist_800_53: ["SC-7", "AC-4"]
+management_detection: true
+high_impact: false
+tags: ["attack-surface", "network"]
+notes: ""

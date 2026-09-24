@@ -1,0 +1,52 @@
+control_id: AF-WIN-AUTH-004
+title: LSASS runs as a protected process (Additional LSA Protection)
+description: >
+  LSASS should run as a protected process (RunAsPPL) so that non-protected
+  processes cannot read or inject code into it, blocking common
+  credential-dumping techniques.
+os: windows
+applies_to: ["windows_11", "windows_server_2022", "windows_server_2025"]
+category: authentication
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "Default-on (no UEFI lock) since Windows 11 22H2 on qualifying clean installs; verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection"
+rationale: >
+  Verified research (docs/SOURCES.md) confirms Microsoft enables Additional
+  LSA Protection by default (without a UEFI lock) on clean installs of
+  Windows 11 22H2+ that are enterprise-joined and HVCI-capable -- but
+  in-place upgrades and non-domain-joined/standalone machines may not get
+  this default, so it remains worth auditing explicitly.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Lsa'
+    name: RunAsPPL
+    default_if_absent: 0
+expected_value: {"one_of": [1, 2]}
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Lsa'
+    name: RunAsPPL
+    value: 1
+  reboot_required: true
+  service_restart_required: false
+possible_impact: >
+  Can break third-party drivers/security software that inject into LSASS
+  without being properly signed for protected-process compatibility. Test
+  before applying broadly.
+frameworks:
+  nist_800_53: ["SC-39", "SI-16"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "credential-protection", "lsass"]
+notes: >
+  RunAsPPL=1 means enabled (no UEFI lock, remotely reversible); RunAsPPL=2
+  means enabled WITH a UEFI lock (stronger, but can only be reversed with
+  physical access to clear the UEFI variable). Both are treated as PASS;
+  remediation deliberately writes 1, not 2, since a remotely-applied UEFI
+  lock would make this tool's own rollback impossible without console
+  access -- an administrator can opt into the UEFI-locked variant manually.

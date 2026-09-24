@@ -1,0 +1,35 @@
+control_id: AF-WIN-ACCT-009
+title: Passwords are never stored using reversible encryption
+description: >
+  "Store password using reversible encryption" must be disabled; when
+  enabled it is cryptographically equivalent to storing plaintext passwords.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: critical
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md for verified current version"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings"
+rationale: >
+  This legacy setting exists only for specific old application compatibility
+  scenarios (some legacy CHAP/IIS digest auth) and effectively defeats
+  password hashing when enabled.
+audit:
+  primitive: win_secedit_policy
+  params:
+    key: ClearTextPassword
+expected_value: 0
+remediation:
+  primitive: win_secedit_policy
+  params:
+    key: ClearTextPassword
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks any legacy application that specifically depends on reversible password encryption (rare)."
+frameworks:
+  nist_800_53: ["IA-5", "SC-28"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy"]
+notes: ""

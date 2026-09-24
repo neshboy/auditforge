@@ -1,0 +1,42 @@
+control_id: AF-WIN-SMB-005
+title: SMB client NTLM blocking is considered (informational)
+description: >
+  Reports whether the SMB client's "Block NTLM" capability is enabled,
+  which prevents the SMB client from falling back to NTLM authentication.
+os: windows
+applies_to: ["windows_11", "windows_server_2025"]
+category: legacy_protocols
+severity: info
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "Feature available from Windows Server 2025 / Windows 11 24H2; opt-in, not default -- verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-ntlm-blocking"
+rationale: >
+  This is a brand-new (2025/2026) opt-in capability, not yet a default or
+  a mature baseline expectation, and enabling it can break legitimate
+  non-domain-joined SMB servers that still require NTLM. AuditForge reports
+  it as informational context only (severity=info -> WARNING, never FAIL)
+  rather than a hardening requirement.
+audit:
+  primitive: win_smb_client_config
+  params:
+    property: BlockNTLM
+    value_type: bool
+expected_value: true
+remediation:
+  primitive: win_smb_client_config
+  params:
+    property: BlockNTLM
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Breaks SMB connections to any non-domain-joined or legacy SMB server that
+  requires NTLM authentication. Review the exception-list mechanism before
+  enabling broadly.
+frameworks:
+  microsoft_baseline: ["SMB NTLM blocking"]
+management_detection: false
+high_impact: true
+tags: ["smb", "ntlm", "informational"]
+notes: "Only applicable on Windows 11 24H2+ / Windows Server 2025+; NOT_APPLICABLE-worthy on older releases, though the primitive does not yet special-case that (reports ERROR if the cmdlet parameter doesn't exist)."

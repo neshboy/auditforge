@@ -1,0 +1,43 @@
+control_id: AF-WIN-LOG-001
+title: Process creation command-line auditing is enabled
+description: >
+  Process-creation audit events (4688) should include the full command
+  line used to launch each process.
+os: windows
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing"
+rationale: >
+  Command-line auditing on process creation is one of the highest-value,
+  lowest-cost detection sources for both attacker tooling and general
+  incident forensics.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit'
+    name: ProcessCreationIncludeCmdLine_Enabled
+    default_if_absent: 0
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit'
+    name: ProcessCreationIncludeCmdLine_Enabled
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Command lines (which can incidentally contain secrets passed as
+  arguments) will appear in the Security event log; ensure log access is
+  appropriately restricted.
+frameworks:
+  nist_800_53: ["AU-2", "AU-3", "AU-12"]
+management_detection: true
+high_impact: false
+tags: ["logging", "audit-policy"]
+notes: "Also requires 'Audit Process Creation' (success) to be enabled -- see AF-WIN-LOG-004."

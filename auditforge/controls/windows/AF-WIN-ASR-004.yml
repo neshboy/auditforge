@@ -1,0 +1,39 @@
+control_id: AF-WIN-ASR-004
+title: Print Spooler is disabled where printing is not required
+description: >
+  The Print Spooler service should be disabled on machines that do not
+  need to print or host shared printers, closing off the PrintNightmare
+  class of vulnerabilities.
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/print"
+rationale: >
+  The Print Spooler has repeatedly been a source of critical remote/local
+  privilege-escalation vulnerabilities (PrintNightmare and related CVEs).
+  Servers and workstations that do not print have no reason to run it.
+audit:
+  primitive: win_service_state
+  params:
+    service_name: Spooler
+expected_value: Disabled
+remediation:
+  primitive: win_service_state
+  params:
+    service_name: Spooler
+    value: Disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  HIGH IMPACT: breaks all local and network printing from this machine,
+  including if it hosts shared printers for others. Do not apply on print
+  servers or workstations whose users print directly.
+frameworks:
+  nist_800_53: ["CM-7", "SI-2"]
+management_detection: false
+high_impact: true
+tags: ["attack-surface", "services", "print-spooler"]
+notes: "Server/workstation profiles that genuinely need printing should exclude this control (see profiles/*.yml)."

@@ -1,0 +1,42 @@
+control_id: AF-WIN-RDP-001
+title: RDP requires Network Level Authentication
+description: >
+  When Remote Desktop is enabled, it must require Network Level
+  Authentication (NLA) so the connecting user authenticates before a full
+  session is established.
+os: windows
+applies_to: ["all"]
+category: remote_access
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview"
+rationale: >
+  NLA moves authentication before the resource-intensive session/logon
+  screen is created, closing off a class of pre-auth RDP attacks and
+  reducing exposure to unauthenticated scanning.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+    name: UserAuthentication
+    default_if_absent: 1
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp'
+    name: UserAuthentication
+    value: 1
+    guard: current_session_rdp
+  reboot_required: false
+  service_restart_required: true
+possible_impact: "Older RDP clients without NLA support (very rare today) will be unable to connect."
+frameworks:
+  nist_800_53: ["IA-2", "AC-17"]
+management_detection: false
+high_impact: false
+tags: ["remote-access", "rdp"]
+notes: "The 'guard' param refuses to apply if AuditForge itself is running inside the RDP session it would affect."

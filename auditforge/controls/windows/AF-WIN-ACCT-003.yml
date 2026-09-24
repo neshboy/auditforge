@@ -1,0 +1,42 @@
+control_id: AF-WIN-ACCT-003
+title: Built-in Administrator account is disabled
+description: >
+  The built-in local Administrator account (RID 500) should be disabled
+  once at least one other administrative account exists, to reduce the
+  value of this well-known, frequently-targeted account name.
+os: windows
+applies_to: ["all"]
+category: accounts
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md for verified current version"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts"
+rationale: >
+  Attackers commonly target the well-known built-in Administrator account.
+  Disabling it (after ensuring another break-glass admin exists) removes
+  that specific target without removing administrative capability.
+audit:
+  primitive: win_local_user_status
+  params:
+    username: Administrator
+    property: Enabled
+remediation:
+  primitive: win_local_user_status
+  params:
+    username: Administrator
+    property: Enabled
+    value: false
+  reboot_required: false
+  service_restart_required: false
+expected_value: false
+possible_impact: >
+  HIGH IMPACT: if this is the only enabled administrator account on the
+  machine, disabling it can remove all local administrative access. AuditForge
+  requires --allow-high-impact for this control and does not verify that a
+  break-glass alternative exists -- confirm that yourself first.
+frameworks:
+  nist_800_53: ["AC-2"]
+management_detection: false
+high_impact: true
+tags: ["accounts", "administrator"]
+notes: "Verify another working administrator account exists before applying."

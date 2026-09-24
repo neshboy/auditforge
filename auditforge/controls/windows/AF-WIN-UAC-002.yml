@@ -1,0 +1,40 @@
+control_id: AF-WIN-UAC-002
+title: UAC elevation prompts use the secure desktop
+description: >
+  UAC consent/credential prompts should switch to the secure desktop,
+  preventing other processes on the interactive desktop from
+  interacting with or spoofing the elevation prompt.
+os: windows
+applies_to: ["all"]
+category: uac
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/"
+rationale: >
+  Without the secure desktop, a malicious process running as the same user
+  could in principle simulate input to an elevation prompt.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    name: PromptOnSecureDesktop
+    default_if_absent: 1
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    name: PromptOnSecureDesktop
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Screen dims briefly during elevation prompts; some remote-control/accessibility tools have historically had trouble interacting with the secure desktop."
+frameworks:
+  nist_800_53: ["AC-6"]
+management_detection: true
+high_impact: false
+tags: ["uac"]
+notes: ""

@@ -1,0 +1,36 @@
+control_id: AF-WIN-REMOTE-002
+title: Remote Registry service is disabled
+description: >
+  The Remote Registry service, which allows other machines to read/write
+  this machine's registry over the network, should be disabled unless
+  specifically required (e.g. by certain management tools).
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/reg"
+rationale: >
+  Remote registry access is rarely needed day-to-day and is a valuable
+  target once an attacker has any foothold with admin credentials, letting
+  them read/modify configuration remotely.
+audit:
+  primitive: win_service_state
+  params:
+    service_name: RemoteRegistry
+expected_value: Disabled
+remediation:
+  primitive: win_service_state
+  params:
+    service_name: RemoteRegistry
+    value: Disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks any management tooling (some older monitoring/inventory agents) that specifically relies on remote registry access."
+frameworks:
+  nist_800_53: ["CM-7", "SC-7"]
+management_detection: false
+high_impact: false
+tags: ["attack-surface", "services"]
+notes: ""

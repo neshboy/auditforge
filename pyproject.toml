@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auditforge"
+version = "0.1.0"
+description = "Cross-platform endpoint security audit and safe hardening framework for Windows, Linux, and macOS"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+authors = [{ name = "AuditForge Contributors" }]
+keywords = ["security", "hardening", "audit", "compliance", "cis", "stig", "nist"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Topic :: Security",
+]
+dependencies = [
+  "PyYAML>=6.0",
+  "jsonschema>=4.17",
+  "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-cov>=4.1",
+  "ruff>=0.5",
+]
+
+[project.scripts]
+auditforge = "auditforge.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["auditforge*"]
+
+[tool.setuptools.package-data]
+auditforge = [
+  "controls/windows/*.yml",
+  "controls/linux/*.yml",
+  "controls/macos/*.yml",
+  "reporting/templates/*.html",
+  "reporting/templates/*.md",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

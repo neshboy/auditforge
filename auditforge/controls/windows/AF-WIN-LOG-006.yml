@@ -1,0 +1,33 @@
+control_id: AF-WIN-LOG-006
+title: Account Lockout auditing is enabled
+description: >
+  The "Account Lockout" audit subcategory should be enabled so lockout
+  events are recorded, giving visibility into ongoing brute-force attempts.
+os: windows
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-account-logon-events"
+rationale: >
+  Lockout events are a strong signal of active password-guessing attempts
+  against one or more accounts.
+audit:
+  primitive: win_audit_policy
+  params:
+    subcategory: "Account Lockout"
+expected_value: true
+remediation:
+  primitive: win_audit_policy
+  params:
+    subcategory: "Account Lockout"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Minor increase in Security event log volume."
+frameworks:
+  nist_800_53: ["AU-2", "AC-7"]
+management_detection: false
+high_impact: false
+tags: ["logging", "audit-policy"]
+notes: ""

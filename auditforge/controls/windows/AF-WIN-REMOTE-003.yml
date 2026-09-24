@@ -1,0 +1,30 @@
+control_id: AF-WIN-REMOTE-003
+title: WPAD auto-proxy discovery service is reviewed (informational)
+description: >
+  Reports the WinHttpAutoProxySvc (Web Proxy Auto-Discovery) service state.
+  WPAD has a long history of spoofing/credential-relay attacks on networks
+  where it is enabled but not properly controlled.
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netsh"
+rationale: >
+  WPAD spoofing can be used to relay NTLM credentials. This is reported at
+  low severity (WARNING, not FAIL) because many enterprise networks rely
+  on legitimate proxy auto-discovery; blindly disabling it can break
+  internet access for users behind a required proxy.
+audit:
+  primitive: win_service_state
+  params:
+    service_name: WinHttpAutoProxySvc
+expected_value: {"one_of": ["Disabled", "Manual"]}
+possible_impact: "Read-only; no remediation is attempted since disabling WPAD can break required corporate proxy configurations."
+frameworks:
+  nist_800_53: ["CM-7"]
+management_detection: false
+high_impact: false
+tags: ["attack-surface", "wpad"]
+notes: ""

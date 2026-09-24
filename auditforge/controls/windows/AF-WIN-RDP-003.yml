@@ -1,0 +1,39 @@
+control_id: AF-WIN-RDP-003
+title: Remote Assistance is disabled unless needed
+description: >
+  Windows Remote Assistance (unattended/solicited help sessions) should be
+  disabled unless actively used for support workflows.
+os: windows
+applies_to: ["all"]
+category: remote_access
+severity: low
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview"
+rationale: >
+  Remote Assistance adds another remote-control surface; if a help-desk
+  workflow doesn't use it, it should be off.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Remote Assistance'
+    name: fAllowToGetHelp
+    default_if_absent: 1
+expected_value: 0
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Remote Assistance'
+    name: fAllowToGetHelp
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks help-desk workflows that specifically rely on Windows Remote Assistance (distinct from RDP or third-party tools)."
+frameworks:
+  nist_800_53: ["AC-17"]
+management_detection: false
+high_impact: false
+tags: ["remote-access"]
+notes: ""

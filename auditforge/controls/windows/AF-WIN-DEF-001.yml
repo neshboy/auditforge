@@ -1,0 +1,37 @@
+control_id: AF-WIN-DEF-001
+title: Microsoft Defender real-time protection is enabled
+description: >
+  Real-time (on-access) malware scanning must be enabled.
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: critical
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "verified current recommendation via docs/SOURCES.md (doc dated 2026-09-02, updated 2026-09-11)"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/configure-real-time-protection-microsoft-defender-antivirus"
+rationale: >
+  Verified current Microsoft guidance explicitly keeps real-time
+  protection, on-access scanning, and bi-directional scanning ON;
+  disabling it is explicitly discouraged.
+audit:
+  primitive: win_defender_preference
+  params:
+    pref_property: DisableRealtimeMonitoring
+    invert: true
+expected_value: true
+remediation:
+  primitive: win_defender_preference
+  params:
+    set_param: DisableRealtimeMonitoring
+    invert: true
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this is Microsoft's own recommended default. If a third-party AV is the intended primary engine, Defender may be in passive mode and this control may not apply -- see AF-WIN-DEF-008."
+frameworks:
+  nist_800_53: ["SI-3"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "defender"]
+notes: "Reports NOT_APPLICABLE if Defender is not present/queryable (e.g. a third-party AV has taken over and disabled the Defender engine entirely)."

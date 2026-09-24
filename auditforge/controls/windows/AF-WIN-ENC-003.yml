@@ -1,0 +1,29 @@
+control_id: AF-WIN-ENC-003
+title: A ready TPM is present (audit only)
+description: >
+  A ready Trusted Platform Module is a prerequisite for BitLocker,
+  Credential Guard, and other hardware-rooted protections.
+os: windows
+applies_to: ["windows_11", "windows_server_2022", "windows_server_2025"]
+category: encryption
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/hardware-security/tpm/trusted-platform-module-overview"
+rationale: >
+  Many current hardware-backed security features (BitLocker without
+  external key entry, Credential Guard, Windows Hello) depend on a
+  functioning TPM 2.0. This is a hardware/firmware fact AuditForge can only
+  report, not change.
+audit:
+  primitive: win_tpm_status
+  params:
+    property: TpmReady
+expected_value: true
+possible_impact: "Read-only; TPM readiness is a firmware/hardware property AuditForge cannot change."
+frameworks:
+  nist_800_53: ["SC-28", "IA-2"]
+management_detection: false
+high_impact: false
+tags: ["encryption", "tpm", "manual-review"]
+notes: "Reports NOT_APPLICABLE if no TPM is detected."

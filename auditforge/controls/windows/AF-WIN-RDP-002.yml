@@ -1,0 +1,43 @@
+control_id: AF-WIN-RDP-002
+title: Remote Desktop exposure is reviewed (informational)
+description: >
+  Reports whether Remote Desktop connections are allowed at all. This is
+  informational, not a blanket "RDP is bad" finding -- many workstations
+  and most servers legitimately need RDP for administration.
+os: windows
+applies_to: ["all"]
+category: remote_access
+severity: info
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview"
+rationale: >
+  Per the project's false-positive policy, "RDP enabled" is a REVIEW
+  signal, not an automatic FAIL -- see section 34 of the project spec.
+  Severity is deliberately "info" so a mismatch here reports WARNING, and
+  remediation is gated behind --allow-high-impact plus a live-session guard.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Terminal Server'
+    name: fDenyTSConnections
+    default_if_absent: 1
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Terminal Server'
+    name: fDenyTSConnections
+    value: 1
+    guard: current_session_rdp
+  reboot_required: false
+  service_restart_required: true
+possible_impact: "HIGH IMPACT: disables all Remote Desktop access to this machine, including your own if you rely on it and are not physically present."
+frameworks:
+  nist_800_53: ["AC-17", "CM-7"]
+management_detection: false
+high_impact: true
+tags: ["remote-access", "rdp", "informational"]
+notes: "Treat a WARNING here as 'confirm this is intended', not 'fix immediately'."

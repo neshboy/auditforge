@@ -1,0 +1,33 @@
+control_id: AF-WIN-LOG-005
+title: Logon auditing is enabled
+description: >
+  The "Logon" audit subcategory (Success and Failure) should be enabled so
+  interactive/network/RDP logon attempts are recorded (4624/4625).
+os: windows
+applies_to: ["all"]
+category: logging
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events"
+rationale: >
+  Logon auditing is foundational for detecting brute-force attempts,
+  credential-stuffing, and lateral movement.
+audit:
+  primitive: win_audit_policy
+  params:
+    subcategory: "Logon"
+expected_value: true
+remediation:
+  primitive: win_audit_policy
+  params:
+    subcategory: "Logon"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Increases Security event log volume, particularly on shared/multi-user hosts."
+frameworks:
+  nist_800_53: ["AU-2", "AC-7"]
+management_detection: false
+high_impact: false
+tags: ["logging", "audit-policy"]
+notes: ""

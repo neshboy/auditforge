@@ -1,0 +1,36 @@
+control_id: AF-WIN-DEF-005
+title: Defender Network Protection is enabled or auditing
+description: >
+  Network Protection blocks outbound connections to known-malicious IPs and
+  domains at the network layer.
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/network-protection"
+rationale: >
+  Network Protection stops connections to malicious domains/IPs (phishing,
+  C2, exploit-hosting sites) even if a malicious process is not yet
+  detected by signature/behavior analysis.
+audit:
+  primitive: win_defender_preference
+  params:
+    pref_property: EnableNetworkProtection
+expected_value: {"one_of": ["Enabled", "AuditMode"]}
+remediation:
+  primitive: win_defender_preference
+  params:
+    set_param: EnableNetworkProtection
+    value_type: string_enum
+    value: AuditMode
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "In Enabled/Block mode, may block legitimate but unusual outbound connections; AuditForge defaults to AuditMode for review before enforcing."
+frameworks:
+  nist_800_53: ["SI-3", "SC-7"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "defender", "network"]
+notes: ""

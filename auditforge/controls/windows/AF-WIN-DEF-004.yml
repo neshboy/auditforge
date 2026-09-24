@@ -1,0 +1,42 @@
+control_id: AF-WIN-DEF-004
+title: Controlled Folder Access is enabled or auditing
+description: >
+  Controlled Folder Access should be at least in Audit mode (ideally
+  Enabled/Block) to resist unauthorized changes to protected folders,
+  particularly against ransomware.
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/controlled-folders"
+rationale: >
+  Controlled Folder Access blocks unrecognized processes from modifying
+  files in protected folders, a strong mitigation against ransomware
+  encryption behavior.
+audit:
+  primitive: win_defender_preference
+  params:
+    pref_property: EnableControlledFolderAccess
+expected_value: {"one_of": ["Enabled", "AuditMode"]}
+remediation:
+  primitive: win_defender_preference
+  params:
+    set_param: EnableControlledFolderAccess
+    value_type: string_enum
+    value: AuditMode
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  In Enabled/Block mode, legitimate applications not on the allow-list may
+  be blocked from writing to protected folders (Documents, Desktop, etc.).
+  AuditForge defaults remediation to AuditMode (log-only) rather than Block
+  to avoid breaking applications sight-unseen; move to Enabled manually
+  once you've reviewed the audit log.
+frameworks:
+  nist_800_53: ["SI-3", "SC-7"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "defender", "ransomware"]
+notes: ""

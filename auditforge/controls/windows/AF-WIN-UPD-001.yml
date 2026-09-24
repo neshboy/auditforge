@@ -1,0 +1,27 @@
+control_id: AF-WIN-UPD-001
+title: No stale pending-reboot state (informational)
+description: >
+  Reports whether the machine has update-related changes waiting on a
+  reboot to complete.
+os: windows
+applies_to: ["all"]
+category: updates
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows/deployment/update/"
+rationale: >
+  A long-pending reboot means recently patched vulnerabilities may not be
+  fully mitigated yet. AuditForge never reboots a machine automatically --
+  that scheduling decision belongs to the administrator.
+audit:
+  primitive: win_pending_reboot
+  params: {}
+expected_value: false
+possible_impact: "Read-only; no remediation is attempted -- rebooting is always an explicit administrator action."
+frameworks:
+  nist_800_53: ["SI-2"]
+management_detection: false
+high_impact: false
+tags: ["updates", "informational"]
+notes: ""

@@ -1,0 +1,39 @@
+control_id: AF-WIN-SMB-002
+title: SMB server signing is required
+description: >
+  The SMB server should require message signing to prevent relay/tampering
+  attacks against SMB traffic.
+os: windows
+applies_to: ["all"]
+category: legacy_protocols
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "Win11 24H2 Ent/Pro/Edu require signing both directions by default; Server 2025 requires outbound by default -- verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-signing"
+rationale: >
+  SMB signing stops on-path tampering/relay of SMB traffic. Verified
+  research shows this is now default-on for many current SKUs -- this
+  control is a regression/consistency check, and deliberately does NOT
+  touch SMBv2/v3 availability itself (the project spec explicitly warns
+  against blindly disabling SMB2/3).
+audit:
+  primitive: win_smb_server_config
+  params:
+    property: RequireSecuritySignature
+    value_type: bool
+expected_value: true
+remediation:
+  primitive: win_smb_server_config
+  params:
+    property: RequireSecuritySignature
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Small CPU overhead per SMB request; extremely old SMB clients without signing support will be rejected."
+frameworks:
+  nist_800_53: ["SC-8", "SC-23"]
+management_detection: false
+high_impact: false
+tags: ["smb"]
+notes: ""

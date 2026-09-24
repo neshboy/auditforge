@@ -1,0 +1,41 @@
+control_id: AF-WIN-ACCT-008
+title: Maximum password age is not misconfigured (informational)
+description: >
+  Reports the local maximum password age. This control is intentionally
+  informational: current NIST SP 800-63B guidance recommends AGAINST
+  mandatory periodic password rotation for the sake of rotation alone,
+  particularly where MFA or breach/compromise detection is in place.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: info
+benchmark: "NIST SP 800-63B-4"
+benchmark_version: "SP 800-63B-4, final, July 2025 -- verified via docs/SOURCES.md"
+external_reference: "https://csrc.nist.gov/pubs/sp/800/63/b/4/final"
+rationale: >
+  NIST SP 800-63B-4 Sec. 3.1.1.2 (verified by direct PDF read, see
+  docs/SOURCES.md) states verifiers SHALL NOT require subscribers to
+  periodically change memorized secrets, and SHALL only force a change when
+  there is evidence the authenticator has been compromised. Forced rotation
+  without cause tends to push users toward weaker, more predictable
+  passwords. AuditForge reports this value for awareness and organizational
+  context rather than penalizing "never expires" as a failure -- see
+  section 3 of the project spec ("do not automatically enforce ...
+  unnecessary periodic password rotation").
+audit:
+  primitive: win_secedit_policy
+  params:
+    key: MaximumPasswordAge
+expected_value: {"max": 365}
+possible_impact: "Read-only; no remediation is applied for this control."
+frameworks:
+  nist_800_63b: ["3.1.1.2"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy", "informational"]
+notes: >
+  A value of 0 (never expires) numerically satisfies max<=365 and reports
+  PASS, consistent with current guidance. Values like 9999 sometimes used
+  by admins to mean "never" will report WARNING (severity=info); this is a
+  known limitation of secedit's plain-integer representation, not a real
+  security gap -- treat a WARNING here as "review", not "fix".

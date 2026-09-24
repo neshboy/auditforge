@@ -1,0 +1,29 @@
+control_id: AF-WIN-ENC-001
+title: BitLocker volume protection is on (audit only)
+description: >
+  The system volume should be protected by BitLocker full-disk encryption.
+os: windows
+applies_to: ["all"]
+category: encryption
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/"
+rationale: >
+  Full-disk encryption protects data at rest from offline access if a
+  device is lost or stolen. AuditForge deliberately never enables
+  encryption automatically -- per section 6 of the project spec, doing so
+  without first protecting the recovery key (e.g. in AD/Entra or a printed
+  recovery sheet) risks irrecoverable data loss.
+audit:
+  primitive: win_bitlocker_status
+  params:
+    mount_point: "C:"
+expected_value: "On"
+possible_impact: "Read-only; no remediation is attempted for this control. Enabling BitLocker is a deliberate administrator action requiring a recovery-key escrow plan first."
+frameworks:
+  nist_800_53: ["SC-28"]
+management_detection: false
+high_impact: false
+tags: ["encryption", "bitlocker", "manual-review"]
+notes: "Reports NOT_APPLICABLE on editions/hardware without BitLocker support."

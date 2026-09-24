@@ -1,0 +1,44 @@
+control_id: AF-WIN-ACCT-004
+title: Account lockout threshold is configured
+description: >
+  The account is locked out after a bounded number of failed logon attempts
+  (between 1 and 10), mitigating online password-guessing attacks.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: high
+benchmark: "NIST SP 800-63B"
+benchmark_version: "see docs/SOURCES.md for verified current revision"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings"
+rationale: >
+  NIST SP 800-63B calls for rate-limiting/throttling online authentication
+  attempts. A lockout threshold between 1 and 10 balances that against
+  denial-of-service risk from an attacker deliberately locking out accounts.
+audit:
+  primitive: win_secedit_policy
+  params:
+    key: LockoutBadCount
+expected_value: {"min": 1, "max": 10}
+remediation:
+  primitive: win_secedit_policy
+  params:
+    key: LockoutBadCount
+    value: 5
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Legitimate users who mistype a password repeatedly will be locked out
+  until the lockout duration expires or an admin resets the count.
+frameworks:
+  nist_800_53: ["IA-5", "AC-7"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "lockout"]
+notes: >
+  secedit reports the resultant (effective) policy value regardless of
+  whether it originates locally or from a domain GPO; AuditForge cannot yet
+  attribute secedit-sourced values to a specific policy source (unlike
+  registry-based controls under SOFTWARE\Policies), so this control does
+  not auto-report MANAGED_BY_ORGANIZATION. On a domain-joined host, check
+  Group Policy before changing this locally -- a GPO refresh may revert it.
+

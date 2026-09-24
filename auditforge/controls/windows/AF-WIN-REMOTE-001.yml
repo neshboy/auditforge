@@ -1,0 +1,41 @@
+control_id: AF-WIN-REMOTE-001
+title: WinRM service exposure is reviewed (informational)
+description: >
+  Reports the WinRM (Windows Remote Management / PowerShell Remoting)
+  service startup state. Informational: many admin workflows (including
+  AuditForge's own remote-management use cases) depend on WinRM.
+os: windows
+applies_to: ["all"]
+category: remote_access
+severity: info
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/powershell/scripting/security/security-features"
+rationale: >
+  Per section 34 of the project spec, remote-management services are a
+  REVIEW signal in context, not an automatic FAIL. Remediation is gated
+  behind --allow-high-impact since disabling WinRM can cut off the very
+  channel an admin might be using to manage the box remotely.
+audit:
+  primitive: win_service_state
+  params:
+    service_name: WinRM
+expected_value: {"one_of": ["Disabled", "Manual", "Automatic"]}
+remediation:
+  primitive: win_service_state
+  params:
+    service_name: WinRM
+    value: Disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "HIGH IMPACT: disables PowerShell Remoting and any tooling (including remote AuditForge runs) that depends on WinRM."
+frameworks:
+  nist_800_53: ["AC-17", "CM-7"]
+management_detection: false
+high_impact: true
+tags: ["remote-access", "winrm", "informational"]
+notes: >
+  expected_value intentionally accepts any state (always PASS) -- this
+  control exists to surface the current state in reports for human review,
+  not to enforce a particular value. Change expected_value locally if your
+  environment has a real policy here.

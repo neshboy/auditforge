@@ -1,0 +1,40 @@
+control_id: AF-WIN-SMB-001
+title: SMBv1 protocol is disabled
+description: >
+  The legacy, insecure SMBv1 protocol must be disabled on the SMB server.
+os: windows
+applies_to: ["all"]
+category: legacy_protocols
+severity: critical
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "SMB1 not installed by default since Windows 10 1709 / Windows Server v1709; verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security"
+rationale: >
+  SMBv1 has no meaningful security properties by modern standards (no
+  required signing, weak/no encryption, exploited by WannaCry/NotPetya via
+  EternalBlue). This is the canonical "legacy protocol" example from the
+  project spec: SMBv1 should normally be treated as legacy/insecure, while
+  SMBv2/v3 (audited separately below) are NOT automatically disabled.
+audit:
+  primitive: win_smb_server_config
+  params:
+    property: EnableSMB1Protocol
+    value_type: bool
+expected_value: false
+remediation:
+  primitive: win_smb_server_config
+  params:
+    property: EnableSMB1Protocol
+    value_type: bool
+    value: false
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Breaks connectivity to legacy NAS/scanners/embedded devices that only
+  speak SMBv1. Confirm no such devices are in use before applying broadly.
+frameworks:
+  nist_800_53: ["CM-7", "SC-7"]
+management_detection: false
+high_impact: false
+tags: ["smb", "legacy-protocols"]
+notes: ""

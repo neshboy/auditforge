@@ -1,0 +1,29 @@
+control_id: AF-WIN-ACCT-002
+title: Local Administrators group membership review
+description: >
+  Enumerates members of the local Administrators group for manual review.
+  Group size alone is not a reliable pass/fail signal -- a build server
+  legitimately needing several admin accounts is different from a laptop
+  that should have exactly one.
+os: windows
+applies_to: ["all"]
+category: accounts
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts"
+rationale: >
+  Excess or stale administrator accounts widen the blast radius of any
+  single compromised credential. This is intentionally a MANUAL_REVIEW
+  finding, not an automatic FAIL, per the project's false-positive policy.
+audit:
+  primitive: win_local_admins_count
+  params: {}
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted for this control."
+frameworks:
+  nist_800_53: ["AC-2", "AC-6"]
+management_detection: false
+high_impact: false
+tags: ["accounts", "manual-review"]
+notes: "Always reports MANUAL_REVIEW; see evidence for the actual member list."

@@ -1,0 +1,38 @@
+control_id: AF-WIN-FW-002
+title: Windows Firewall is enabled for the Private profile
+description: >
+  The Windows Defender Firewall must be enabled for the Private network
+  profile.
+os: windows
+applies_to: ["all"]
+category: firewall
+severity: critical
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/"
+rationale: >
+  A disabled firewall profile removes host-based network filtering
+  entirely for that network context.
+audit:
+  primitive: win_firewall_profile
+  params:
+    profile: Private
+    property: Enabled
+    value_type: bool
+expected_value: true
+remediation:
+  primitive: win_firewall_profile
+  params:
+    profile: Private
+    property: Enabled
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected under normal circumstances."
+frameworks:
+  nist_800_53: ["SC-7", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["firewall"]
+notes: "Existing custom firewall rules are never modified or deleted by this control."

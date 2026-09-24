@@ -1,0 +1,202 @@
+"""Transaction storage: every `harden` run gets a unique transaction ID and
+an on-disk record of exactly what changed, so `auditforge rollback <id>` can
+undo it later. No secret material is ever stored here -- every primitive
+that AuditForge ships only ever reads/writes configuration state (booleans,
+enums, policy values), never credentials.
+"""
+
+from __future__ import annotations
+
+import dataclasses
+import getpass
+import json
+import os
+import secrets
+import shutil
+import socket
+from datetime import datetime, timezone
+from typing import Optional
+
+from auditforge.core.models import ChangeRecord
+
+
+def _default_state_root() -> str:
+    if os.name == "nt":
+        program_data = os.environ.get("PROGRAMDATA", r"C:\ProgramData")
+        candidate = os.path.join(program_data, "AuditForge")
+        if _writable_or_creatable(candidate):
+            return candidate
+        return os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "AuditForge")
+    candidate = "/var/lib/auditforge"
+    if _writable_or_creatable(candidate):
+        return candidate
+    return os.path.join(os.path.expanduser("~"), ".auditforge")
+
+
+def _writable_or_creatable(path: str) -> bool:
+    try:
+        os.makedirs(path, exist_ok=True)
+        probe = os.path.join(path, ".af_write_test")
+        with open(probe, "w") as fh:
+            fh.write("ok")
+        os.remove(probe)
+        return True
+    except OSError:
+        return False
+
+
+def state_dir() -> str:
+    override = os.environ.get("AUDITFORGE_STATE_DIR")
+    root = override or _default_state_root()
+    os.makedirs(root, exist_ok=True)
+    return root
+
+
+def new_transaction_id() -> str:
+    now = datetime.now(timezone.utc)
+    return f"AF-{now.strftime('%Y%m%d-%H%M%S')}-{secrets.token_hex(3).upper()}"
+
+
+@dataclasses.dataclass
+class Transaction:
+    tx_id: str
+    directory: str
+    profile: str
+    hostname: str
+    executing_account: str
+    os_name: str
+    os_version: str
+    started_at: str
+    dry_run: bool = False
+    status: str = "in_progress"  # in_progress | complete | failed | partial | rolled_back
+    changes: list = dataclasses.field(default_factory=list)  # list[ChangeRecord]
+    pre_audit_summary: Optional[dict] = None
+    post_audit_summary: Optional[dict] = None
+    finished_at: Optional[str] = None
+
+    def manifest_path(self) -> str:
+        return os.path.join(self.directory, "manifest.json")
+
+    def to_manifest(self) -> dict:
+        return {
+            "tx_id": self.tx_id,
+            "profile": self.profile,
+            "hostname": self.hostname,
+            "executing_account": self.executing_account,
+            "os_name": self.os_name,
+            "os_version": self.os_version,
+            "started_at": self.started_at,
+            "finished_at": self.finished_at,
+            "dry_run": self.dry_run,
+            "status": self.status,
+            "changes": [c.to_dict() if isinstance(c, ChangeRecord) else c for c in self.changes],
+            "pre_audit_summary": self.pre_audit_summary,
+            "post_audit_summary": self.post_audit_summary,
+        }
+
+
+class TransactionManager:
+    def __init__(self, root: Optional[str] = None):
+        self.root = root or state_dir()
+        self.tx_root = os.path.join(self.root, "transactions")
+        os.makedirs(self.tx_root, exist_ok=True)
+
+    def begin(self, profile: str, os_name: str, os_version: str, dry_run: bool = False) -> Transaction:
+        tx_id = new_transaction_id()
+        directory = os.path.join(self.tx_root, tx_id)
+        os.makedirs(directory, exist_ok=False)
+        tx = Transaction(
+            tx_id=tx_id,
+            directory=directory,
+            profile=profile,
+            hostname=socket.gethostname(),
+            executing_account=getpass.getuser(),
+            os_name=os_name,
+            os_version=os_version,
+            started_at=datetime.now(timezone.utc).isoformat(),
+            dry_run=dry_run,
+        )
+        self._save(tx)
+        return tx
+
+    def record_change(self, tx: Transaction, change: ChangeRecord) -> None:
+        tx.changes.append(change)
+        self._save(tx)
+
+    def backup_path(self, tx: Transaction, filename: str) -> str:
+        backups_dir = os.path.join(tx.directory, "backups")
+        os.makedirs(backups_dir, exist_ok=True)
+        return os.path.join(backups_dir, filename)
+
+    def copy_into_backup(self, tx: Transaction, source_path: str) -> str:
+        dest = self.backup_path(tx, os.path.basename(source_path).lstrip(os.sep) + ".bak")
+        shutil.copy2(source_path, dest)
+        return dest
+
+    def finalize(self, tx: Transaction, status: str, post_audit_summary: Optional[dict] = None) -> None:
+        tx.status = status
+        tx.post_audit_summary = post_audit_summary
+        tx.finished_at = datetime.now(timezone.utc).isoformat()
+        self._save(tx)
+
+    def _save(self, tx: Transaction) -> None:
+        with open(tx.manifest_path(), "w", encoding="utf-8") as fh:
+            json.dump(tx.to_manifest(), fh, indent=2, default=str)
+
+    def load(self, tx_id: str) -> Transaction:
+        directory = os.path.join(self.tx_root, tx_id)
+        manifest_path = os.path.join(directory, "manifest.json")
+        if not os.path.isfile(manifest_path):
+            raise FileNotFoundError(f"no transaction found with id {tx_id}")
+        with open(manifest_path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        changes = [
+            ChangeRecord(
+                control_id=c["control_id"],
+                primitive=c["primitive"],
+                params=c["params"],
+                previous_value=c["previous_value"],
+                new_value=c["new_value"],
+                timestamp=c["timestamp"],
+                backup_file=c.get("backup_file"),
+            )
+            for c in data.get("changes", [])
+        ]
+        tx = Transaction(
+            tx_id=data["tx_id"],
+            directory=directory,
+            profile=data.get("profile", ""),
+            hostname=data.get("hostname", ""),
+            executing_account=data.get("executing_account", ""),
+            os_name=data.get("os_name", ""),
+            os_version=data.get("os_version", ""),
+            started_at=data.get("started_at", ""),
+            dry_run=data.get("dry_run", False),
+            status=data.get("status", "unknown"),
+            changes=changes,
+            pre_audit_summary=data.get("pre_audit_summary"),
+            post_audit_summary=data.get("post_audit_summary"),
+            finished_at=data.get("finished_at"),
+        )
+        return tx
+
+    def list_transactions(self) -> list[dict]:
+        results = []
+        if not os.path.isdir(self.tx_root):
+            return results
+        for name in sorted(os.listdir(self.tx_root), reverse=True):
+            manifest = os.path.join(self.tx_root, name, "manifest.json")
+            if os.path.isfile(manifest):
+                with open(manifest, encoding="utf-8") as fh:
+                    data = json.load(fh)
+                results.append(
+                    {
+                        "tx_id": data.get("tx_id", name),
+                        "started_at": data.get("started_at"),
+                        "status": data.get("status"),
+                        "profile": data.get("profile"),
+                        "num_changes": len(data.get("changes", [])),
+                        "dry_run": data.get("dry_run", False),
+                    }
+                )
+        return results

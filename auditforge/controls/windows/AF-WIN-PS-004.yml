@@ -1,0 +1,33 @@
+control_id: AF-WIN-PS-004
+title: PowerShell execution policy is reviewed (informational, not a security boundary)
+description: >
+  Reports the local-machine PowerShell execution policy for awareness.
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: info
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies"
+rationale: >
+  Per the project spec ("do not treat ExecutionPolicy as a full security
+  boundary") and Microsoft's own documentation, ExecutionPolicy is a
+  convenience/safety-net feature, trivially bypassed by anyone with local
+  code execution (e.g. `-ExecutionPolicy Bypass`, piping to `iex`, or
+  loading script content in-memory). AuditForge reports it as
+  informational context only.
+audit:
+  primitive: win_registry_string
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell'
+    name: ExecutionPolicy
+    default_if_absent: Restricted
+expected_value: {"one_of": ["AllSigned", "RemoteSigned", "Restricted"]}
+possible_impact: "Read-only; no remediation is attempted since this is explicitly not treated as a security control."
+frameworks:
+  nist_800_53: ["CM-7"]
+management_detection: false
+high_impact: false
+tags: ["powershell", "informational"]
+notes: "Do not rely on this control for anything resembling a security guarantee -- real PowerShell threat mitigation comes from AMSI, Script Block Logging (AF-WIN-PS-002), Constrained Language Mode, and application control (WDAC/AppLocker), none of which are ExecutionPolicy."

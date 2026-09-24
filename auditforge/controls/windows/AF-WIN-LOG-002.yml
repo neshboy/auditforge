@@ -1,0 +1,39 @@
+control_id: AF-WIN-LOG-002
+title: Security event log has adequate maximum size
+description: >
+  The Security event log's maximum size should be large enough to retain a
+  meaningful window of history before it wraps/overwrites old events.
+os: windows
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows/win32/wes/eventlog-key"
+rationale: >
+  A too-small Security log can wrap and lose evidence within hours on a
+  busy system, especially once auditing is turned up (see AF-WIN-LOG-001,
+  004-006). This control uses the modern Get-WinEvent/EventLogConfiguration
+  API rather than the legacy, no-longer-authoritative
+  HKLM\...\EventLog\Security\MaxSize registry value (see the primitive's
+  own docstring) -- using that legacy key would itself be exactly the kind
+  of stale hardening myth the project spec warns against.
+audit:
+  primitive: win_eventlog_config
+  params:
+    channel: Security
+expected_value: {"min": 201326592}
+remediation:
+  primitive: win_eventlog_config
+  params:
+    channel: Security
+    value: 201326592
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Consumes more disk space for log storage (192 MB minimum here); negligible on modern disks."
+frameworks:
+  nist_800_53: ["AU-4", "AU-11"]
+management_detection: false
+high_impact: false
+tags: ["logging"]
+notes: "201326592 bytes = 192 MiB, a multiple of the required 64 KiB granularity."

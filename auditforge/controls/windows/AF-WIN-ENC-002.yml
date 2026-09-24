@@ -1,0 +1,27 @@
+control_id: AF-WIN-ENC-002
+title: Secure Boot is enabled (audit only)
+description: >
+  UEFI Secure Boot should be enabled to prevent unsigned/untrusted boot
+  loaders and drivers from running before the OS takes over.
+os: windows
+applies_to: ["windows_11", "windows_server_2022", "windows_server_2025"]
+category: encryption
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-secure-boot"
+rationale: >
+  Secure Boot is foundational to the modern Windows boot-integrity chain
+  (and a prerequisite for several VBS-based protections). AuditForge cannot
+  change firmware settings and does not attempt to.
+audit:
+  primitive: win_secure_boot_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; changing this requires a firmware/UEFI settings change, which AuditForge does not perform."
+frameworks:
+  nist_800_53: ["SI-7", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["encryption", "boot-integrity", "manual-review"]
+notes: "Reports NOT_APPLICABLE on legacy BIOS systems."

@@ -1,0 +1,39 @@
+control_id: AF-WIN-ACCT-001
+title: Guest account is disabled
+description: >
+  The built-in Guest local account should be disabled unless there is a
+  documented business need for anonymous/guest local logon.
+os: windows
+applies_to: ["windows_11", "windows_server_2022", "windows_server_2025"]
+category: accounts
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md for verified current version"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings"
+rationale: >
+  An enabled Guest account provides an unauthenticated or trivially
+  authenticated path onto the system and is not required by any modern
+  Windows workflow.
+audit:
+  primitive: win_local_user_status
+  params:
+    username: Guest
+    property: Enabled
+remediation:
+  primitive: win_local_user_status
+  params:
+    username: Guest
+    property: Enabled
+    value: false
+  reboot_required: false
+  service_restart_required: false
+expected_value: false
+possible_impact: >
+  None expected; legacy kiosk/guest-access workflows that intentionally rely
+  on the Guest account will stop working.
+frameworks:
+  nist_800_53: ["AC-2", "IA-5"]
+management_detection: false
+high_impact: false
+tags: ["accounts", "guest"]
+notes: "Reported NOT_APPLICABLE by the primitive if no local Guest account exists."

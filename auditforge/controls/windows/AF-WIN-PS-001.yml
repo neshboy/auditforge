@@ -1,0 +1,37 @@
+control_id: AF-WIN-PS-001
+title: The legacy PowerShell v2 engine is removed
+description: >
+  The Windows Optional Feature that provides the legacy PowerShell 2.0
+  engine should be removed; it lacks modern logging (no AMSI, no script
+  block logging) and can be used to bypass newer PowerShell security
+  controls by explicitly invoking "-Version 2".
+os: windows
+applies_to: ["all"]
+category: attack_surface
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/powershell/scripting/security/security-features"
+rationale: >
+  PowerShell v2's lack of AMSI integration and script block logging makes
+  it a known "living off the land" downgrade technique for attackers with
+  code-execution capability.
+audit:
+  primitive: win_optional_feature
+  params:
+    feature_name: MicrosoftWindowsPowerShellV2Root
+expected_value: Disabled
+remediation:
+  primitive: win_optional_feature
+  params:
+    feature_name: MicrosoftWindowsPowerShellV2Root
+    value: Disabled
+  reboot_required: true
+  service_restart_required: false
+possible_impact: "Breaks any legacy script/module that explicitly requires the PowerShell 2.0 engine (rare in current environments)."
+frameworks:
+  nist_800_53: ["CM-7"]
+management_detection: false
+high_impact: false
+tags: ["powershell", "attack-surface"]
+notes: ""

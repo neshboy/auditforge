@@ -1,0 +1,28 @@
+control_id: AF-WIN-UPD-002
+title: No outstanding software updates (audit only)
+description: >
+  Counts software updates the Windows Update Agent reports as not yet
+  installed.
+os: windows
+applies_to: ["all"]
+category: updates
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows/deployment/update/"
+rationale: >
+  Unpatched software is one of the most common real-world attack vectors.
+  AuditForge deliberately does not auto-install updates unattended (that
+  requires reboot orchestration and change-control outside this tool's
+  scope) -- this is audit-only, surfaced for manual patching action.
+audit:
+  primitive: win_pending_updates
+  params: {}
+expected_value: {"max": 0}
+possible_impact: "Read-only; no remediation is attempted. On WSUS/Intune-managed machines this search may be blocked by policy and report ERROR rather than a count -- that is expected, not a bug."
+frameworks:
+  nist_800_53: ["SI-2"]
+management_detection: false
+high_impact: false
+tags: ["updates"]
+notes: ""

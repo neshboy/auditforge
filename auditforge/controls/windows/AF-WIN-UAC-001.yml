@@ -1,0 +1,40 @@
+control_id: AF-WIN-UAC-001
+title: User Account Control is enabled
+description: >
+  UAC (EnableLUA) must be enabled so administrative operations require
+  explicit elevation.
+os: windows
+applies_to: ["all"]
+category: uac
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/"
+rationale: >
+  Disabling UAC removes the split-token elevation model entirely, causing
+  all processes (including malware) to inherit full administrative rights
+  by default when run by an admin account.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    name: EnableLUA
+    default_if_absent: 1
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    name: EnableLUA
+    value: 1
+  reboot_required: true
+  service_restart_required: false
+possible_impact: "Legacy applications assuming always-elevated execution may misbehave until UAC virtualization/compatibility shims kick in."
+frameworks:
+  nist_800_53: ["AC-6", "CM-7"]
+management_detection: true
+high_impact: false
+tags: ["uac"]
+notes: ""

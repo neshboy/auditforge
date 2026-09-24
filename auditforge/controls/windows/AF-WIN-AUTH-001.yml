@@ -1,0 +1,43 @@
+control_id: AF-WIN-AUTH-001
+title: LAN Manager password hash storage is disabled
+description: >
+  The legacy, crackable LM hash must not be stored alongside the NTLM hash
+  for new local passwords.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "see docs/SOURCES.md for verified current version"
+external_reference: "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks"
+rationale: >
+  LM hashes use a weak, easily-brute-forced algorithm. Storing them provides
+  attackers an easier password-cracking target even when NTLM is also used.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Lsa'
+    name: NoLMHash
+    default_if_absent: 0
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SYSTEM\CurrentControlSet\Control\Lsa'
+    name: NoLMHash
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected on modern Windows; only affects storage of new/changed passwords."
+frameworks:
+  nist_800_53: ["IA-5", "SC-8"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "legacy-protocols"]
+notes: >
+  This value lives directly under CurrentControlSet\Control\Lsa rather than
+  a SOFTWARE\Policies mirror, so AuditForge's registry-path heuristic for
+  detecting GPO management does not apply here even though a domain GPO can
+  and often does set it directly.

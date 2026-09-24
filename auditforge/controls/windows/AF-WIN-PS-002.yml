@@ -1,0 +1,43 @@
+control_id: AF-WIN-PS-002
+title: PowerShell Script Block Logging is enabled
+description: >
+  PowerShell should log the full deobfuscated content of executed script
+  blocks (Event ID 4104) for detection and forensics.
+os: windows
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "not enabled by default in any current PowerShell 5.1/7.x release -- verified via docs/SOURCES.md"
+external_reference: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+rationale: >
+  Verified current guidance confirms Script Block Logging is off by
+  default and must be explicitly enabled; it is one of the single highest-
+  value PowerShell-based-attack detection sources available.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+    name: EnableScriptBlockLogging
+    default_if_absent: 0
+expected_value: 1
+remediation:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+    name: EnableScriptBlockLogging
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Increases Windows PowerShell/Operational event log volume; scripts that
+  handle secrets in plaintext will have that content logged too -- pair
+  with Protected Event Logging if that's a concern (see notes).
+frameworks:
+  nist_800_53: ["AU-2", "AU-12"]
+management_detection: true
+high_impact: false
+tags: ["powershell", "logging"]
+notes: "Consider also enabling 'Enable Protected Event Logging' (requires a Document-Encryption certificate) per current Microsoft guidance; not yet implemented as a separate AuditForge control."

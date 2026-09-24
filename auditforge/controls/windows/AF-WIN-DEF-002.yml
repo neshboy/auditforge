@@ -1,0 +1,36 @@
+control_id: AF-WIN-DEF-002
+title: Microsoft Defender cloud-delivered protection is enabled
+description: >
+  Cloud-delivered protection (MAPS) should be enabled to get near-real-time
+  detections beyond local signature updates.
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: medium
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "enabled by default; verified via docs/SOURCES.md (doc dated 2025-10-20, updated 2026-09-11)"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-microsoft-defender-antivirus"
+rationale: >
+  Cloud protection is a prerequisite for several Attack Surface Reduction
+  rules and materially speeds up detection of new threats versus local
+  signatures alone.
+audit:
+  primitive: win_defender_preference
+  params:
+    pref_property: MAPSReporting
+expected_value: {"min": 1}
+remediation:
+  primitive: win_defender_preference
+  params:
+    set_param: MAPSReporting
+    value_type: int
+    value: 2
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Sends file metadata (and, at the 'Advanced' level, sample submissions) to Microsoft cloud services; review data-handling policy if operating in a highly restricted network."
+frameworks:
+  nist_800_53: ["SI-3"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "defender", "cloud"]
+notes: ""

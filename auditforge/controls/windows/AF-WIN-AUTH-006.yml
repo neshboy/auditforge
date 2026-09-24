@@ -1,0 +1,40 @@
+control_id: AF-WIN-AUTH-006
+title: Cached domain logon count is limited
+description: >
+  Limits how many previous domain logons Windows caches locally, bounding
+  what an attacker with disk/offline access to a stolen laptop can crack.
+os: windows
+applies_to: ["all"]
+category: authentication
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/"
+rationale: >
+  Cached logon credential material is a target for offline cracking on
+  lost/stolen devices. A small cache (e.g. 4) still allows normal offline
+  laptop use while limiting exposure.
+audit:
+  primitive: win_registry_string
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    name: CachedLogonsCount
+    default_if_absent: "10"
+expected_value: {"max": 4}
+remediation:
+  primitive: win_registry_string
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    name: CachedLogonsCount
+    value: "4"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Users who roam across many domain controllers with no connectivity may need to be online more often to authenticate."
+frameworks:
+  nist_800_53: ["IA-5"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "domain-join"]
+notes: "Only meaningful on domain-joined machines; harmless no-op otherwise."

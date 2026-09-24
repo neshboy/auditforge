@@ -1,0 +1,30 @@
+control_id: AF-WIN-DEF-007
+title: Defender Tamper Protection is enabled (audit only)
+description: >
+  Tamper Protection prevents malware and unauthorized users/admins (even
+  via registry or Group Policy) from disabling core Defender protections.
+os: windows
+applies_to: ["all"]
+category: malware_protection
+severity: high
+benchmark: "Microsoft Security Baseline"
+benchmark_version: "now ON by default for enterprise/managed customers -- verified via docs/SOURCES.md (doc dated 2026-09-09, updated 2026-09-11)"
+external_reference: "https://learn.microsoft.com/en-us/defender-endpoint/tamper-protection-overview"
+rationale: >
+  Tamper Protection is audit-only in AuditForge by design: Microsoft has
+  deliberately made it unsettable via registry or Group Policy specifically
+  to resist exactly the kind of unattended automated configuration change
+  a tool like AuditForge would otherwise perform. Use Intune/Defender
+  portal/"troubleshooting mode" to change it.
+audit:
+  primitive: win_defender_status
+  params:
+    property: IsTamperProtected
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted or possible via this tool."
+frameworks:
+  nist_800_53: ["SI-3", "CM-6"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "defender", "manual-review"]
+notes: ""
