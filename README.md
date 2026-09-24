@@ -8,6 +8,10 @@
 Scan -> Audit -> Explain -> Backup -> Harden -> Verify -> Report -> Roll Back
 ```
 
+**[-> See it in action: real screenshots, real CI, real rollback pipeline (docs/SHOWCASE.md)](docs/SHOWCASE.md)**
+
+![AuditForge HTML report executive summary: 58.8% overall posture with a real PASS/FAIL/WARNING breakdown](docs/images/report-executive-summary.png)
+
 ## What this is
 
 One command tells you where a Windows, Linux, or macOS machine stands against current security guidance -- PASS, FAIL, WARNING, NOT_APPLICABLE, MANUAL_REVIEW, or MANAGED_BY_ORGANIZATION, per control, with evidence, a citation, and (where it's safe and reversible) an optional one-command fix. Every change AuditForge makes gets a transaction ID and can be rolled back.

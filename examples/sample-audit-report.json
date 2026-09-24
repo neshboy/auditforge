@@ -5,7 +5,7 @@
   "os_version": "25H2",
   "architecture": "AMD64",
   "profile": "audit_only",
-  "generated_at": "2026-09-24T09:52:24.890110+00:00",
+  "generated_at": "2026-09-24T16:33:12.580904+00:00",
   "management": {
     "managed": false,
     "sources": []
@@ -147,7 +147,7 @@
         "detected_value": false,
         "expected_value": false,
         "source": "Get-LocalUser",
-        "timestamp": "2026-09-24T09:51:13.340216+00:00",
+        "timestamp": "2026-09-24T16:32:04.900238+00:00",
         "raw": {
           "user": "Guest",
           "property": "Enabled"
@@ -191,7 +191,7 @@
         "detected_value": 3,
         "expected_value": true,
         "source": "Get-LocalGroupMember",
-        "timestamp": "2026-09-24T09:51:14.485150+00:00",
+        "timestamp": "2026-09-24T16:32:05.893978+00:00",
         "raw": {
           "members": [
             "MYCSOC\\Administrator",
@@ -238,7 +238,7 @@
         "detected_value": false,
         "expected_value": false,
         "source": "Get-LocalUser",
-        "timestamp": "2026-09-24T09:51:15.459837+00:00",
+        "timestamp": "2026-09-24T16:32:06.967087+00:00",
         "raw": {
           "user": "Administrator",
           "property": "Enabled"
@@ -287,7 +287,7 @@
           "max": 10
         },
         "source": "secedit /export",
-        "timestamp": "2026-09-24T09:51:15.708487+00:00",
+        "timestamp": "2026-09-24T16:32:07.209945+00:00",
         "raw": {
           "key": "LockoutBadCount",
           "raw": "10"
@@ -335,7 +335,7 @@
           "min": 15
         },
         "source": "secedit /export",
-        "timestamp": "2026-09-24T09:51:15.893074+00:00",
+        "timestamp": "2026-09-24T16:32:07.394389+00:00",
         "raw": {
           "key": "LockoutDuration",
           "raw": "10"
@@ -382,7 +382,7 @@
           "min": 15
         },
         "source": "secedit /export",
-        "timestamp": "2026-09-24T09:51:16.072668+00:00",
+        "timestamp": "2026-09-24T16:32:07.577680+00:00",
         "raw": {
           "key": "MinimumPasswordLength",
           "raw": "0"
@@ -431,7 +431,7 @@
           "min": 5
         },
         "source": "secedit /export",
-        "timestamp": "2026-09-24T09:51:16.309984+00:00",
+        "timestamp": "2026-09-24T16:32:07.738210+00:00",
         "raw": {
           "key": "PasswordHistorySize",
           "raw": "0"
@@ -478,7 +478,7 @@
           "max": 365
         },
         "source": "secedit /export",
-        "timestamp": "2026-09-24T09:51:16.504329+00:00",
+        "timestamp": "2026-09-24T16:32:07.950436+00:00",
         "raw": {
           "key": "MaximumPasswordAge",
           "raw": "42"
@@ -521,7 +521,7 @@
         "detected_value": 0,
         "expected_value": 0,
         "source": "secedit /export",
-        "timestamp": "2026-09-24T09:51:16.728757+00:00",
+        "timestamp": "2026-09-24T16:32:08.128299+00:00",
         "raw": {
           "key": "ClearTextPassword",
           "raw": "0"
@@ -569,7 +569,7 @@
           "min": 255
         },
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoDriveTypeAutoRun",
-        "timestamp": "2026-09-24T09:51:16.729760+00:00",
+        "timestamp": "2026-09-24T16:32:08.128299+00:00",
         "raw": {
           "exists": false,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
@@ -614,7 +614,7 @@
         "detected_value": 1,
         "expected_value": 0,
         "source": "registry:HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient\\EnableMulticast",
-        "timestamp": "2026-09-24T09:51:16.730560+00:00",
+        "timestamp": "2026-09-24T16:32:08.128850+00:00",
         "raw": {
           "exists": false,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
@@ -659,7 +659,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "Win32_NetworkAdapterConfiguration",
-        "timestamp": "2026-09-24T09:51:18.480402+00:00",
+        "timestamp": "2026-09-24T16:32:09.414347+00:00",
         "raw": {
           "per_adapter": [
             0,
@@ -704,7 +704,7 @@
         "detected_value": "Automatic",
         "expected_value": "Disabled",
         "source": "Get-Service",
-        "timestamp": "2026-09-24T09:51:19.503137+00:00",
+        "timestamp": "2026-09-24T16:32:10.346551+00:00",
         "raw": {
           "status": "Running",
           "start_type": "Automatic"
@@ -748,7 +748,7 @@
         "detected_value": 1,
         "expected_value": 1,
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\NoLMHash",
-        "timestamp": "2026-09-24T09:51:19.503137+00:00",
+        "timestamp": "2026-09-24T16:32:10.346551+00:00",
         "raw": {
           "exists": true
         }
@@ -795,7 +795,7 @@
           "min": 5
         },
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\LmCompatibilityLevel",
-        "timestamp": "2026-09-24T09:51:19.503137+00:00",
+        "timestamp": "2026-09-24T16:32:10.346551+00:00",
         "raw": {
           "exists": false,
           "used_default": true
@@ -838,7 +838,7 @@
         "detected_value": 0,
         "expected_value": 0,
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential",
-        "timestamp": "2026-09-24T09:51:19.504134+00:00",
+        "timestamp": "2026-09-24T16:32:10.347550+00:00",
         "raw": {
           "exists": false,
           "used_default": true
@@ -892,7 +892,7 @@
           ]
         },
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\RunAsPPL",
-        "timestamp": "2026-09-24T09:51:19.504134+00:00",
+        "timestamp": "2026-09-24T16:32:10.347550+00:00",
         "raw": {
           "exists": true
         }
@@ -935,7 +935,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Win32_DeviceGuard",
-        "timestamp": "2026-09-24T09:51:20.547853+00:00",
+        "timestamp": "2026-09-24T16:32:11.374616+00:00",
         "raw": {
           "security_services_running": [
             1
@@ -983,7 +983,7 @@
           "max": 4
         },
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\CachedLogonsCount",
-        "timestamp": "2026-09-24T09:51:20.548854+00:00",
+        "timestamp": "2026-09-24T16:32:11.375624+00:00",
         "raw": {
           "exists": true
         }
@@ -1025,7 +1025,7 @@
         "detected_value": "0",
         "expected_value": "0",
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\AutoAdminLogon",
-        "timestamp": "2026-09-24T09:51:20.549854+00:00",
+        "timestamp": "2026-09-24T16:32:11.375624+00:00",
         "raw": {
           "exists": true
         }
@@ -1068,7 +1068,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "registry:LAPS policy keys",
-        "timestamp": "2026-09-24T09:51:20.549854+00:00",
+        "timestamp": "2026-09-24T16:32:11.375624+00:00",
         "raw": {
           "windows_laps_backup_directory": null,
           "legacy_admpwd_enabled": null
@@ -1111,7 +1111,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Get-MpPreference",
-        "timestamp": "2026-09-24T09:51:23.933288+00:00",
+        "timestamp": "2026-09-24T16:32:14.951955+00:00",
         "raw": {
           "property": "DisableRealtimeMonitoring"
         }
@@ -1157,7 +1157,7 @@
           "min": 1
         },
         "source": "Get-MpPreference",
-        "timestamp": "2026-09-24T09:51:26.600418+00:00",
+        "timestamp": "2026-09-24T16:32:17.522528+00:00",
         "raw": {
           "property": "MAPSReporting"
         }
@@ -1209,7 +1209,7 @@
           ]
         },
         "source": "Get-MpPreference",
-        "timestamp": "2026-09-24T09:51:29.114102+00:00",
+        "timestamp": "2026-09-24T16:32:19.846271+00:00",
         "raw": {
           "property": "PUAProtection"
         }
@@ -1261,7 +1261,7 @@
           ]
         },
         "source": "Get-MpPreference",
-        "timestamp": "2026-09-24T09:51:31.659888+00:00",
+        "timestamp": "2026-09-24T16:32:22.389547+00:00",
         "raw": {
           "property": "EnableControlledFolderAccess"
         }
@@ -1314,7 +1314,7 @@
           ]
         },
         "source": "Get-MpPreference",
-        "timestamp": "2026-09-24T09:51:34.372690+00:00",
+        "timestamp": "2026-09-24T16:32:24.766796+00:00",
         "raw": {
           "property": "EnableNetworkProtection"
         }
@@ -1357,7 +1357,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Get-MpPreference",
-        "timestamp": "2026-09-24T09:51:36.795516+00:00",
+        "timestamp": "2026-09-24T16:32:27.271347+00:00",
         "raw": {
           "property": "DisableBehaviorMonitoring"
         }
@@ -1400,7 +1400,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Get-MpComputerStatus",
-        "timestamp": "2026-09-24T09:51:39.430656+00:00",
+        "timestamp": "2026-09-24T16:32:29.703678+00:00",
         "raw": {
           "property": "IsTamperProtected"
         }
@@ -1443,7 +1443,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Get-MpComputerStatus",
-        "timestamp": "2026-09-24T09:51:41.886225+00:00",
+        "timestamp": "2026-09-24T16:32:31.956317+00:00",
         "raw": {
           "property": "AntivirusEnabled"
         }
@@ -1485,7 +1485,7 @@
         "detected_value": "Off",
         "expected_value": "On",
         "source": "Get-BitLockerVolume",
-        "timestamp": "2026-09-24T09:51:45.478535+00:00",
+        "timestamp": "2026-09-24T16:32:34.589365+00:00",
         "raw": {
           "ProtectionStatus": "Off",
           "VolumeStatus": "FullyDecrypted",
@@ -1529,7 +1529,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "Confirm-SecureBootUEFI",
-        "timestamp": "2026-09-24T09:51:46.243885+00:00",
+        "timestamp": "2026-09-24T16:32:35.320595+00:00",
         "raw": {}
       },
       "remediation_applied": false,
@@ -1570,7 +1570,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Get-Tpm",
-        "timestamp": "2026-09-24T09:51:47.493608+00:00",
+        "timestamp": "2026-09-24T16:32:36.582205+00:00",
         "raw": {
           "property": "TpmReady"
         }
@@ -1613,7 +1613,7 @@
         "detected_value": 1,
         "expected_value": true,
         "source": "Get-NetFirewallProfile",
-        "timestamp": "2026-09-24T09:51:52.665444+00:00",
+        "timestamp": "2026-09-24T16:32:41.849208+00:00",
         "raw": {
           "profile": "Domain",
           "property": "Enabled"
@@ -1657,7 +1657,7 @@
         "detected_value": 1,
         "expected_value": true,
         "source": "Get-NetFirewallProfile",
-        "timestamp": "2026-09-24T09:51:55.857497+00:00",
+        "timestamp": "2026-09-24T16:32:44.816583+00:00",
         "raw": {
           "profile": "Private",
           "property": "Enabled"
@@ -1701,7 +1701,7 @@
         "detected_value": 1,
         "expected_value": true,
         "source": "Get-NetFirewallProfile",
-        "timestamp": "2026-09-24T09:51:59.051159+00:00",
+        "timestamp": "2026-09-24T16:32:47.852972+00:00",
         "raw": {
           "profile": "Public",
           "property": "Enabled"
@@ -1753,7 +1753,7 @@
           ]
         },
         "source": "Get-NetFirewallProfile",
-        "timestamp": "2026-09-24T09:52:02.194615+00:00",
+        "timestamp": "2026-09-24T16:32:50.931766+00:00",
         "raw": {
           "profile": "Public",
           "property": "DefaultInboundAction"
@@ -1796,7 +1796,7 @@
         "detected_value": 0,
         "expected_value": 1,
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Audit\\ProcessCreationIncludeCmdLine_Enabled",
-        "timestamp": "2026-09-24T09:52:02.194615+00:00",
+        "timestamp": "2026-09-24T16:32:50.931766+00:00",
         "raw": {
           "exists": false,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
@@ -1846,7 +1846,7 @@
           "min": 201326592
         },
         "source": "Get-WinEvent -ListLog",
-        "timestamp": "2026-09-24T09:52:02.998314+00:00",
+        "timestamp": "2026-09-24T16:32:51.690575+00:00",
         "raw": {
           "channel": "Security"
         }
@@ -1893,7 +1893,7 @@
           "min": 67108864
         },
         "source": "Get-WinEvent -ListLog",
-        "timestamp": "2026-09-24T09:52:03.751312+00:00",
+        "timestamp": "2026-09-24T16:32:52.427769+00:00",
         "raw": {
           "channel": "Windows PowerShell"
         }
@@ -1936,7 +1936,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "auditpol /get",
-        "timestamp": "2026-09-24T09:52:03.839202+00:00",
+        "timestamp": "2026-09-24T16:32:52.506895+00:00",
         "raw": {
           "setting": "No Auditing"
         }
@@ -1979,7 +1979,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "auditpol /get",
-        "timestamp": "2026-09-24T09:52:03.905994+00:00",
+        "timestamp": "2026-09-24T16:32:52.579871+00:00",
         "raw": {
           "setting": "Success and Failure"
         }
@@ -2022,7 +2022,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "auditpol /get",
-        "timestamp": "2026-09-24T09:52:03.976946+00:00",
+        "timestamp": "2026-09-24T16:32:52.651709+00:00",
         "raw": {
           "setting": "Success"
         }
@@ -2065,7 +2065,7 @@
         "detected_value": null,
         "expected_value": "Disabled",
         "source": "win_optional_feature",
-        "timestamp": "2026-09-24T09:52:07.404344+00:00",
+        "timestamp": "2026-09-24T16:32:55.815029+00:00",
         "raw": {}
       },
       "remediation_applied": false,
@@ -2105,7 +2105,7 @@
         "detected_value": 0,
         "expected_value": 1,
         "source": "registry:HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging\\EnableScriptBlockLogging",
-        "timestamp": "2026-09-24T09:52:07.404344+00:00",
+        "timestamp": "2026-09-24T16:32:55.815029+00:00",
         "raw": {
           "exists": false,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
@@ -2150,7 +2150,7 @@
         "detected_value": 0,
         "expected_value": 1,
         "source": "registry:HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ModuleLogging\\EnableModuleLogging",
-        "timestamp": "2026-09-24T09:52:07.405342+00:00",
+        "timestamp": "2026-09-24T16:32:55.816539+00:00",
         "raw": {
           "exists": false,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
@@ -2207,7 +2207,7 @@
           ]
         },
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell\\ExecutionPolicy",
-        "timestamp": "2026-09-24T09:52:07.405342+00:00",
+        "timestamp": "2026-09-24T16:32:55.816539+00:00",
         "raw": {
           "exists": false,
           "used_default": true
@@ -2250,7 +2250,7 @@
         "detected_value": 1,
         "expected_value": 1,
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\\UserAuthentication",
-        "timestamp": "2026-09-24T09:52:07.405342+00:00",
+        "timestamp": "2026-09-24T16:32:55.816539+00:00",
         "raw": {
           "exists": true
         }
@@ -2293,7 +2293,7 @@
         "detected_value": 0,
         "expected_value": 1,
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\fDenyTSConnections",
-        "timestamp": "2026-09-24T09:52:07.406342+00:00",
+        "timestamp": "2026-09-24T16:32:55.816539+00:00",
         "raw": {
           "exists": true
         }
@@ -2336,7 +2336,7 @@
         "detected_value": 1,
         "expected_value": 0,
         "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance\\fAllowToGetHelp",
-        "timestamp": "2026-09-24T09:52:07.406342+00:00",
+        "timestamp": "2026-09-24T16:32:55.818114+00:00",
         "raw": {
           "exists": true
         }
@@ -2390,7 +2390,7 @@
           ]
         },
         "source": "Get-Service",
-        "timestamp": "2026-09-24T09:52:08.320341+00:00",
+        "timestamp": "2026-09-24T16:32:56.676536+00:00",
         "raw": {
           "status": "Stopped",
           "start_type": "Manual"
@@ -2434,7 +2434,7 @@
         "detected_value": "Disabled",
         "expected_value": "Disabled",
         "source": "Get-Service",
-        "timestamp": "2026-09-24T09:52:09.245004+00:00",
+        "timestamp": "2026-09-24T16:32:57.503743+00:00",
         "raw": {
           "status": "Stopped",
           "start_type": "Disabled"
@@ -2488,7 +2488,7 @@
           ]
         },
         "source": "Get-Service",
-        "timestamp": "2026-09-24T09:52:10.077320+00:00",
+        "timestamp": "2026-09-24T16:32:58.423391+00:00",
         "raw": {
           "status": "Running",
           "start_type": "Manual"
@@ -2531,7 +2531,7 @@
         "detected_value": false,
         "expected_value": false,
         "source": "Get-SmbServerConfiguration",
-        "timestamp": "2026-09-24T09:52:13.654941+00:00",
+        "timestamp": "2026-09-24T16:33:01.859498+00:00",
         "raw": {
           "property": "EnableSMB1Protocol"
         }
@@ -2574,7 +2574,7 @@
         "detected_value": true,
         "expected_value": true,
         "source": "Get-SmbServerConfiguration",
-        "timestamp": "2026-09-24T09:52:15.940608+00:00",
+        "timestamp": "2026-09-24T16:33:04.007916+00:00",
         "raw": {
           "property": "RequireSecuritySignature"
         }
@@ -2617,7 +2617,7 @@
         "detected_value": false,
         "expected_value": false,
         "source": "Get-SmbClientConfiguration",
-        "timestamp": "2026-09-24T09:52:18.218605+00:00",
+        "timestamp": "2026-09-24T16:33:06.131800+00:00",
         "raw": {
           "property": "EnableInsecureGuestLogons"
         }
@@ -2660,7 +2660,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "Get-SmbServerConfiguration",
-        "timestamp": "2026-09-24T09:52:20.433932+00:00",
+        "timestamp": "2026-09-24T16:33:08.266093+00:00",
         "raw": {
           "property": "EncryptData"
         }
@@ -2703,7 +2703,7 @@
         "detected_value": false,
         "expected_value": true,
         "source": "Get-SmbClientConfiguration",
-        "timestamp": "2026-09-24T09:52:22.843292+00:00",
+        "timestamp": "2026-09-24T16:33:10.631212+00:00",
         "raw": {
           "property": "BlockNTLM"
         }
@@ -2745,7 +2745,7 @@
         "detected_value": 1,
         "expected_value": 1,
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA",
-        "timestamp": "2026-09-24T09:52:22.843292+00:00",
+        "timestamp": "2026-09-24T16:33:10.631212+00:00",
         "raw": {
           "exists": true,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)"
@@ -2789,7 +2789,7 @@
         "detected_value": 0,
         "expected_value": 1,
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\PromptOnSecureDesktop",
-        "timestamp": "2026-09-24T09:52:22.844297+00:00",
+        "timestamp": "2026-09-24T16:33:10.631212+00:00",
         "raw": {
           "exists": true,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)"
@@ -2836,7 +2836,7 @@
           "min": 1
         },
         "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\ConsentPromptBehaviorAdmin",
-        "timestamp": "2026-09-24T09:52:22.844297+00:00",
+        "timestamp": "2026-09-24T16:33:10.632212+00:00",
         "raw": {
           "exists": true,
           "policy_source": "Registry Policy key (SOFTWARE\\Policies)"
@@ -2879,7 +2879,7 @@
         "detected_value": false,
         "expected_value": false,
         "source": "registry reboot-pending flags",
-        "timestamp": "2026-09-24T09:52:24.392657+00:00",
+        "timestamp": "2026-09-24T16:33:12.172036+00:00",
         "raw": {}
       },
       "remediation_applied": false,
@@ -2923,7 +2923,7 @@
           "max": 0
         },
         "source": "win_pending_updates",
-        "timestamp": "2026-09-24T09:52:24.890110+00:00",
+        "timestamp": "2026-09-24T16:33:12.580904+00:00",
         "raw": {}
       },
       "remediation_applied": false,

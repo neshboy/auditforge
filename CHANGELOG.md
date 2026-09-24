@@ -19,6 +19,17 @@ Initial release.
 - 99-test automated suite (unit tests with mocked OS state; see `docs/TEST_MATRIX.md` for what was additionally verified live).
 - CI: ruff lint, pytest matrix (ubuntu-latest/windows-latest x Python 3.10/3.12), ShellCheck, PSScriptAnalyzer, gitleaks secret scanning.
 
+### Fixed (found via live/CI testing during development, before/around the initial release)
+- `@register` storing the decorated class instead of an instance, which would have broken every single primitive at runtime.
+- PowerShell's `ConvertTo-Json` serializing `Get-Service` `Status`/`StartType` and `Get-BitLockerVolume` `ProtectionStatus` as raw integers instead of names, causing false FAILs against string-based `expected_value`s.
+- `AF-WIN-SMB-003` referencing `EnableInsecureGuestLogons` on the wrong SMB cmdlet (it's a client-config property, not server-config).
+- `RunAsPPL=2` (UEFI-locked LSA protection, stronger than `1`) being wrongly flagged as non-compliant.
+- Windows local password minimum length baseline corrected from a stale "14 characters" to NIST SP 800-63B-4's verified 15-character requirement.
+- `sshd -t` (and, found separately via fresh-clone testing, `sshd -T`) failing with "Missing privilege separation directory: /run/sshd" whenever sshd was currently stopped -- both now share one helper that ensures the directory exists first.
+- `AF-LNX-SSH-001` not accepting `without-password`, OpenSSH's legacy-name synonym for `prohibit-password`.
+- `linux_sudoers_nopasswd_scan` crashing with an uncaught `PermissionError` on `os.listdir("/etc/sudoers.d")` when run as a non-root user -- the normal case for that directory's typical `0750 root:root` permissions, only missed locally because every Docker-based test had run as literal root.
+- The `secret-scan` CI job failing outright on the repository's very first push (gitleaks-action's before/after diff range has no valid parent to diff from on a root commit) -- replaced with a direct full-history `gitleaks detect` scan.
+
 ### Known limitations (v0.1.0)
 - macOS module is entirely untested on real Apple hardware -- no Mac was available during development. See `docs/TEST_MATRIX.md`.
 - No PDF report generation.

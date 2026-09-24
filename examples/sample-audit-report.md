@@ -2,7 +2,7 @@
 
 - **OS:** Microsoft Windows 11 Enterprise N 25H2 (AMD64)
 - **Profile:** audit_only
-- **Generated:** 2026-09-24T09:52:24.890110+00:00
+- **Generated:** 2026-09-24T16:33:12.580904+00:00
 - **Centrally managed:** No
 - **Overall score:** 58.8%
 
