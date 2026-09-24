@@ -1,0 +1,16 @@
+control_id: AF-WIN-TST-003
+title: Unknown top-level field
+description: This control has a field the schema does not recognize.
+os: windows
+category: testing
+severity: medium
+benchmark: "AuditForge Test Fixture"
+rationale: Exists to validate additionalProperties:false is enforced.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Test'
+    name: TestValue
+expected_value: 1
+totally_made_up_field: this should not be allowed

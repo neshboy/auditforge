@@ -1,0 +1,10 @@
+control_id: AF-WIN-TST-002
+title: Missing required fields
+os: windows
+category: testing
+severity: medium
+benchmark: "AuditForge Test Fixture"
+audit:
+  primitive: win_registry_dword
+  params: {}
+expected_value: 1

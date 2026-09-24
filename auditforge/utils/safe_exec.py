@@ -25,7 +25,7 @@ import shutil
 import subprocess
 from typing import Optional, Sequence
 
-_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:\\/\-\s]+$")
+_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:\\/\-]+$")
 
 _KNOWN_PATHS = {
     "powershell.exe": (r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",),

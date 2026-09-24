@@ -346,8 +346,9 @@ class LoginDefsPrimitive(Primitive):
     def apply(self, params: dict, expected_value: Any) -> ApplyOutcome:
         key = validate_token(params["key"], r"^[A-Z][A-Z0-9_]*$")
         target = params.get("value", expected_value)
-        before_raw = _login_defs_get(key)
-        prev_recorded = before_raw if before_raw is not None else dict(_ABSENT)
+        existed = _login_defs_get(key) is not None
+        before = self.probe(params)
+        prev_recorded = before.value if existed else dict(_ABSENT)
         _login_defs_set(key, str(target))
         return ApplyOutcome(previous_value=prev_recorded, new_value=target)
 

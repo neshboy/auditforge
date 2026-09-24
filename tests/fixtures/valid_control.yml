@@ -1,0 +1,25 @@
+control_id: AF-WIN-TST-001
+title: Test control
+description: A control used only by the test suite.
+os: windows
+applies_to: ["all"]
+category: testing
+severity: medium
+benchmark: "AuditForge Test Fixture"
+benchmark_version: "n/a"
+external_reference: "https://example.invalid/"
+rationale: Exists to validate the loader.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Test'
+    name: TestValue
+expected_value: 1
+possible_impact: "None; test fixture."
+frameworks:
+  nist_800_53: ["AC-2"]
+management_detection: false
+high_impact: false
+tags: ["test"]
+notes: ""

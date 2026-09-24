@@ -1,0 +1,15 @@
+control_id: not-a-valid-id
+title: Bad control ID pattern
+description: This control_id does not match the required regex.
+os: windows
+category: testing
+severity: medium
+benchmark: "AuditForge Test Fixture"
+rationale: Exists to validate the loader rejects bad IDs.
+audit:
+  primitive: win_registry_dword
+  params:
+    hive: HKLM
+    path: 'SOFTWARE\Test'
+    name: TestValue
+expected_value: 1
