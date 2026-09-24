@@ -4,6 +4,8 @@
 
 > **Status: v0.1.0, actively developed.** Windows and Linux are genuinely tested (see below). macOS is written but **not yet validated on real Apple hardware** -- read `docs/TEST_MATRIX.md` before trusting it with anything. This is not a finished, audited-by-a-third-party product; it's a real, working first release.
 
+![AuditForge terminal demo](docs/assets/demo.svg)
+
 ```
 Scan -> Audit -> Explain -> Backup -> Harden -> Verify -> Report -> Roll Back
 ```
