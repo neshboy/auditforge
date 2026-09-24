@@ -121,13 +121,32 @@ class SysctlPrimitive(Primitive):
 # ---------------------------------------------------------------------------
 
 
+def _ensure_sshd_runtime_dir() -> None:
+    # Both `sshd -T` (probe) and `sshd -t` (apply-path validation) refuse to
+    # run at all -- printing "Missing privilege separation directory:
+    # /run/sshd" on stdout with exit code 0 -- if this directory is absent,
+    # which happens whenever sshd is currently stopped (the directory is
+    # normally created by the service manager before sshd starts, not by
+    # sshd itself). Ensuring it exists makes both probing and validating
+    # config changes work regardless of whether the service is running.
+    os.makedirs("/run/sshd", exist_ok=True)
+    os.chmod("/run/sshd", 0o755)
+
+
 def _sshd_effective_config() -> dict:
+    _ensure_sshd_runtime_dir()
     exe = resolve_binary("sshd")
     res = run([exe, "-T", "-C", "user=root,host=localhost,addr=127.0.0.1,lport=22,laddr=127.0.0.1"], timeout=10)
-    if not res.ok:
+    values = _parse_sshd_dump(res.stdout)
+    if not values:
         res = run([exe, "-T"], timeout=10)
+        values = _parse_sshd_dump(res.stdout)
+    return values
+
+
+def _parse_sshd_dump(text: str) -> dict:
     values = {}
-    for line in res.stdout.splitlines():
+    for line in text.splitlines():
         parts = line.strip().split(None, 1)
         if len(parts) == 2:
             values[parts[0].lower()] = parts[1]
@@ -147,12 +166,7 @@ def _sshd_dropin_remove(option: str) -> None:
 
 def _sshd_validate_and_reload() -> tuple:
     exe = resolve_binary("sshd")
-    # sshd -t needs its privilege-separation directory to exist; normally
-    # created by the service manager before sshd starts, but if sshd is
-    # currently stopped (e.g. a different control disabled the unit) this
-    # directory may be absent even though the config itself is fine.
-    os.makedirs("/run/sshd", exist_ok=True)
-    os.chmod("/run/sshd", 0o755)
+    _ensure_sshd_runtime_dir()
     check = run([exe, "-t"], timeout=10)
     if not check.ok:
         return False, check.stderr.strip() or check.stdout.strip()
