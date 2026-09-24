@@ -10,9 +10,7 @@
 Scan -> Audit -> Explain -> Backup -> Harden -> Verify -> Report -> Roll Back
 ```
 
-**[-> See it in action: real screenshots, real CI, real rollback pipeline (docs/SHOWCASE.md)](docs/SHOWCASE.md)**
-
-![AuditForge HTML report executive summary: 58.8% overall posture with a real PASS/FAIL/WARNING breakdown](docs/images/report-executive-summary.png)
+**[-> See it in action: real report screenshots, real GitHub CI, real rollback pipeline (docs/SHOWCASE.md)](docs/SHOWCASE.md)**
 
 ## What this is
 
