@@ -1,0 +1,28 @@
+control_id: AF-MAC-ENC-001
+title: FileVault disk encryption is on (audit only)
+description: >
+  FileVault full-disk encryption should be enabled.
+os: macos
+applies_to: ["all"]
+category: encryption
+severity: high
+benchmark: "Apple Platform Security"
+benchmark_version: "guide revision 2026-08 -- verified via docs/SOURCES.md"
+external_reference: "https://support.apple.com/guide/security/volume-encryption-with-filevault-sec4c6dc1b6e/web"
+rationale: >
+  FileVault protects data at rest if the device is lost or stolen. Per
+  section 6 of the project spec, AuditForge NEVER enables disk encryption
+  automatically -- doing so without first arranging recovery-key escrow
+  (e.g. via MDM/Apple Business Manager, or a printed/stored recovery key)
+  risks irrecoverable data loss. This control is audit-only.
+audit:
+  primitive: macos_fdesetup_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted for this control under any circumstance."
+frameworks:
+  nist_800_53: ["SC-28"]
+management_detection: false
+high_impact: false
+tags: ["encryption", "filevault", "manual-review"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. fdesetup status output format is well-documented and stable across recent macOS releases."

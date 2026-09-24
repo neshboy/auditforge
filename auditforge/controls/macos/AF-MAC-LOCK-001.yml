@@ -1,0 +1,48 @@
+control_id: AF-MAC-LOCK-001
+title: Screen lock requires a password immediately after sleep/screensaver
+description: >
+  The screensaver/lock screen should require a password to unlock, with
+  effectively no grace delay.
+os: macos
+applies_to: ["all"]
+category: identity
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mh35852/mac"
+rationale: >
+  Without this, anyone with physical access to a sleeping/screensaver-
+  locked Mac can wake it and reach an authenticated session with no
+  prompt.
+audit:
+  primitive: macos_defaults
+  params:
+    domain: com.apple.screensaver
+    key: askForPassword
+    scope: user
+    host: true
+    value_type: bool
+    default_if_absent: false
+expected_value: true
+remediation:
+  primitive: macos_defaults
+  params:
+    domain: com.apple.screensaver
+    key: askForPassword
+    scope: user
+    host: true
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected for normal use; kiosk-mode Macs intentionally configured without a lock screen would be affected."
+frameworks:
+  nist_800_53: ["AC-11"]
+management_detection: false
+high_impact: false
+tags: ["identity", "screen-lock"]
+notes: >
+  UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. Targets the
+  console user's preference domain via `sudo -u <console user> defaults
+  ...` since this is a per-user setting, not a system-wide one; reports an
+  error if no non-root console user session is currently active.

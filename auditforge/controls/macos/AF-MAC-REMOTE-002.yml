@@ -1,0 +1,36 @@
+control_id: AF-MAC-REMOTE-002
+title: Remote Apple Events is disabled unless required
+description: >
+  Remote Apple Events (unauthenticated-by-default AppleScript/Apple Event
+  execution from other Macs on the network) should be disabled unless
+  specifically needed for cross-Mac automation workflows.
+os: macos
+applies_to: ["all"]
+category: remote_access
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mchlp1191/mac"
+rationale: >
+  Remote Apple Events expands the remote-execution attack surface and is
+  rarely needed outside specific automation/scripting workflows between
+  trusted Macs.
+audit:
+  primitive: macos_systemsetup_flag
+  params:
+    flag: remoteappleevents
+expected_value: false
+remediation:
+  primitive: macos_systemsetup_flag
+  params:
+    flag: remoteappleevents
+    value: false
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks cross-Mac AppleScript/Apple Event automation workflows that rely on this feature."
+frameworks:
+  nist_800_53: ["AC-17", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["remote-access"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

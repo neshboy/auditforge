@@ -1,0 +1,39 @@
+control_id: AF-MAC-ACCT-001
+title: Guest account is disabled
+description: >
+  The built-in Guest account should be disabled.
+os: macos
+applies_to: ["all"]
+category: accounts
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mh11890/mac"
+rationale: >
+  An enabled Guest account provides an unauthenticated local login path.
+audit:
+  primitive: macos_defaults
+  params:
+    domain: /Library/Preferences/com.apple.loginwindow
+    key: GuestEnabled
+    scope: system
+    value_type: bool
+    default_if_absent: false
+expected_value: false
+remediation:
+  primitive: macos_defaults
+  params:
+    domain: /Library/Preferences/com.apple.loginwindow
+    key: GuestEnabled
+    scope: system
+    value_type: bool
+    value: false
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; kiosk deployments intentionally using the Guest account would be affected."
+frameworks:
+  nist_800_53: ["AC-2", "IA-5"]
+management_detection: false
+high_impact: false
+tags: ["accounts", "guest"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

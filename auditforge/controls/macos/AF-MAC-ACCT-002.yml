@@ -1,0 +1,33 @@
+control_id: AF-MAC-ACCT-002
+title: Automatic login is disabled
+description: >
+  The Mac must not be configured to automatically log a user in at boot
+  without a password prompt.
+os: macos
+applies_to: ["all"]
+category: accounts
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mh11851/mac"
+rationale: >
+  Automatic login grants anyone with physical/console access to the
+  machine an authenticated session with no prompt, and is incompatible
+  with FileVault's own login-required-to-decrypt model in most
+  configurations.
+audit:
+  primitive: macos_defaults
+  params:
+    domain: /Library/Preferences/com.apple.loginwindow
+    key: autoLoginUser
+    scope: system
+    value_type: string
+    default_if_absent: false
+expected_value: false
+possible_impact: "Read-only; no remediation is attempted -- removing this key requires care (e.g. clearing the associated keychain-stored password) that AuditForge does not currently automate."
+frameworks:
+  nist_800_53: ["IA-2", "AC-11"]
+management_detection: false
+high_impact: false
+tags: ["accounts", "physical-access"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. A present value of any kind (a username) fails this control; only true absence of the key passes."

@@ -1,0 +1,28 @@
+control_id: AF-MAC-MDM-001
+title: MDM enrollment status (informational)
+description: >
+  Reports whether this Mac is enrolled in an MDM (Mobile Device
+  Management) solution, for report visibility alongside the general
+  management detection surfaced in the executive summary.
+os: macos
+applies_to: ["all"]
+category: management
+severity: info
+benchmark: "Apple Platform Deployment"
+benchmark_version: "guide revision 2026-09-17 -- verified via docs/SOURCES.md"
+external_reference: "https://support.apple.com/guide/security/device-management-security-overview-sec013b5d35d/web"
+rationale: >
+  Knowing whether a Mac is MDM-managed helps interpret every other finding
+  on this report -- an unmanaged personal Mac and a fleet-managed
+  corporate Mac warrant different remediation decisions.
+audit:
+  primitive: macos_profiles_enrollment
+  params: {}
+expected_value: {"one_of": [true, false]}
+possible_impact: "Read-only; no remediation is attempted for this control."
+frameworks:
+  nist_800_53: ["CM-8"]
+management_detection: false
+high_impact: false
+tags: ["management", "informational"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. Always PASSes; this control exists for report visibility, not compliance judgment."

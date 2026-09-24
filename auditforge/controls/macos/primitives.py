@@ -292,29 +292,41 @@ class ApplicationFirewallStealthPrimitive(Primitive):
         return res.ok
 
 
-@register
-class RemoteLoginStatusPrimitive(Primitive):
-    """SSH (Remote Login) via `systemsetup`."""
+_SYSTEMSETUP_FLAGS = {"remotelogin", "remoteappleevents"}
 
-    name = "macos_remote_login"
+
+@register
+class SystemsetupFlagPrimitive(Primitive):
+    """Generic on/off flag via `systemsetup -get<flag>` / `-set<flag>`.
+    params: flag (one of _SYSTEMSETUP_FLAGS, e.g. 'remotelogin' for SSH,
+    'remoteappleevents' for Remote Apple Events)."""
+
+    name = "macos_systemsetup_flag"
 
     def probe(self, params: dict) -> ProbeResult:
-        res = run(["/usr/sbin/systemsetup", "-getremotelogin"], timeout=10)
+        flag = params["flag"]
+        if flag not in _SYSTEMSETUP_FLAGS:
+            raise ValueError(f"unsupported systemsetup flag '{flag}'")
+        res = run(["/usr/sbin/systemsetup", f"-get{flag}"], timeout=10)
         if not res.ok:
             return ProbeResult(value=None, error=res.stderr.strip() or "systemsetup failed (may require sudo)")
         enabled = "on" in res.stdout.lower()
-        return ProbeResult(value=enabled, source="systemsetup -getremotelogin", raw={"raw": res.stdout.strip()})
+        return ProbeResult(value=enabled, source=f"systemsetup -get{flag}", raw={"raw": res.stdout.strip()})
 
     def apply(self, params: dict, expected_value: Any) -> ApplyOutcome:
+        flag = params["flag"]
+        if flag not in _SYSTEMSETUP_FLAGS:
+            raise ValueError(f"unsupported systemsetup flag '{flag}'")
         target = bool(params.get("value", expected_value))
         before = self.probe(params)
-        res = run(["/usr/sbin/systemsetup", "-setremotelogin", "on" if target else "off"], timeout=15)
+        res = run(["/usr/sbin/systemsetup", f"-set{flag}", "on" if target else "off"], timeout=15)
         if not res.ok:
-            raise RuntimeError(f"systemsetup -setremotelogin failed: {res.stderr.strip()}")
+            raise RuntimeError(f"systemsetup -set{flag} failed: {res.stderr.strip()}")
         return ApplyOutcome(previous_value=before.value, new_value=target)
 
     def rollback(self, params: dict, change) -> bool:
-        res = run(["/usr/sbin/systemsetup", "-setremotelogin", "on" if change.previous_value else "off"], timeout=15)
+        flag = params["flag"]
+        res = run(["/usr/sbin/systemsetup", f"-set{flag}", "on" if change.previous_value else "off"], timeout=15)
         return res.ok
 
 

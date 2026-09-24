@@ -1,0 +1,40 @@
+control_id: AF-MAC-UPD-001
+title: Automatic software update checking is enabled
+description: >
+  macOS should automatically check for available software updates.
+os: macos
+applies_to: ["all"]
+category: updates
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mchl21a90b48/mac"
+rationale: >
+  Automatic update checking ensures security patches are surfaced to the
+  user/administrator promptly rather than being missed indefinitely.
+audit:
+  primitive: macos_defaults
+  params:
+    domain: /Library/Preferences/com.apple.SoftwareUpdate
+    key: AutomaticCheckEnabled
+    scope: system
+    value_type: bool
+    default_if_absent: true
+expected_value: true
+remediation:
+  primitive: macos_defaults
+  params:
+    domain: /Library/Preferences/com.apple.SoftwareUpdate
+    key: AutomaticCheckEnabled
+    scope: system
+    value_type: bool
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this only enables checking for updates, not automatic installation."
+frameworks:
+  nist_800_53: ["SI-2"]
+management_detection: false
+high_impact: false
+tags: ["updates"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. This checks for update AVAILABILITY notifications only; AuditForge does not enable automatic unattended installation of updates (change-control decision left to the administrator, same posture as Windows/Linux update controls)."

@@ -1,0 +1,40 @@
+control_id: AF-MAC-REMOTE-001
+title: Remote Login (SSH) exposure is reviewed (informational)
+description: >
+  Reports whether Remote Login (the built-in SSH server) is enabled. This
+  is informational, not an automatic FAIL -- many Mac servers and
+  developer workstations legitimately need SSH access.
+os: macos
+applies_to: ["all"]
+category: remote_access
+severity: info
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/allow-a-remote-computer-to-access-your-mac-mchlp1066/mac"
+rationale: >
+  Per section 34 of the project spec, remote-access services are a REVIEW
+  signal in context, not an automatic FAIL.
+audit:
+  primitive: macos_systemsetup_flag
+  params:
+    flag: remotelogin
+expected_value: {"one_of": [true, false]}
+remediation:
+  primitive: macos_systemsetup_flag
+  params:
+    flag: remotelogin
+    value: false
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "HIGH IMPACT: disables all SSH access to this Mac, including your own current session if you are connected via SSH."
+frameworks:
+  nist_800_53: ["AC-17", "CM-7"]
+management_detection: false
+high_impact: true
+tags: ["remote-access", "ssh", "informational"]
+notes: >
+  UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. Unlike the
+  Linux SSH controls, this primitive has no live-session guard (no
+  reliable SSH_CONNECTION-equivalent check implemented for macOS yet) --
+  treat --allow-high-impact for this control with extra caution until that
+  gap is closed (roadmap item).

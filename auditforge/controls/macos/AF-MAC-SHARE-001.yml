@@ -1,0 +1,35 @@
+control_id: AF-MAC-SHARE-001
+title: File Sharing (SMB) exposure is reviewed (informational)
+description: >
+  Reports whether the built-in SMB file-sharing service is loaded.
+  Informational -- File Sharing is a common, legitimate feature on Macs
+  used as file servers or for local network sharing.
+os: macos
+applies_to: ["all"]
+category: remote_access
+severity: info
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mh17131/mac"
+rationale: >
+  Per section 34 of the project spec, SMB/file sharing is a REVIEW signal
+  in context, not an automatic FAIL (mirrors the Windows SMB posture).
+audit:
+  primitive: macos_launchd_service
+  params:
+    label: com.apple.smbd
+expected_value: {"one_of": [true, false]}
+remediation:
+  primitive: macos_launchd_service
+  params:
+    label: com.apple.smbd
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "HIGH IMPACT: disables SMB File Sharing, breaking access for any client currently connecting to shares on this Mac."
+frameworks:
+  nist_800_53: ["AC-17", "CM-7"]
+management_detection: false
+high_impact: true
+tags: ["file-sharing", "smb", "informational"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

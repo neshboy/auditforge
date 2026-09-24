@@ -1,0 +1,43 @@
+control_id: AF-MAC-LOCK-002
+title: Screen lock password delay is minimal
+description: >
+  If a grace delay exists before the password prompt is required, it
+  should be small (at most a few seconds).
+os: macos
+applies_to: ["all"]
+category: identity
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mh35852/mac"
+rationale: >
+  A long grace delay after wake gives a window where physical access grants
+  full access without any authentication.
+audit:
+  primitive: macos_defaults
+  params:
+    domain: com.apple.screensaver
+    key: askForPasswordDelay
+    scope: user
+    host: true
+    value_type: int
+    default_if_absent: 0
+expected_value: {"max": 5}
+remediation:
+  primitive: macos_defaults
+  params:
+    domain: com.apple.screensaver
+    key: askForPasswordDelay
+    scope: user
+    host: true
+    value_type: int
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected for normal use."
+frameworks:
+  nist_800_53: ["AC-11"]
+management_detection: false
+high_impact: false
+tags: ["identity", "screen-lock"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

@@ -1,0 +1,35 @@
+control_id: AF-MAC-FW-001
+title: Application Firewall is enabled
+description: >
+  The built-in macOS Application Firewall should be enabled.
+os: macos
+applies_to: ["all"]
+category: firewall
+severity: high
+benchmark: "Apple Platform Security"
+benchmark_version: "Firewall topic page dated 2021-02-18 -- verified via docs/SOURCES.md"
+external_reference: "https://support.apple.com/guide/security/firewall-security-in-macos-seca0e83763f/web"
+rationale: >
+  The Application Firewall protects against unsolicited inbound network
+  connections and denial-of-service probing.
+audit:
+  primitive: macos_alf_state
+  params: {}
+expected_value: true
+remediation:
+  primitive: macos_alf_state
+  params:
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "May prompt for allow/deny the first time each listening application is run, if per-app rules are also configured."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["firewall"]
+notes: >
+  UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. The
+  socketfilterfw CLI's exact behavior is documented only via the local man
+  page (per docs/SOURCES.md, Apple's own online docs do not mention it),
+  not independently verified against Apple documentation.

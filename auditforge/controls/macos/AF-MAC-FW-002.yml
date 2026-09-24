@@ -1,0 +1,32 @@
+control_id: AF-MAC-FW-002
+title: Application Firewall stealth mode is enabled
+description: >
+  Stealth mode should be enabled so the Mac does not respond to ICMP
+  ping / unsolicited probing traffic used for network reconnaissance.
+os: macos
+applies_to: ["all"]
+category: firewall
+severity: low
+benchmark: "Apple Platform Security"
+benchmark_version: "Firewall topic page dated 2021-02-18 -- verified via docs/SOURCES.md"
+external_reference: "https://support.apple.com/guide/security/firewall-security-in-macos-seca0e83763f/web"
+rationale: >
+  Stealth mode reduces the host's visibility to automated network scanning
+  without affecting normal outbound/established connections.
+audit:
+  primitive: macos_alf_stealth
+  params: {}
+expected_value: true
+remediation:
+  primitive: macos_alf_stealth
+  params:
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Some network diagnostic tools/monitoring on the local network that rely on ping reachability will no longer see this host respond."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["firewall"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

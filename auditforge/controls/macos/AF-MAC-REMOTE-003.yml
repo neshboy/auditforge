@@ -1,0 +1,35 @@
+control_id: AF-MAC-REMOTE-003
+title: Screen Sharing exposure is reviewed (informational)
+description: >
+  Reports whether the built-in Screen Sharing (VNC/ARD-compatible) service
+  is loaded. Informational -- Screen Sharing is a common, legitimate
+  remote-support/administration tool.
+os: macos
+applies_to: ["all"]
+category: remote_access
+severity: info
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://support.apple.com/guide/mac-help/mh11851/mac"
+rationale: >
+  Per section 34 of the project spec, remote-access services are a REVIEW
+  signal in context, not an automatic FAIL.
+audit:
+  primitive: macos_launchd_service
+  params:
+    label: com.apple.screensharing
+expected_value: {"one_of": [true, false]}
+remediation:
+  primitive: macos_launchd_service
+  params:
+    label: com.apple.screensharing
+    value: true
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "HIGH IMPACT: disables Screen Sharing/remote-support access to this Mac, including any session currently connected via Screen Sharing."
+frameworks:
+  nist_800_53: ["AC-17", "CM-7"]
+management_detection: false
+high_impact: true
+tags: ["remote-access", "informational"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md. `value: true` in the remediation params means 'disabled' per macos_launchd_service's own convention (probe returns true when NOT loaded); see the primitive's docstring."

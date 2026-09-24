@@ -1,0 +1,28 @@
+control_id: AF-MAC-SIP-001
+title: System Integrity Protection is enabled (audit only)
+description: >
+  System Integrity Protection (SIP) should be enabled.
+os: macos
+applies_to: ["all"]
+category: system_integrity
+severity: critical
+benchmark: "Apple Platform Security"
+benchmark_version: "SIP topic page dated 2021-02-18 (not recently revised) -- verified via docs/SOURCES.md"
+external_reference: "https://support.apple.com/guide/security/system-integrity-protection-secb7ea06b49/web"
+rationale: >
+  SIP is a foundational macOS protection restricting writes to critical
+  system locations. AuditForge NEVER attempts to change SIP -- doing so
+  requires booting into Recovery OS and directly contradicts the project's
+  "never defeat platform security mechanisms" rule (section 9 of the
+  project spec). This control is audit-only.
+audit:
+  primitive: macos_csrutil_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; AuditForge cannot and will not change this setting."
+frameworks:
+  nist_800_53: ["SI-7", "CM-6"]
+management_detection: false
+high_impact: false
+tags: ["system-integrity", "sip", "manual-review"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

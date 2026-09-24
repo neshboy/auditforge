@@ -1,0 +1,32 @@
+control_id: AF-MAC-GK-001
+title: Gatekeeper assessments are enabled (audit only)
+description: >
+  Gatekeeper's app-launch assessment (checking downloaded software for
+  known-malicious content and valid signing/notarization) should be
+  enabled.
+os: macos
+applies_to: ["all"]
+category: malware_protection
+severity: high
+benchmark: "Apple Platform Security"
+benchmark_version: "guide revision 2026-08 -- verified via docs/SOURCES.md"
+external_reference: "https://support.apple.com/guide/security/gatekeeper-and-runtime-protection-sec5599b66df/web"
+rationale: >
+  Gatekeeper is a core first line of defense against malicious downloaded
+  software. AuditForge reports this as audit-only: available documentation
+  on the exact current CLI toggle behavior for Gatekeeper is inconsistent
+  across macOS versions (see docs/SOURCES.md Apple section), so a
+  remediation attempt risked either a silent no-op or an incorrect change
+  on an OS AuditForge cannot test against -- the safer choice was to match
+  FileVault/SIP's audit-only posture here too.
+audit:
+  primitive: macos_spctl_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted for this control."
+frameworks:
+  nist_800_53: ["SI-3", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["malware-protection", "gatekeeper", "manual-review"]
+notes: "UNTESTED on real macOS hardware -- see docs/TEST_MATRIX.md."

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AuditForge Report -- {{ report.hostname }}</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:      #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --status-good:     #0ca30c;
+    --status-warning:  #fab219;
+    --status-serious:  #ec835a;
+    --status-critical: #d03b3b;
+    --status-manual:   #2a78d6;
+    --status-managed:  #4a3aa7;
+    --sev-info:   #898781;
+    --sev-low:    #86b6ef;
+    --sev-medium: #eda100;
+    --sev-high:   #eb6834;
+    --sev-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:      #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --status-good:     #0ca30c;
+      --status-warning:  #fab219;
+      --status-serious:  #ec835a;
+      --status-critical: #e66767;
+      --status-manual:   #3987e5;
+      --status-managed:  #9085e9;
+      --sev-info:   #898781;
+      --sev-low:    #5598e7;
+      --sev-medium: #c98500;
+      --sev-high:   #d95926;
+      --sev-critical: #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  .af-report { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.af-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--gridline); padding-bottom: 16px; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 8px;
+  }
+  header.af-header h1 { font-size: 20px; margin: 0; letter-spacing: 0.02em; }
+  header.af-header .meta { color: var(--text-secondary); font-size: 13px; text-align: right; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; margin-bottom: 20px;
+  }
+  h2.section-title { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-secondary); margin: 0 0 16px; }
+  .exec-summary { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .hero-score { text-align: center; min-width: 140px; }
+  .hero-score .num {
+    font-size: 56px; font-weight: 700; line-height: 1;
+    font-variant-numeric: proportional-nums;
+  }
+  .hero-score .num.band-good { color: var(--status-good); }
+  .hero-score .num.band-warning { color: var(--status-warning); }
+  .hero-score .num.band-critical { color: var(--status-critical); }
+  .hero-score .num.band-unknown { color: var(--text-muted); }
+  .hero-score .label { color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .stat-tiles { display: flex; gap: 16px; flex: 1; flex-wrap: wrap; }
+  .stat-tile { min-width: 88px; }
+  .stat-tile .value { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-tile .label { color: var(--text-secondary); font-size: 12px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; font-size: 13px; }
+  .meta-grid dt { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .meta-grid dd { margin: 2px 0 0; }
+  .category-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+  .category-row .cat-name { width: 200px; flex-shrink: 0; font-size: 13px; }
+  .category-row .bar-track { flex: 1; height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .category-row .bar-fill { height: 100%; border-radius: 5px; }
+  .category-row .bar-fill.band-good { background: var(--status-good); }
+  .category-row .bar-fill.band-warning { background: var(--status-warning); }
+  .category-row .bar-fill.band-critical { background: var(--status-critical); }
+  .category-row .bar-fill.band-unknown { background: var(--text-muted); }
+  .category-row .cat-score { width: 48px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .badge-PASS { color: var(--status-good); background: color-mix(in srgb, var(--status-good) 12%, transparent); }
+  .badge-PASS::before { background: var(--status-good); }
+  .badge-FAIL { color: var(--status-critical); background: color-mix(in srgb, var(--status-critical) 12%, transparent); }
+  .badge-FAIL::before { background: var(--status-critical); }
+  .badge-WARNING { color: var(--text-primary); background: color-mix(in srgb, var(--status-warning) 22%, transparent); }
+  .badge-WARNING::before { background: var(--status-warning); }
+  .badge-NOT_APPLICABLE { color: var(--text-muted); background: color-mix(in srgb, var(--text-muted) 12%, transparent); }
+  .badge-NOT_APPLICABLE::before { background: var(--text-muted); }
+  .badge-MANUAL_REVIEW { color: var(--status-manual); background: color-mix(in srgb, var(--status-manual) 12%, transparent); }
+  .badge-MANUAL_REVIEW::before { background: var(--status-manual); }
+  .badge-MANAGED_BY_ORGANIZATION { color: var(--status-managed); background: color-mix(in srgb, var(--status-managed) 12%, transparent); }
+  .badge-MANAGED_BY_ORGANIZATION::before { background: var(--status-managed); }
+  .badge-ERROR { color: var(--text-primary); background: var(--gridline); border: 1px dashed var(--text-muted); }
+  .badge-ERROR::before { background: var(--text-muted); }
+  .sev-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; padding: 2px 7px; border-radius: 3px; color: var(--text-primary); }
+  .sev-info { background: color-mix(in srgb, var(--sev-info) 20%, transparent); }
+  .sev-low { background: color-mix(in srgb, var(--sev-low) 30%, transparent); }
+  .sev-medium { background: color-mix(in srgb, var(--sev-medium) 30%, transparent); }
+  .sev-high { background: color-mix(in srgb, var(--sev-high) 30%, transparent); }
+  .sev-critical { background: color-mix(in srgb, var(--sev-critical) 30%, transparent); }
+  .finding { border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; }
+  .finding-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .finding-head .control-id { font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace; font-size: 12px; color: var(--text-muted); }
+  .finding-head .title { font-weight: 600; font-size: 14px; }
+  .finding dl.details { display: grid; grid-template-columns: 120px 1fr; gap: 4px 12px; font-size: 13px; margin: 8px 0 0; }
+  .finding dl.details dt { color: var(--text-muted); }
+  .finding dl.details dd { margin: 0; }
+  table.plain { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.plain th { text-align: left; color: var(--text-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
+  table.plain td { padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
+  details.appendix summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; padding: 8px 0; }
+  footer.disclaimer { color: var(--text-muted); font-size: 12px; margin-top: 32px; border-top: 1px solid var(--gridline); padding-top: 16px; }
+  .empty-state { color: var(--text-muted); font-size: 13px; padding: 12px 0; }
+</style>
+</head>
+<body>
+<div class="af-report">
+
+  <header class="af-header">
+    <h1>AUDITFORGE &mdash; Security Assessment</h1>
+    <div class="meta">{{ report.generated_at }}<br>profile: {{ report.profile }}</div>
+  </header>
+
+  <div class="card">
+    <h2 class="section-title">Executive Summary</h2>
+    <div class="exec-summary">
+      <div class="hero-score">
+        <div class="num band-{{ score_band }}">{{ score if score is not none else '--' }}{% if score is not none %}%{% endif %}</div>
+        <div class="label">Overall Posture</div>
+      </div>
+      <div class="stat-tiles">
+        {% for status in ['PASS','FAIL','WARNING','MANUAL_REVIEW','MANAGED_BY_ORGANIZATION','NOT_APPLICABLE','ERROR'] %}
+        <div class="stat-tile">
+          <div class="value">{{ counts.get(status, 0) }}</div>
+          <div class="label">{{ status.replace('_', ' ') }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <dl class="meta-grid">
+      <div><dt>Hostname</dt><dd>{{ report.hostname }}</dd></div>
+      <div><dt>Operating System</dt><dd>{{ report.os_name }} {{ report.os_version }}</dd></div>
+      <div><dt>Architecture</dt><dd>{{ report.architecture }}</dd></div>
+      <div><dt>Assessment Date</dt><dd>{{ report.generated_at }}</dd></div>
+      <div><dt>Profile</dt><dd>{{ report.profile }}</dd></div>
+      <div><dt>Centrally Managed</dt><dd>{% if report.management.managed %}Yes ({{ report.management.sources|join(', ') }}){% else %}No{% endif %}</dd></div>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Categories</h2>
+    {% for cat in categories %}
+    <div class="category-row">
+      <div class="cat-name">{{ cat.display_name }}</div>
+      <div class="bar-track"><div class="bar-fill band-{{ 'unknown' if cat.score is none else ('good' if cat.score >= 90 else ('warning' if cat.score >= 70 else 'critical')) }}" style="width: {{ cat.score if cat.score is not none else 0 }}%;"></div></div>
+      <div class="cat-score">{{ (cat.score ~ '%') if cat.score is not none else 'n/a' }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Findings ({{ findings|length }})</h2>
+    {% if not findings %}
+    <div class="empty-state">No findings -- everything evaluated passed, was not applicable, or is managed externally.</div>
+    {% endif %}
+    {% for r in findings %}
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-{{ r.status }}">{{ r.status.replace('_',' ') }}</span>
+        <span class="sev-badge sev-{{ r.severity }}">{{ r.severity }}</span>
+        <span class="control-id">{{ r.control_id }}</span>
+        <span class="title">{{ r.title }}</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>{{ r.evidence.detected_value }}</dd>
+        <dt>Expected</dt><dd>{{ r.evidence.expected_value | format_expected }}</dd>
+        <dt>Why</dt><dd>{{ r.rationale }}</dd>
+        <dt>Reference</dt><dd>{{ r.benchmark }} &mdash; <a href="{{ r.external_reference }}" rel="noopener noreferrer">{{ r.external_reference }}</a></dd>
+        <dt>Remediation</dt><dd>{{ 'Available' if r.remediation_available else 'Manual review only' }}{% if r.reboot_required %} &middot; reboot may be required{% endif %}{% if r.service_restart_required %} &middot; service restart required{% endif %}</dd>
+        {% if r.possible_impact %}<dt>Possible Impact</dt><dd>{{ r.possible_impact }}</dd>{% endif %}
+      </dl>
+    </div>
+    {% endfor %}
+  </div>
+
+  <details class="appendix">
+    <summary>Passed controls ({{ passed_results|length }})</summary>
+    <table class="plain">
+      <tr><th>Control</th><th>Title</th><th>Category</th></tr>
+      {% for r in passed_results %}
+      <tr><td>{{ r.control_id }}</td><td>{{ r.title }}</td><td>{{ r.category }}</td></tr>
+      {% endfor %}
+    </table>
+  </details>
+
+  <details class="appendix">
+    <summary>Not applicable / managed by organization ({{ other_results|length }})</summary>
+    <table class="plain">
+      <tr><th>Control</th><th>Title</th><th>Status</th><th>Message</th></tr>
+      {% for r in other_results %}
+      <tr><td>{{ r.control_id }}</td><td>{{ r.title }}</td><td>{{ r.status }}</td><td>{{ r.message }}</td></tr>
+      {% endfor %}
+    </table>
+  </details>
+
+  <footer class="disclaimer">
+    Generated by AuditForge. This report reflects the state of {{ report.hostname }} at {{ report.generated_at }}
+    and is not a substitute for professional security assessment. A FAIL or WARNING does not automatically mean
+    remediation is safe to apply blindly -- review possible impact before hardening, especially for controls
+    marked high-impact. See docs/CONTROLS.md and docs/HARDENING.md for AuditForge's safety philosophy.
+  </footer>
+
+</div>
+</body>
+</html>
