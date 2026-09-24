@@ -464,16 +464,29 @@ class FaillockPrimitive(_KvConfPrimitive):
 # ---------------------------------------------------------------------------
 
 
+def _safe_listdir_paths(base: str) -> list:
+    if not os.path.isdir(base):
+        return []
+    try:
+        return [os.path.join(base, f) for f in os.listdir(base)]
+    except OSError:
+        return []
+
+
 @register
 class SudoersNopasswdScanPrimitive(Primitive):
     name = "linux_sudoers_nopasswd_scan"
 
     def probe(self, params: dict) -> ProbeResult:
         hits = []
+        unreadable = []
         for base in ("/etc/sudoers", "/etc/sudoers.d"):
-            paths = [base] if os.path.isfile(base) else (
-                [os.path.join(base, f) for f in os.listdir(base)] if os.path.isdir(base) else []
-            )
+            if os.path.isdir(base):
+                try:
+                    os.listdir(base)
+                except OSError:
+                    unreadable.append(base)
+            paths = [base] if os.path.isfile(base) else _safe_listdir_paths(base)
             for path in paths:
                 try:
                     with open(path, encoding="utf-8", errors="replace") as fh:
@@ -481,15 +494,22 @@ class SudoersNopasswdScanPrimitive(Primitive):
                             if "NOPASSWD" in line and not line.strip().startswith("#"):
                                 hits.append(f"{path}:{lineno}")
                 except OSError:
-                    continue
+                    unreadable.append(path)
+        caveat = (
+            f" NOTE: could not read {', '.join(unreadable)} (insufficient privilege) -- this scan is incomplete, "
+            "re-run as root/with sudo for a full result."
+            if unreadable
+            else ""
+        )
         return ProbeResult(
             value=len(hits),
             source="sudoers scan",
-            raw={"lines": hits},
+            raw={"lines": hits, "unreadable": unreadable},
             manual_review=True,
             manual_review_reason=(
                 f"{len(hits)} NOPASSWD sudoers entr(y/ies) found: {', '.join(hits) or '(none)'}. "
                 "May be intentional (automation accounts) -- review, do not assume this is wrong."
+                f"{caveat}"
             ),
         )
 
