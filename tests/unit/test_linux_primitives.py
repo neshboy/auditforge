@@ -84,7 +84,7 @@ class TestSysctlPrimitive:
         prim = linprim.SysctlPrimitive()
         for _ in range(3):
             prim.apply({"key": "net.ipv4.ip_forward", "value": 0}, expected_value=0)
-        lines = [l for l in fake_sysctl_dropin.read_text().splitlines() if l.strip()]
+        lines = [line for line in fake_sysctl_dropin.read_text().splitlines() if line.strip()]
         assert lines == ["net.ipv4.ip_forward = 0"]
 
     def test_rollback_removes_dropin_entry(self, fake_runner, fake_sysctl_dropin):

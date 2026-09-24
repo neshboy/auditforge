@@ -127,7 +127,6 @@ def cmd_harden(args) -> int:
     for a in report.applied:
         print(f"  [{a.outcome:12s}] {a.control_id:18s} {a.message}")
 
-    before = {r.control.control_id: r.status for r in report.pre_audit.results}
     after_counts = report.post_audit.summary()["counts"]
     print("\nPost-hardening summary:")
     for status in ("PASS", "FAIL", "WARNING"):
@@ -143,7 +142,10 @@ def cmd_rollback(args) -> int:
     manager = TransactionManager()
     if args.list:
         for tx in manager.list_transactions():
-            print(f"{tx['tx_id']}  {tx['started_at']}  status={tx['status']}  changes={tx['num_changes']}  profile={tx['profile']}")
+            print(
+                f"{tx['tx_id']}  {tx['started_at']}  status={tx['status']}  "
+                f"changes={tx['num_changes']}  profile={tx['profile']}"
+            )
         return 0
     if not args.transaction_id:
         print("Specify a transaction id, or use --list to see available transactions.", file=sys.stderr)
@@ -275,7 +277,9 @@ def _dispatch(parser: argparse.ArgumentParser, argv: list) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="auditforge", description="Cross-platform endpoint security audit and hardening framework")
+    parser = argparse.ArgumentParser(
+        prog="auditforge", description="Cross-platform endpoint security audit and hardening framework"
+    )
     sub = parser.add_subparsers(dest="command")
 
     common = dict(add_help=False)

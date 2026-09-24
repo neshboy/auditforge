@@ -83,7 +83,7 @@ class Primitive(abc.ABC):
     def apply(self, params: dict, expected_value: Any) -> ApplyOutcome:
         raise NotImplementedError(f"primitive '{self.name}' is audit-only; no remediation implemented")
 
-    def rollback(self, params: dict, change: "ChangeRecordLike") -> bool:
+    def rollback(self, params: dict, change: ChangeRecordLike) -> bool:
         raise NotImplementedError(f"primitive '{self.name}' does not support rollback")
 
     def compare(self, detected: Any, expected: Any) -> bool:

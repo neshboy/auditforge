@@ -2,7 +2,14 @@ import json
 
 import pytest
 
-from auditforge.reporting.generator import render, render_csv, render_html, render_json, render_markdown, _format_expected
+from auditforge.reporting.generator import (
+    _format_expected,
+    render,
+    render_csv,
+    render_html,
+    render_json,
+    render_markdown,
+)
 
 
 def _sample_report():
@@ -92,7 +99,7 @@ def test_render_json_roundtrips():
 
 def test_render_csv_has_one_row_per_control():
     text = render_csv(_sample_report())
-    lines = [l for l in text.splitlines() if l.strip()]
+    lines = [line for line in text.splitlines() if line.strip()]
     assert len(lines) == 3  # header + 2 controls
     assert "AF-TEST-001" in text
     assert "AF-TEST-002" in text

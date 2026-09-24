@@ -49,8 +49,15 @@ auditforge = [
 ]
 
 [tool.ruff]
-line-length = 110
+line-length = 130
 target-version = "py39"
+
+[tool.ruff.lint]
+# Pyflakes + pycodestyle errors + import sort. Deliberately not the
+# opinionated add-on rule sets (bandit/bugbear/simplify/pyupgrade) for
+# v0.1 -- several of engine.py's `except Exception` blocks are
+# intentional ("a probe must never crash the whole audit"), not oversights.
+select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

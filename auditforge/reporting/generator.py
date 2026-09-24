@@ -22,7 +22,15 @@ _CATEGORY_DISPLAY_OVERRIDES = {
 }
 
 _SEVERITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
-_STATUS_PRIORITY = {"FAIL": 0, "ERROR": 1, "WARNING": 2, "MANUAL_REVIEW": 3, "MANAGED_BY_ORGANIZATION": 4, "NOT_APPLICABLE": 5, "PASS": 6}
+_STATUS_PRIORITY = {
+    "FAIL": 0,
+    "ERROR": 1,
+    "WARNING": 2,
+    "MANUAL_REVIEW": 3,
+    "MANAGED_BY_ORGANIZATION": 4,
+    "NOT_APPLICABLE": 5,
+    "PASS": 6,
+}
 
 
 def _category_display(name: str) -> str:

@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from auditforge.core import registry
-from auditforge.core.models import OperatingSystem
 from auditforge.core.bootstrap import load_primitives_for
+from auditforge.core.models import OperatingSystem
 from auditforge.rollback.transaction import Transaction, TransactionManager
 
 
@@ -64,7 +64,7 @@ def rollback_transaction(tx_id: str, manager: Optional[TransactionManager] = Non
 
     tx.status = "rolled_back" if report.all_restored else "partial"
     tx.finished_at = datetime.now(timezone.utc).isoformat()
-    manager._save(tx)  # noqa: SLF001 - same module family, intentional
+    manager._save(tx)
     return report
 
 

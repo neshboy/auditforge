@@ -8,9 +8,8 @@ project spec ("do not fight the management platform").
 from __future__ import annotations
 
 import dataclasses
-import platform
 import os
-from typing import Optional
+import platform
 
 from auditforge.core.models import OperatingSystem
 from auditforge.utils.safe_exec import run, run_powershell

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import glob
 import os
-from typing import Iterable
+from collections.abc import Iterable
 
 import yaml
 from jsonschema import Draft202012Validator

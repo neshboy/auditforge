@@ -23,7 +23,8 @@ import dataclasses
 import re
 import shutil
 import subprocess
-from typing import Optional, Sequence
+from collections.abc import Sequence
+from typing import Optional
 
 _TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:\\/\-]+$")
 

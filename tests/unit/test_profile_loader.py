@@ -1,8 +1,9 @@
+import os
+
 import pytest
 
 from auditforge.core.control_loader import load_control_file
 from auditforge.core.profile_loader import apply_profile_filter, list_profiles, load_profile
-import os
 
 FIXTURES = os.path.join(os.path.dirname(__file__), "..", "fixtures")
 

@@ -1,6 +1,6 @@
 import pytest
 
-from auditforge.utils.safe_exec import UnsafeValueError, validate_token, run
+from auditforge.utils.safe_exec import UnsafeValueError, run, validate_token
 
 
 class TestValidateToken:

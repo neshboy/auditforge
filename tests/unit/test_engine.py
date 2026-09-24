@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from auditforge.core.control_loader import load_control_file
@@ -6,7 +8,6 @@ from auditforge.core.environment import EnvironmentInfo, ManagementInfo
 from auditforge.core.models import OperatingSystem, Status
 from auditforge.core.registry import ApplyOutcome, Primitive, ProbeResult, register
 from auditforge.rollback.transaction import TransactionManager
-import os
 
 FIXTURES = os.path.join(os.path.dirname(__file__), "..", "fixtures")
 

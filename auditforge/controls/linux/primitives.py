@@ -66,13 +66,21 @@ def _sysctl_runtime_get(key: str) -> Optional[str]:
 
 
 def _sysctl_dropin_set(key: str, value: str) -> None:
-    lines = [l for l in _read_lines(AF_SYSCTL_DROPIN) if not l.strip().startswith(f"{key} ") and not l.strip().startswith(f"{key}=")]
+    lines = [
+        line
+        for line in _read_lines(AF_SYSCTL_DROPIN)
+        if not line.strip().startswith(f"{key} ") and not line.strip().startswith(f"{key}=")
+    ]
     lines.append(f"{key} = {value}")
     _atomic_write(AF_SYSCTL_DROPIN, "\n".join(lines) + "\n")
 
 
 def _sysctl_dropin_remove(key: str) -> None:
-    lines = [l for l in _read_lines(AF_SYSCTL_DROPIN) if not l.strip().startswith(f"{key} ") and not l.strip().startswith(f"{key}=")]
+    lines = [
+        line
+        for line in _read_lines(AF_SYSCTL_DROPIN)
+        if not line.strip().startswith(f"{key} ") and not line.strip().startswith(f"{key}=")
+    ]
     _atomic_write(AF_SYSCTL_DROPIN, "\n".join(lines) + ("\n" if lines else ""))
 
 
@@ -127,13 +135,13 @@ def _sshd_effective_config() -> dict:
 
 
 def _sshd_dropin_set(option: str, value: str) -> None:
-    lines = [l for l in _read_lines(AF_SSHD_DROPIN) if l.strip().split(None, 1)[:1] != [option]]
+    lines = [line for line in _read_lines(AF_SSHD_DROPIN) if line.strip().split(None, 1)[:1] != [option]]
     lines.append(f"{option} {value}")
     _atomic_write(AF_SSHD_DROPIN, "\n".join(lines) + "\n")
 
 
 def _sshd_dropin_remove(option: str) -> None:
-    lines = [l for l in _read_lines(AF_SSHD_DROPIN) if l.strip().split(None, 1)[:1] != [option]]
+    lines = [line for line in _read_lines(AF_SSHD_DROPIN) if line.strip().split(None, 1)[:1] != [option]]
     _atomic_write(AF_SSHD_DROPIN, "\n".join(lines) + ("\n" if lines else ""))
 
 
@@ -661,6 +669,10 @@ class PendingUpdatesPrimitive(Primitive):
                 # check-update exit codes: 0 = no updates, 100 = updates available, other = error
                 if res.returncode not in (0, 100):
                     return ProbeResult(value=None, error=res.stderr.strip() or f"{mgr} check-update failed")
-                count = sum(1 for line in res.stdout.splitlines() if line.strip() and not line.startswith(("Last metadata", "Obsoleting")))
+                count = sum(
+                    1
+                    for line in res.stdout.splitlines()
+                    if line.strip() and not line.startswith(("Last metadata", "Obsoleting"))
+                )
                 return ProbeResult(value=count if res.returncode == 100 else 0, source=f"{mgr} check-update")
         return ProbeResult(value=None, error="no supported package manager (apt/dnf/yum) found")

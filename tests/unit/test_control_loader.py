@@ -4,11 +4,11 @@ import pytest
 
 from auditforge.core.control_loader import (
     ControlValidationError,
+    filter_by_categories,
+    filter_by_ids,
     load_control_file,
     load_controls_dir,
     load_controls_for_os,
-    filter_by_categories,
-    filter_by_ids,
 )
 from auditforge.core.models import OperatingSystem
 from auditforge.core.paths import controls_base_dir

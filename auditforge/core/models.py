@@ -67,7 +67,7 @@ class FrameworkMapping:
     apple_guidance: tuple[str, ...] = ()
 
     @classmethod
-    def from_dict(cls, data: Optional[dict]) -> "FrameworkMapping":
+    def from_dict(cls, data: Optional[dict]) -> FrameworkMapping:
         data = data or {}
 
         def _tup(key: str) -> tuple:
