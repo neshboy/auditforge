@@ -1,0 +1,2945 @@
+{
+  "hostname": "MYCSOC",
+  "os": "windows",
+  "os_name": "Microsoft Windows 11 Enterprise N",
+  "os_version": "25H2",
+  "architecture": "AMD64",
+  "profile": "audit_only",
+  "generated_at": "2026-09-24T09:52:24.890110+00:00",
+  "management": {
+    "managed": false,
+    "sources": []
+  },
+  "summary": {
+    "counts": {
+      "PASS": 30,
+      "FAIL": 14,
+      "WARNING": 7,
+      "NOT_APPLICABLE": 1,
+      "MANUAL_REVIEW": 1,
+      "MANAGED_BY_ORGANIZATION": 8,
+      "ERROR": 1
+    },
+    "by_category": {
+      "accounts": {
+        "PASS": 2,
+        "FAIL": 0,
+        "WARNING": 0,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 1,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "authentication": {
+        "PASS": 8,
+        "FAIL": 5,
+        "WARNING": 1,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "attack_surface": {
+        "PASS": 3,
+        "FAIL": 1,
+        "WARNING": 1,
+        "NOT_APPLICABLE": 1,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 2,
+        "ERROR": 0
+      },
+      "malware_protection": {
+        "PASS": 6,
+        "FAIL": 2,
+        "WARNING": 0,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "encryption": {
+        "PASS": 1,
+        "FAIL": 2,
+        "WARNING": 0,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "firewall": {
+        "PASS": 3,
+        "FAIL": 1,
+        "WARNING": 0,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "logging": {
+        "PASS": 1,
+        "FAIL": 3,
+        "WARNING": 1,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 3,
+        "ERROR": 0
+      },
+      "remote_access": {
+        "PASS": 2,
+        "FAIL": 0,
+        "WARNING": 2,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "legacy_protocols": {
+        "PASS": 3,
+        "FAIL": 0,
+        "WARNING": 2,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 0
+      },
+      "uac": {
+        "PASS": 0,
+        "FAIL": 0,
+        "WARNING": 0,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 3,
+        "ERROR": 0
+      },
+      "updates": {
+        "PASS": 1,
+        "FAIL": 0,
+        "WARNING": 0,
+        "NOT_APPLICABLE": 0,
+        "MANUAL_REVIEW": 0,
+        "MANAGED_BY_ORGANIZATION": 0,
+        "ERROR": 1
+      }
+    },
+    "total_controls": 62,
+    "score_percent": 58.8
+  },
+  "results": [
+    {
+      "control_id": "AF-WIN-ACCT-001",
+      "title": "Guest account is disabled",
+      "description": "The built-in Guest local account should be disabled unless there is a documented business need for anonymous/guest local logon.\n",
+      "os": "windows",
+      "category": "accounts",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md for verified current version",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings",
+      "rationale": "An enabled Guest account provides an unauthenticated or trivially authenticated path onto the system and is not required by any modern Windows workflow.\n",
+      "expected_value": false,
+      "possible_impact": "None expected; legacy kiosk/guest-access workflows that intentionally rely on the Guest account will stop working.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": false,
+        "source": "Get-LocalUser",
+        "timestamp": "2026-09-24T09:51:13.340216+00:00",
+        "raw": {
+          "user": "Guest",
+          "property": "Enabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-2",
+          "IA-5"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-002",
+      "title": "Local Administrators group membership review",
+      "description": "Enumerates members of the local Administrators group for manual review. Group size alone is not a reliable pass/fail signal -- a build server legitimately needing several admin accounts is different from a laptop that should have exactly one.\n",
+      "os": "windows",
+      "category": "accounts",
+      "severity": "medium",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts",
+      "rationale": "Excess or stale administrator accounts widen the blast radius of any single compromised credential. This is intentionally a MANUAL_REVIEW finding, not an automatic FAIL, per the project's false-positive policy.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; no remediation is attempted for this control.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "MANUAL_REVIEW",
+      "message": "3 account(s) in local Administrators group: MYCSOC\\Administrator, MYCSOC\\MYCSOC1, MYCSOC\\SERVER1. Review for staleness/necessity -- membership size alone is not a reliable pass/fail signal.",
+      "evidence": {
+        "detected_value": 3,
+        "expected_value": true,
+        "source": "Get-LocalGroupMember",
+        "timestamp": "2026-09-24T09:51:14.485150+00:00",
+        "raw": {
+          "members": [
+            "MYCSOC\\Administrator",
+            "MYCSOC\\MYCSOC1",
+            "MYCSOC\\SERVER1"
+          ]
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-2",
+          "AC-6"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-003",
+      "title": "Built-in Administrator account is disabled",
+      "description": "The built-in local Administrator account (RID 500) should be disabled once at least one other administrative account exists, to reduce the value of this well-known, frequently-targeted account name.\n",
+      "os": "windows",
+      "category": "accounts",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md for verified current version",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts",
+      "rationale": "Attackers commonly target the well-known built-in Administrator account. Disabling it (after ensuring another break-glass admin exists) removes that specific target without removing administrative capability.\n",
+      "expected_value": false,
+      "possible_impact": "HIGH IMPACT: if this is the only enabled administrator account on the machine, disabling it can remove all local administrative access. AuditForge requires --allow-high-impact for this control and does not verify that a break-glass alternative exists -- confirm that yourself first.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": false,
+        "source": "Get-LocalUser",
+        "timestamp": "2026-09-24T09:51:15.459837+00:00",
+        "raw": {
+          "user": "Administrator",
+          "property": "Enabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-2"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-004",
+      "title": "Account lockout threshold is configured",
+      "description": "The account is locked out after a bounded number of failed logon attempts (between 1 and 10), mitigating online password-guessing attacks.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "NIST SP 800-63B",
+      "benchmark_version": "see docs/SOURCES.md for verified current revision",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings",
+      "rationale": "NIST SP 800-63B calls for rate-limiting/throttling online authentication attempts. A lockout threshold between 1 and 10 balances that against denial-of-service risk from an attacker deliberately locking out accounts.\n",
+      "expected_value": {
+        "min": 1,
+        "max": 10
+      },
+      "possible_impact": "Legitimate users who mistype a password repeatedly will be locked out until the lockout duration expires or an admin resets the count.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 10,
+        "expected_value": {
+          "min": 1,
+          "max": 10
+        },
+        "source": "secedit /export",
+        "timestamp": "2026-09-24T09:51:15.708487+00:00",
+        "raw": {
+          "key": "LockoutBadCount",
+          "raw": "10"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5",
+          "AC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-005",
+      "title": "Account lockout duration is at least 15 minutes",
+      "description": "Once triggered, the account lockout stays in effect for a meaningful amount of time, slowing down automated password-guessing.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "medium",
+      "benchmark": "NIST SP 800-63B",
+      "benchmark_version": "see docs/SOURCES.md for verified current revision",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings",
+      "rationale": "A very short lockout duration provides little throttling benefit against automated guessing; 15+ minutes is a widely used minimum baseline.\n",
+      "expected_value": {
+        "min": 15
+      },
+      "possible_impact": "Locked-out users wait longer before automatic unlock.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'min': 15}, found 10",
+      "evidence": {
+        "detected_value": 10,
+        "expected_value": {
+          "min": 15
+        },
+        "source": "secedit /export",
+        "timestamp": "2026-09-24T09:51:15.893074+00:00",
+        "raw": {
+          "key": "LockoutDuration",
+          "raw": "10"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-006",
+      "title": "Minimum local password length meets current NIST guidance (>=15 characters)",
+      "description": "Local account passwords must be at least 15 characters long when used as a single (non-MFA) authentication factor.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "NIST SP 800-63B-4",
+      "benchmark_version": "SP 800-63B-4, final, July 2025 (supersedes SP 800-63B of 2020-03-02) -- verified via docs/SOURCES.md",
+      "external_reference": "https://csrc.nist.gov/pubs/sp/800/63/b/4/final",
+      "rationale": "NIST SP 800-63B-4 Sec. 3.1.1.1-3.1.1.2 (verified by direct PDF read, see docs/SOURCES.md) SHALL requires verifiers to enforce a minimum of 15 characters for passwords used as a single authentication factor (8 characters minimum is only acceptable when the password is one factor of MFA), SHOULD support at least 64 characters, and explicitly SHALL NOT impose composition/complexity rules beyond a compromised-password blocklist check. This supersedes the older, widely-cited \"8-14 chars plus complexity\" guidance -- see section 3 of the project spec (\"do not blindly implement old hardening advice\") and AF-WIN-ACCT-007's notes.\n",
+      "expected_value": {
+        "min": 15
+      },
+      "possible_impact": "Users with shorter existing passwords must change them at next reset, not immediately.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'min': 15}, found 0",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": {
+          "min": 15
+        },
+        "source": "secedit /export",
+        "timestamp": "2026-09-24T09:51:16.072668+00:00",
+        "raw": {
+          "key": "MinimumPasswordLength",
+          "raw": "0"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [
+          "3.1.1.1"
+        ],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-007",
+      "title": "Password history remembers at least 5 previous passwords",
+      "description": "Prevents immediate reuse of a small rotation of previous passwords.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "low",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings",
+      "rationale": "A small password-history requirement stops the common \"change it and change it right back\" workaround without imposing NIST 800-63B's discouraged practice of frequent forced rotation.\n",
+      "expected_value": {
+        "min": 5
+      },
+      "possible_impact": "Users cannot immediately reuse a recent password.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected {'min': 5}, found 0",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": {
+          "min": 5
+        },
+        "source": "secedit /export",
+        "timestamp": "2026-09-24T09:51:16.309984+00:00",
+        "raw": {
+          "key": "PasswordHistorySize",
+          "raw": "0"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-008",
+      "title": "Maximum password age is not misconfigured (informational)",
+      "description": "Reports the local maximum password age. This control is intentionally informational: current NIST SP 800-63B guidance recommends AGAINST mandatory periodic password rotation for the sake of rotation alone, particularly where MFA or breach/compromise detection is in place.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "info",
+      "benchmark": "NIST SP 800-63B-4",
+      "benchmark_version": "SP 800-63B-4, final, July 2025 -- verified via docs/SOURCES.md",
+      "external_reference": "https://csrc.nist.gov/pubs/sp/800/63/b/4/final",
+      "rationale": "NIST SP 800-63B-4 Sec. 3.1.1.2 (verified by direct PDF read, see docs/SOURCES.md) states verifiers SHALL NOT require subscribers to periodically change memorized secrets, and SHALL only force a change when there is evidence the authenticator has been compromised. Forced rotation without cause tends to push users toward weaker, more predictable passwords. AuditForge reports this value for awareness and organizational context rather than penalizing \"never expires\" as a failure -- see section 3 of the project spec (\"do not automatically enforce ... unnecessary periodic password rotation\").\n",
+      "expected_value": {
+        "max": 365
+      },
+      "possible_impact": "Read-only; no remediation is applied for this control.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 42,
+        "expected_value": {
+          "max": 365
+        },
+        "source": "secedit /export",
+        "timestamp": "2026-09-24T09:51:16.504329+00:00",
+        "raw": {
+          "key": "MaximumPasswordAge",
+          "raw": "42"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [],
+        "nist_800_171": [],
+        "nist_800_63b": [
+          "3.1.1.2"
+        ],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ACCT-009",
+      "title": "Passwords are never stored using reversible encryption",
+      "description": "\"Store password using reversible encryption\" must be disabled; when enabled it is cryptographically equivalent to storing plaintext passwords.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "critical",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md for verified current version",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings",
+      "rationale": "This legacy setting exists only for specific old application compatibility scenarios (some legacy CHAP/IIS digest auth) and effectively defeats password hashing when enabled.\n",
+      "expected_value": 0,
+      "possible_impact": "Breaks any legacy application that specifically depends on reversible password encryption (rare).",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 0,
+        "source": "secedit /export",
+        "timestamp": "2026-09-24T09:51:16.728757+00:00",
+        "raw": {
+          "key": "ClearTextPassword",
+          "raw": "0"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5",
+          "SC-28"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ASR-001",
+      "title": "AutoRun/AutoPlay is disabled for all drive types",
+      "description": "Windows should not automatically execute or prompt to run content from newly connected removable/fixed drives.\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings",
+      "rationale": "AutoRun/AutoPlay from removable media is a classic malware propagation vector (USB drop attacks).\n",
+      "expected_value": {
+        "min": 255
+      },
+      "possible_impact": "Removable media will no longer auto-launch installers/menus; users must open drives manually.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 145,
+        "expected_value": {
+          "min": 255
+        },
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoDriveTypeAutoRun",
+        "timestamp": "2026-09-24T09:51:16.729760+00:00",
+        "raw": {
+          "exists": false,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7",
+          "MP-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ASR-002",
+      "title": "LLMNR is disabled",
+      "description": "Link-Local Multicast Name Resolution should be disabled; it has no authentication and is routinely abused for network credential-relay attacks (e.g. Responder-style tooling).\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks",
+      "rationale": "LLMNR broadcasts name-resolution requests to the entire local segment with no authentication, letting any host on the network respond and potentially capture/relay authentication attempts.\n",
+      "expected_value": 0,
+      "possible_impact": "Name resolution on networks without proper DNS for all hosts (some small/home networks) may stop working for unregistered hostnames.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": 0,
+        "source": "registry:HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient\\EnableMulticast",
+        "timestamp": "2026-09-24T09:51:16.730560+00:00",
+        "raw": {
+          "exists": false,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-7",
+          "AC-4"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ASR-003",
+      "title": "NetBIOS over TCP/IP is disabled where not required",
+      "description": "NetBIOS name resolution/session services should be disabled on network adapters; like LLMNR, it has weak/no authentication and is a common credential-relay target.\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "low",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks",
+      "rationale": "NetBIOS is a legacy name-resolution protocol superseded by DNS; leaving it enabled widens the same credential-relay attack surface as LLMNR.\n",
+      "expected_value": true,
+      "possible_impact": "Breaks name resolution on networks that still rely on NetBIOS/WINS rather than DNS for some legacy hosts.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "Win32_NetworkAdapterConfiguration",
+        "timestamp": "2026-09-24T09:51:18.480402+00:00",
+        "raw": {
+          "per_adapter": [
+            0,
+            0
+          ]
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ASR-004",
+      "title": "Print Spooler is disabled where printing is not required",
+      "description": "The Print Spooler service should be disabled on machines that do not need to print or host shared printers, closing off the PrintNightmare class of vulnerabilities.\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/print",
+      "rationale": "The Print Spooler has repeatedly been a source of critical remote/local privilege-escalation vulnerabilities (PrintNightmare and related CVEs). Servers and workstations that do not print have no reason to run it.\n",
+      "expected_value": "Disabled",
+      "possible_impact": "HIGH IMPACT: breaks all local and network printing from this machine, including if it hosts shared printers for others. Do not apply on print servers or workstations whose users print directly.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected 'Disabled', found 'Automatic'",
+      "evidence": {
+        "detected_value": "Automatic",
+        "expected_value": "Disabled",
+        "source": "Get-Service",
+        "timestamp": "2026-09-24T09:51:19.503137+00:00",
+        "raw": {
+          "status": "Running",
+          "start_type": "Automatic"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7",
+          "SI-2"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-001",
+      "title": "LAN Manager password hash storage is disabled",
+      "description": "The legacy, crackable LM hash must not be stored alongside the NTLM hash for new local passwords.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md for verified current version",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks",
+      "rationale": "LM hashes use a weak, easily-brute-forced algorithm. Storing them provides attackers an easier password-cracking target even when NTLM is also used.\n",
+      "expected_value": 1,
+      "possible_impact": "None expected on modern Windows; only affects storage of new/changed passwords.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\NoLMHash",
+        "timestamp": "2026-09-24T09:51:19.503137+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5",
+          "SC-8"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-002",
+      "title": "LAN Manager authentication level restricts legacy LM/NTLMv1",
+      "description": "The LAN Manager authentication level should be set to \"Send NTLMv2 response only, refuse LM & NTLM\" (level 5).\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks",
+      "rationale": "LM and NTLMv1 use weak, crackable challenge/response schemes. Requiring NTLMv2-only (and refusing the legacy variants) removes an easy downgrade target, while stopping short of Microsoft's broader in-progress NTLM deprecation roadmap (see docs/SOURCES.md), which is not yet default-on for currently supported releases and is out of scope for this control.\n",
+      "expected_value": {
+        "min": 5
+      },
+      "possible_impact": "Breaks authentication to very old (pre-Windows 2000/legacy SMB/NAS) systems that only understand LM or NTLMv1.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'min': 5}, found 3",
+      "evidence": {
+        "detected_value": 3,
+        "expected_value": {
+          "min": 5
+        },
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\LmCompatibilityLevel",
+        "timestamp": "2026-09-24T09:51:19.503137+00:00",
+        "raw": {
+          "exists": false,
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-003",
+      "title": "WDigest credential caching is disabled",
+      "description": "WDigest authentication must not cache reversible plaintext-equivalent credentials in LSASS memory.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "Default-disabled since KB2871997/KB2928120 (2014); verified current status via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks",
+      "rationale": "When enabled, WDigest keeps a reversible copy of the user's plaintext password in LSASS memory, a favorite target for credential-dumping tools. Verified research (docs/SOURCES.md) confirms this has been disabled by default since the 2014-era KB2871997/KB2928120 updates; this control is a regression check, not a change most current systems will need.\n",
+      "expected_value": 0,
+      "possible_impact": "Breaks any legacy WDigest/HTTP Digest authentication scheme that specifically needs plaintext-equivalent credentials (rare).",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 0,
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest\\UseLogonCredential",
+        "timestamp": "2026-09-24T09:51:19.504134+00:00",
+        "raw": {
+          "exists": false,
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5",
+          "SC-28"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-004",
+      "title": "LSASS runs as a protected process (Additional LSA Protection)",
+      "description": "LSASS should run as a protected process (RunAsPPL) so that non-protected processes cannot read or inject code into it, blocking common credential-dumping techniques.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "Default-on (no UEFI lock) since Windows 11 22H2 on qualifying clean installs; verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection",
+      "rationale": "Verified research (docs/SOURCES.md) confirms Microsoft enables Additional LSA Protection by default (without a UEFI lock) on clean installs of Windows 11 22H2+ that are enterprise-joined and HVCI-capable -- but in-place upgrades and non-domain-joined/standalone machines may not get this default, so it remains worth auditing explicitly.\n",
+      "expected_value": {
+        "one_of": [
+          1,
+          2
+        ]
+      },
+      "possible_impact": "Can break third-party drivers/security software that inject into LSASS without being properly signed for protected-process compatibility. Test before applying broadly.\n",
+      "reboot_required": true,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 2,
+        "expected_value": {
+          "one_of": [
+            1,
+            2
+          ]
+        },
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\RunAsPPL",
+        "timestamp": "2026-09-24T09:51:19.504134+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-39",
+          "SI-16"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-005",
+      "title": "Credential Guard is running (audit only)",
+      "description": "Reports whether Virtualization-Based Security Credential Guard is active, isolating derived domain credentials in a protected VBS enclave.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "Default-on since Windows 11 22H2 / Windows Server 2025 on qualifying domain-joined hosts; verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/",
+      "rationale": "Credential Guard significantly raises the cost of pass-the-hash and similar credential-theft techniques. AuditForge does not attempt to enable it automatically -- doing so safely depends on hardware/VBS readiness, licensing (Enterprise/Education), and role (must NOT be enabled on domain controllers or Exchange Server per Microsoft guidance) that this tool cannot fully verify unattended.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; enabling Credential Guard is a manual decision requiring hardware/role review.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Win32_DeviceGuard",
+        "timestamp": "2026-09-24T09:51:20.547853+00:00",
+        "raw": {
+          "security_services_running": [
+            1
+          ]
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-39"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-006",
+      "title": "Cached domain logon count is limited",
+      "description": "Limits how many previous domain logons Windows caches locally, bounding what an attacker with disk/offline access to a stolen laptop can crack.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "medium",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/",
+      "rationale": "Cached logon credential material is a target for offline cracking on lost/stolen devices. A small cache (e.g. 4) still allows normal offline laptop use while limiting exposure.\n",
+      "expected_value": {
+        "max": 4
+      },
+      "possible_impact": "Users who roam across many domain controllers with no connectivity may need to be online more often to authenticate.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'max': 4}, found '10'",
+      "evidence": {
+        "detected_value": "10",
+        "expected_value": {
+          "max": 4
+        },
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\CachedLogonsCount",
+        "timestamp": "2026-09-24T09:51:20.548854+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-007",
+      "title": "Automatic logon is disabled",
+      "description": "The machine must not be configured to automatically log a user on at boot without a password prompt.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/identity-protection/",
+      "rationale": "Automatic logon stores a plaintext (or weakly obfuscated) password in the registry and grants anyone with physical/console access to the machine an authenticated session with no prompt.\n",
+      "expected_value": "0",
+      "possible_impact": "Kiosk-mode or single-purpose devices intentionally using auto-logon will start prompting for credentials.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": "0",
+        "expected_value": "0",
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\AutoAdminLogon",
+        "timestamp": "2026-09-24T09:51:20.549854+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5",
+          "AC-11"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-AUTH-008",
+      "title": "LAPS (local administrator password management) is present",
+      "description": "Detects whether Windows LAPS or the legacy Microsoft LAPS policy is configured, which rotates and vaults local administrator passwords.\n",
+      "os": "windows",
+      "category": "authentication",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview",
+      "rationale": "Without LAPS, local administrator passwords are often identical across many machines, so compromising one grants lateral movement to many others. AuditForge only detects LAPS presence; deploying LAPS requires AD schema/Entra configuration decisions outside this tool's scope.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; no remediation is attempted for this control.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "FAIL",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "registry:LAPS policy keys",
+        "timestamp": "2026-09-24T09:51:20.549854+00:00",
+        "raw": {
+          "windows_laps_backup_directory": null,
+          "legacy_admpwd_enabled": null
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-5"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-001",
+      "title": "Microsoft Defender real-time protection is enabled",
+      "description": "Real-time (on-access) malware scanning must be enabled.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "critical",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "verified current recommendation via docs/SOURCES.md (doc dated 2026-09-02, updated 2026-09-11)",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/configure-real-time-protection-microsoft-defender-antivirus",
+      "rationale": "Verified current Microsoft guidance explicitly keeps real-time protection, on-access scanning, and bi-directional scanning ON; disabling it is explicitly discouraged.\n",
+      "expected_value": true,
+      "possible_impact": "None expected; this is Microsoft's own recommended default. If a third-party AV is the intended primary engine, Defender may be in passive mode and this control may not apply -- see AF-WIN-DEF-008.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Get-MpPreference",
+        "timestamp": "2026-09-24T09:51:23.933288+00:00",
+        "raw": {
+          "property": "DisableRealtimeMonitoring"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-002",
+      "title": "Microsoft Defender cloud-delivered protection is enabled",
+      "description": "Cloud-delivered protection (MAPS) should be enabled to get near-real-time detections beyond local signature updates.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "enabled by default; verified via docs/SOURCES.md (doc dated 2025-10-20, updated 2026-09-11)",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-microsoft-defender-antivirus",
+      "rationale": "Cloud protection is a prerequisite for several Attack Surface Reduction rules and materially speeds up detection of new threats versus local signatures alone.\n",
+      "expected_value": {
+        "min": 1
+      },
+      "possible_impact": "Sends file metadata (and, at the 'Advanced' level, sample submissions) to Microsoft cloud services; review data-handling policy if operating in a highly restricted network.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 2,
+        "expected_value": {
+          "min": 1
+        },
+        "source": "Get-MpPreference",
+        "timestamp": "2026-09-24T09:51:26.600418+00:00",
+        "raw": {
+          "property": "MAPSReporting"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-003",
+      "title": "Potentially Unwanted Application (PUA) protection is enabled",
+      "description": "Defender should block or audit potentially unwanted applications (adware, bundled toolbars, etc.).\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "low",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus",
+      "rationale": "PUA protection reduces adware/bundleware noise that otherwise degrades both security posture and user experience.\n",
+      "expected_value": {
+        "one_of": [
+          1,
+          2
+        ]
+      },
+      "possible_impact": "May flag/block legitimately bundled optional software some users intentionally installed.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 2,
+        "expected_value": {
+          "one_of": [
+            1,
+            2
+          ]
+        },
+        "source": "Get-MpPreference",
+        "timestamp": "2026-09-24T09:51:29.114102+00:00",
+        "raw": {
+          "property": "PUAProtection"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-004",
+      "title": "Controlled Folder Access is enabled or auditing",
+      "description": "Controlled Folder Access should be at least in Audit mode (ideally Enabled/Block) to resist unauthorized changes to protected folders, particularly against ransomware.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/controlled-folders",
+      "rationale": "Controlled Folder Access blocks unrecognized processes from modifying files in protected folders, a strong mitigation against ransomware encryption behavior.\n",
+      "expected_value": {
+        "one_of": [
+          "Enabled",
+          "AuditMode"
+        ]
+      },
+      "possible_impact": "In Enabled/Block mode, legitimate applications not on the allow-list may be blocked from writing to protected folders (Documents, Desktop, etc.). AuditForge defaults remediation to AuditMode (log-only) rather than Block to avoid breaking applications sight-unseen; move to Enabled manually once you've reviewed the audit log.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'one_of': ['Enabled', 'AuditMode']}, found 0",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": {
+          "one_of": [
+            "Enabled",
+            "AuditMode"
+          ]
+        },
+        "source": "Get-MpPreference",
+        "timestamp": "2026-09-24T09:51:31.659888+00:00",
+        "raw": {
+          "property": "EnableControlledFolderAccess"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3",
+          "SC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-005",
+      "title": "Defender Network Protection is enabled or auditing",
+      "description": "Network Protection blocks outbound connections to known-malicious IPs and domains at the network layer.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/network-protection",
+      "rationale": "Network Protection stops connections to malicious domains/IPs (phishing, C2, exploit-hosting sites) even if a malicious process is not yet detected by signature/behavior analysis.\n",
+      "expected_value": {
+        "one_of": [
+          "Enabled",
+          "AuditMode"
+        ]
+      },
+      "possible_impact": "In Enabled/Block mode, may block legitimate but unusual outbound connections; AuditForge defaults to AuditMode for review before enforcing.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'one_of': ['Enabled', 'AuditMode']}, found 0",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": {
+          "one_of": [
+            "Enabled",
+            "AuditMode"
+          ]
+        },
+        "source": "Get-MpPreference",
+        "timestamp": "2026-09-24T09:51:34.372690+00:00",
+        "raw": {
+          "property": "EnableNetworkProtection"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3",
+          "SC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-006",
+      "title": "Defender behavior monitoring is enabled",
+      "description": "Behavior monitoring analyzes process behavior in real time to catch threats that evade static signature detection.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/configure-real-time-protection-microsoft-defender-antivirus",
+      "rationale": "Verified current Microsoft guidance keeps behavior monitoring ON as part of the recommended real-time protection configuration.\n",
+      "expected_value": true,
+      "possible_impact": "None expected; matches Microsoft's own recommended configuration.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Get-MpPreference",
+        "timestamp": "2026-09-24T09:51:36.795516+00:00",
+        "raw": {
+          "property": "DisableBehaviorMonitoring"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3",
+          "SI-4"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-007",
+      "title": "Defender Tamper Protection is enabled (audit only)",
+      "description": "Tamper Protection prevents malware and unauthorized users/admins (even via registry or Group Policy) from disabling core Defender protections.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "now ON by default for enterprise/managed customers -- verified via docs/SOURCES.md (doc dated 2026-09-09, updated 2026-09-11)",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/tamper-protection-overview",
+      "rationale": "Tamper Protection is audit-only in AuditForge by design: Microsoft has deliberately made it unsettable via registry or Group Policy specifically to resist exactly the kind of unattended automated configuration change a tool like AuditForge would otherwise perform. Use Intune/Defender portal/\"troubleshooting mode\" to change it.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; no remediation is attempted or possible via this tool.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Get-MpComputerStatus",
+        "timestamp": "2026-09-24T09:51:39.430656+00:00",
+        "raw": {
+          "property": "IsTamperProtected"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3",
+          "CM-6"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-DEF-008",
+      "title": "An antivirus engine is active (audit only)",
+      "description": "Reports whether an antivirus engine (Defender, in \"AntivirusEnabled\") is currently active. A FAIL here often means a third-party AV has taken over, not necessarily that the machine is unprotected -- treat as a prompt to verify the actual AV in use, not a confirmed gap.\n",
+      "os": "windows",
+      "category": "malware_protection",
+      "severity": "critical",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/defender-endpoint/microsoft-defender-antivirus-windows",
+      "rationale": "Some antivirus protection should always be active. AuditForge cannot currently enumerate third-party AV engines, so a FAIL here is reported as a prompt for manual confirmation rather than an automatic remediation target.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; no remediation is attempted for this control.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Get-MpComputerStatus",
+        "timestamp": "2026-09-24T09:51:41.886225+00:00",
+        "raw": {
+          "property": "AntivirusEnabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-3"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ENC-001",
+      "title": "BitLocker volume protection is on (audit only)",
+      "description": "The system volume should be protected by BitLocker full-disk encryption.\n",
+      "os": "windows",
+      "category": "encryption",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/",
+      "rationale": "Full-disk encryption protects data at rest from offline access if a device is lost or stolen. AuditForge deliberately never enables encryption automatically -- per section 6 of the project spec, doing so without first protecting the recovery key (e.g. in AD/Entra or a printed recovery sheet) risks irrecoverable data loss.\n",
+      "expected_value": "On",
+      "possible_impact": "Read-only; no remediation is attempted for this control. Enabling BitLocker is a deliberate administrator action requiring a recovery-key escrow plan first.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "FAIL",
+      "message": "Expected 'On', found 'Off'",
+      "evidence": {
+        "detected_value": "Off",
+        "expected_value": "On",
+        "source": "Get-BitLockerVolume",
+        "timestamp": "2026-09-24T09:51:45.478535+00:00",
+        "raw": {
+          "ProtectionStatus": "Off",
+          "VolumeStatus": "FullyDecrypted",
+          "EncryptionMethod": 0
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-28"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ENC-002",
+      "title": "Secure Boot is enabled (audit only)",
+      "description": "UEFI Secure Boot should be enabled to prevent unsigned/untrusted boot loaders and drivers from running before the OS takes over.\n",
+      "os": "windows",
+      "category": "encryption",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-secure-boot",
+      "rationale": "Secure Boot is foundational to the modern Windows boot-integrity chain (and a prerequisite for several VBS-based protections). AuditForge cannot change firmware settings and does not attempt to.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; changing this requires a firmware/UEFI settings change, which AuditForge does not perform.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "FAIL",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "Confirm-SecureBootUEFI",
+        "timestamp": "2026-09-24T09:51:46.243885+00:00",
+        "raw": {}
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-7",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-ENC-003",
+      "title": "A ready TPM is present (audit only)",
+      "description": "A ready Trusted Platform Module is a prerequisite for BitLocker, Credential Guard, and other hardware-rooted protections.\n",
+      "os": "windows",
+      "category": "encryption",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/hardware-security/tpm/trusted-platform-module-overview",
+      "rationale": "Many current hardware-backed security features (BitLocker without external key entry, Credential Guard, Windows Hello) depend on a functioning TPM 2.0. This is a hardware/firmware fact AuditForge can only report, not change.\n",
+      "expected_value": true,
+      "possible_impact": "Read-only; TPM readiness is a firmware/hardware property AuditForge cannot change.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Get-Tpm",
+        "timestamp": "2026-09-24T09:51:47.493608+00:00",
+        "raw": {
+          "property": "TpmReady"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-28",
+          "IA-2"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-FW-001",
+      "title": "Windows Firewall is enabled for the Domain profile",
+      "description": "The Windows Defender Firewall must be enabled for the Domain network profile.\n",
+      "os": "windows",
+      "category": "firewall",
+      "severity": "critical",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/",
+      "rationale": "A disabled firewall profile removes host-based network filtering entirely for that network context.\n",
+      "expected_value": true,
+      "possible_impact": "None expected under normal circumstances.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": true,
+        "source": "Get-NetFirewallProfile",
+        "timestamp": "2026-09-24T09:51:52.665444+00:00",
+        "raw": {
+          "profile": "Domain",
+          "property": "Enabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-7",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-FW-002",
+      "title": "Windows Firewall is enabled for the Private profile",
+      "description": "The Windows Defender Firewall must be enabled for the Private network profile.\n",
+      "os": "windows",
+      "category": "firewall",
+      "severity": "critical",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/",
+      "rationale": "A disabled firewall profile removes host-based network filtering entirely for that network context.\n",
+      "expected_value": true,
+      "possible_impact": "None expected under normal circumstances.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": true,
+        "source": "Get-NetFirewallProfile",
+        "timestamp": "2026-09-24T09:51:55.857497+00:00",
+        "raw": {
+          "profile": "Private",
+          "property": "Enabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-7",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-FW-003",
+      "title": "Windows Firewall is enabled for the Public profile",
+      "description": "The Windows Defender Firewall must be enabled for the Public network profile.\n",
+      "os": "windows",
+      "category": "firewall",
+      "severity": "critical",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/",
+      "rationale": "Public networks are the highest-risk context (coffee shops, airports, etc.); the firewall must never be disabled there.\n",
+      "expected_value": true,
+      "possible_impact": "None expected under normal circumstances.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": true,
+        "source": "Get-NetFirewallProfile",
+        "timestamp": "2026-09-24T09:51:59.051159+00:00",
+        "raw": {
+          "profile": "Public",
+          "property": "Enabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-7",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-FW-004",
+      "title": "Public profile default inbound action is Block",
+      "description": "The Public firewall profile's default inbound action should be Block, so any inbound rule must be an explicit, deliberate allow.\n",
+      "os": "windows",
+      "category": "firewall",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/",
+      "rationale": "Default-block for unsolicited inbound traffic on untrusted networks is a foundational network-exposure control.\n",
+      "expected_value": {
+        "one_of": [
+          "Block"
+        ]
+      },
+      "possible_impact": "Any inbound-listening application without an explicit allow rule will stop being reachable from the network while on a Public profile.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'one_of': ['Block']}, found 0",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": {
+          "one_of": [
+            "Block"
+          ]
+        },
+        "source": "Get-NetFirewallProfile",
+        "timestamp": "2026-09-24T09:52:02.194615+00:00",
+        "raw": {
+          "profile": "Public",
+          "property": "DefaultInboundAction"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-LOG-001",
+      "title": "Process creation command-line auditing is enabled",
+      "description": "Process-creation audit events (4688) should include the full command line used to launch each process.\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing",
+      "rationale": "Command-line auditing on process creation is one of the highest-value, lowest-cost detection sources for both attacker tooling and general incident forensics.\n",
+      "expected_value": 1,
+      "possible_impact": "Command lines (which can incidentally contain secrets passed as arguments) will appear in the Security event log; ensure log access is appropriately restricted.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\Audit\\ProcessCreationIncludeCmdLine_Enabled",
+        "timestamp": "2026-09-24T09:52:02.194615+00:00",
+        "raw": {
+          "exists": false,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-2",
+          "AU-3",
+          "AU-12"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-LOG-002",
+      "title": "Security event log has adequate maximum size",
+      "description": "The Security event log's maximum size should be large enough to retain a meaningful window of history before it wraps/overwrites old events.\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/win32/wes/eventlog-key",
+      "rationale": "A too-small Security log can wrap and lose evidence within hours on a busy system, especially once auditing is turned up (see AF-WIN-LOG-001, 004-006). This control uses the modern Get-WinEvent/EventLogConfiguration API rather than the legacy, no-longer-authoritative HKLM\\...\\EventLog\\Security\\MaxSize registry value (see the primitive's own docstring) -- using that legacy key would itself be exactly the kind of stale hardening myth the project spec warns against.\n",
+      "expected_value": {
+        "min": 201326592
+      },
+      "possible_impact": "Consumes more disk space for log storage (192 MB minimum here); negligible on modern disks.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected {'min': 201326592}, found 20971520",
+      "evidence": {
+        "detected_value": 20971520,
+        "expected_value": {
+          "min": 201326592
+        },
+        "source": "Get-WinEvent -ListLog",
+        "timestamp": "2026-09-24T09:52:02.998314+00:00",
+        "raw": {
+          "channel": "Security"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-4",
+          "AU-11"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-LOG-003",
+      "title": "PowerShell operational log has adequate maximum size",
+      "description": "The Windows PowerShell operational log (which carries Script Block Logging events, if enabled per AF-WIN-PS-002) should have enough capacity to avoid wrapping quickly.\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "low",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows",
+      "rationale": "Script Block Logging is only useful if the log capacity is large enough to retain events long enough to be reviewed or shipped to a SIEM.\n",
+      "expected_value": {
+        "min": 67108864
+      },
+      "possible_impact": "Consumes more disk space for log storage (64 MB minimum here).",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected {'min': 67108864}, found 15728640",
+      "evidence": {
+        "detected_value": 15728640,
+        "expected_value": {
+          "min": 67108864
+        },
+        "source": "Get-WinEvent -ListLog",
+        "timestamp": "2026-09-24T09:52:03.751312+00:00",
+        "raw": {
+          "channel": "Windows PowerShell"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-4",
+          "AU-11"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-LOG-004",
+      "title": "Process Creation auditing is enabled",
+      "description": "The \"Process Creation\" audit subcategory (Success and Failure) should be enabled so process-launch events (4688) are generated at all -- a prerequisite for AF-WIN-LOG-001's command-line detail to have any effect.\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing",
+      "rationale": "Without this audit subcategory enabled, no 4688 process-creation events are generated regardless of the command-line-inclusion setting.\n",
+      "expected_value": true,
+      "possible_impact": "Increases Security event log volume, particularly on hosts that spawn many short-lived processes.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "auditpol /get",
+        "timestamp": "2026-09-24T09:52:03.839202+00:00",
+        "raw": {
+          "setting": "No Auditing"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-2",
+          "AU-12"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-LOG-005",
+      "title": "Logon auditing is enabled",
+      "description": "The \"Logon\" audit subcategory (Success and Failure) should be enabled so interactive/network/RDP logon attempts are recorded (4624/4625).\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events",
+      "rationale": "Logon auditing is foundational for detecting brute-force attempts, credential-stuffing, and lateral movement.\n",
+      "expected_value": true,
+      "possible_impact": "Increases Security event log volume, particularly on shared/multi-user hosts.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "auditpol /get",
+        "timestamp": "2026-09-24T09:52:03.905994+00:00",
+        "raw": {
+          "setting": "Success and Failure"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-2",
+          "AC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-LOG-006",
+      "title": "Account Lockout auditing is enabled",
+      "description": "The \"Account Lockout\" audit subcategory should be enabled so lockout events are recorded, giving visibility into ongoing brute-force attempts.\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-account-logon-events",
+      "rationale": "Lockout events are a strong signal of active password-guessing attempts against one or more accounts.\n",
+      "expected_value": true,
+      "possible_impact": "Minor increase in Security event log volume.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "FAIL",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "auditpol /get",
+        "timestamp": "2026-09-24T09:52:03.976946+00:00",
+        "raw": {
+          "setting": "Success"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-2",
+          "AC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-PS-001",
+      "title": "The legacy PowerShell v2 engine is removed",
+      "description": "The Windows Optional Feature that provides the legacy PowerShell 2.0 engine should be removed; it lacks modern logging (no AMSI, no script block logging) and can be used to bypass newer PowerShell security controls by explicitly invoking \"-Version 2\".\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/powershell/scripting/security/security-features",
+      "rationale": "PowerShell v2's lack of AMSI integration and script block logging makes it a known \"living off the land\" downgrade technique for attackers with code-execution capability.\n",
+      "expected_value": "Disabled",
+      "possible_impact": "Breaks any legacy script/module that explicitly requires the PowerShell 2.0 engine (rare in current environments).",
+      "reboot_required": true,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "NOT_APPLICABLE",
+      "message": "optional feature 'MicrosoftWindowsPowerShellV2Root' does not exist on this Windows SKU/edition",
+      "evidence": {
+        "detected_value": null,
+        "expected_value": "Disabled",
+        "source": "win_optional_feature",
+        "timestamp": "2026-09-24T09:52:07.404344+00:00",
+        "raw": {}
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-PS-002",
+      "title": "PowerShell Script Block Logging is enabled",
+      "description": "PowerShell should log the full deobfuscated content of executed script blocks (Event ID 4104) for detection and forensics.\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "not enabled by default in any current PowerShell 5.1/7.x release -- verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows",
+      "rationale": "Verified current guidance confirms Script Block Logging is off by default and must be explicitly enabled; it is one of the single highest- value PowerShell-based-attack detection sources available.\n",
+      "expected_value": 1,
+      "possible_impact": "Increases Windows PowerShell/Operational event log volume; scripts that handle secrets in plaintext will have that content logged too -- pair with Protected Event Logging if that's a concern (see notes).\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging\\EnableScriptBlockLogging",
+        "timestamp": "2026-09-24T09:52:07.404344+00:00",
+        "raw": {
+          "exists": false,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-2",
+          "AU-12"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-PS-003",
+      "title": "PowerShell Module Logging is enabled",
+      "description": "PowerShell should log pipeline execution details for every module it loads (Event ID 4103).\n",
+      "os": "windows",
+      "category": "logging",
+      "severity": "low",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "not enabled by default -- verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows",
+      "rationale": "Module logging complements Script Block Logging with additional pipeline execution detail, useful for detection and incident response.\n",
+      "expected_value": 1,
+      "possible_impact": "Increases Windows PowerShell/Operational event log volume.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\PowerShell\\ModuleLogging\\EnableModuleLogging",
+        "timestamp": "2026-09-24T09:52:07.405342+00:00",
+        "raw": {
+          "exists": false,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)",
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AU-2",
+          "AU-12"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-PS-004",
+      "title": "PowerShell execution policy is reviewed (informational, not a security boundary)",
+      "description": "Reports the local-machine PowerShell execution policy for awareness.\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "info",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies",
+      "rationale": "Per the project spec (\"do not treat ExecutionPolicy as a full security boundary\") and Microsoft's own documentation, ExecutionPolicy is a convenience/safety-net feature, trivially bypassed by anyone with local code execution (e.g. `-ExecutionPolicy Bypass`, piping to `iex`, or loading script content in-memory). AuditForge reports it as informational context only.\n",
+      "expected_value": {
+        "one_of": [
+          "AllSigned",
+          "RemoteSigned",
+          "Restricted"
+        ]
+      },
+      "possible_impact": "Read-only; no remediation is attempted since this is explicitly not treated as a security control.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": "Restricted",
+        "expected_value": {
+          "one_of": [
+            "AllSigned",
+            "RemoteSigned",
+            "Restricted"
+          ]
+        },
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\PowerShell\\1\\ShellIds\\Microsoft.PowerShell\\ExecutionPolicy",
+        "timestamp": "2026-09-24T09:52:07.405342+00:00",
+        "raw": {
+          "exists": false,
+          "used_default": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-RDP-001",
+      "title": "RDP requires Network Level Authentication",
+      "description": "When Remote Desktop is enabled, it must require Network Level Authentication (NLA) so the connecting user authenticates before a full session is established.\n",
+      "os": "windows",
+      "category": "remote_access",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview",
+      "rationale": "NLA moves authentication before the resource-intensive session/logon screen is created, closing off a class of pre-auth RDP attacks and reducing exposure to unauthenticated scanning.\n",
+      "expected_value": 1,
+      "possible_impact": "Older RDP clients without NLA support (very rare today) will be unable to connect.",
+      "reboot_required": false,
+      "service_restart_required": true,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\\UserAuthentication",
+        "timestamp": "2026-09-24T09:52:07.405342+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "IA-2",
+          "AC-17"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-RDP-002",
+      "title": "Remote Desktop exposure is reviewed (informational)",
+      "description": "Reports whether Remote Desktop connections are allowed at all. This is informational, not a blanket \"RDP is bad\" finding -- many workstations and most servers legitimately need RDP for administration.\n",
+      "os": "windows",
+      "category": "remote_access",
+      "severity": "info",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview",
+      "rationale": "Per the project's false-positive policy, \"RDP enabled\" is a REVIEW signal, not an automatic FAIL -- see section 34 of the project spec. Severity is deliberately \"info\" so a mismatch here reports WARNING, and remediation is gated behind --allow-high-impact plus a live-session guard.\n",
+      "expected_value": 1,
+      "possible_impact": "HIGH IMPACT: disables all Remote Desktop access to this machine, including your own if you rely on it and are not physically present.",
+      "reboot_required": false,
+      "service_restart_required": true,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected 1, found 0",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\fDenyTSConnections",
+        "timestamp": "2026-09-24T09:52:07.406342+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-17",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-RDP-003",
+      "title": "Remote Assistance is disabled unless needed",
+      "description": "Windows Remote Assistance (unattended/solicited help sessions) should be disabled unless actively used for support workflows.\n",
+      "os": "windows",
+      "category": "remote_access",
+      "severity": "low",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview",
+      "rationale": "Remote Assistance adds another remote-control surface; if a help-desk workflow doesn't use it, it should be off.\n",
+      "expected_value": 0,
+      "possible_impact": "Breaks help-desk workflows that specifically rely on Windows Remote Assistance (distinct from RDP or third-party tools).",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected 0, found 1",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": 0,
+        "source": "registry:HKLM\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance\\fAllowToGetHelp",
+        "timestamp": "2026-09-24T09:52:07.406342+00:00",
+        "raw": {
+          "exists": true
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-17"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-REMOTE-001",
+      "title": "WinRM service exposure is reviewed (informational)",
+      "description": "Reports the WinRM (Windows Remote Management / PowerShell Remoting) service startup state. Informational: many admin workflows (including AuditForge's own remote-management use cases) depend on WinRM.\n",
+      "os": "windows",
+      "category": "remote_access",
+      "severity": "info",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/powershell/scripting/security/security-features",
+      "rationale": "Per section 34 of the project spec, remote-management services are a REVIEW signal in context, not an automatic FAIL. Remediation is gated behind --allow-high-impact since disabling WinRM can cut off the very channel an admin might be using to manage the box remotely.\n",
+      "expected_value": {
+        "one_of": [
+          "Disabled",
+          "Manual",
+          "Automatic"
+        ]
+      },
+      "possible_impact": "HIGH IMPACT: disables PowerShell Remoting and any tooling (including remote AuditForge runs) that depends on WinRM.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": "Manual",
+        "expected_value": {
+          "one_of": [
+            "Disabled",
+            "Manual",
+            "Automatic"
+          ]
+        },
+        "source": "Get-Service",
+        "timestamp": "2026-09-24T09:52:08.320341+00:00",
+        "raw": {
+          "status": "Stopped",
+          "start_type": "Manual"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-17",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-REMOTE-002",
+      "title": "Remote Registry service is disabled",
+      "description": "The Remote Registry service, which allows other machines to read/write this machine's registry over the network, should be disabled unless specifically required (e.g. by certain management tools).\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/reg",
+      "rationale": "Remote registry access is rarely needed day-to-day and is a valuable target once an attacker has any foothold with admin credentials, letting them read/modify configuration remotely.\n",
+      "expected_value": "Disabled",
+      "possible_impact": "Breaks any management tooling (some older monitoring/inventory agents) that specifically relies on remote registry access.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": "Disabled",
+        "expected_value": "Disabled",
+        "source": "Get-Service",
+        "timestamp": "2026-09-24T09:52:09.245004+00:00",
+        "raw": {
+          "status": "Stopped",
+          "start_type": "Disabled"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7",
+          "SC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-REMOTE-003",
+      "title": "WPAD auto-proxy discovery service is reviewed (informational)",
+      "description": "Reports the WinHttpAutoProxySvc (Web Proxy Auto-Discovery) service state. WPAD has a long history of spoofing/credential-relay attacks on networks where it is enabled but not properly controlled.\n",
+      "os": "windows",
+      "category": "attack_surface",
+      "severity": "low",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/netsh",
+      "rationale": "WPAD spoofing can be used to relay NTLM credentials. This is reported at low severity (WARNING, not FAIL) because many enterprise networks rely on legitimate proxy auto-discovery; blindly disabling it can break internet access for users behind a required proxy.\n",
+      "expected_value": {
+        "one_of": [
+          "Disabled",
+          "Manual"
+        ]
+      },
+      "possible_impact": "Read-only; no remediation is attempted since disabling WPAD can break required corporate proxy configurations.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": "Manual",
+        "expected_value": {
+          "one_of": [
+            "Disabled",
+            "Manual"
+          ]
+        },
+        "source": "Get-Service",
+        "timestamp": "2026-09-24T09:52:10.077320+00:00",
+        "raw": {
+          "status": "Running",
+          "start_type": "Manual"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-SMB-001",
+      "title": "SMBv1 protocol is disabled",
+      "description": "The legacy, insecure SMBv1 protocol must be disabled on the SMB server.\n",
+      "os": "windows",
+      "category": "legacy_protocols",
+      "severity": "critical",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "SMB1 not installed by default since Windows 10 1709 / Windows Server v1709; verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security",
+      "rationale": "SMBv1 has no meaningful security properties by modern standards (no required signing, weak/no encryption, exploited by WannaCry/NotPetya via EternalBlue). This is the canonical \"legacy protocol\" example from the project spec: SMBv1 should normally be treated as legacy/insecure, while SMBv2/v3 (audited separately below) are NOT automatically disabled.\n",
+      "expected_value": false,
+      "possible_impact": "Breaks connectivity to legacy NAS/scanners/embedded devices that only speak SMBv1. Confirm no such devices are in use before applying broadly.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": false,
+        "source": "Get-SmbServerConfiguration",
+        "timestamp": "2026-09-24T09:52:13.654941+00:00",
+        "raw": {
+          "property": "EnableSMB1Protocol"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "CM-7",
+          "SC-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-SMB-002",
+      "title": "SMB server signing is required",
+      "description": "The SMB server should require message signing to prevent relay/tampering attacks against SMB traffic.\n",
+      "os": "windows",
+      "category": "legacy_protocols",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "Win11 24H2 Ent/Pro/Edu require signing both directions by default; Server 2025 requires outbound by default -- verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-signing",
+      "rationale": "SMB signing stops on-path tampering/relay of SMB traffic. Verified research shows this is now default-on for many current SKUs -- this control is a regression/consistency check, and deliberately does NOT touch SMBv2/v3 availability itself (the project spec explicitly warns against blindly disabling SMB2/3).\n",
+      "expected_value": true,
+      "possible_impact": "Small CPU overhead per SMB request; extremely old SMB clients without signing support will be rejected.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": true,
+        "expected_value": true,
+        "source": "Get-SmbServerConfiguration",
+        "timestamp": "2026-09-24T09:52:15.940608+00:00",
+        "raw": {
+          "property": "RequireSecuritySignature"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-8",
+          "SC-23"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-SMB-003",
+      "title": "Insecure SMB guest logons are disabled",
+      "description": "The SMB client must not silently downgrade to unauthenticated guest access when connecting to a share that rejects normal credentials.\n",
+      "os": "windows",
+      "category": "legacy_protocols",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security",
+      "rationale": "Insecure guest logons silently fall back to unauthenticated access, which both weakens security and can leak credentials-adjacent traffic to a malicious/spoofed server.\n",
+      "expected_value": false,
+      "possible_impact": "Breaks connectivity to older/consumer NAS devices whose shares only offer unauthenticated guest access.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": false,
+        "source": "Get-SmbClientConfiguration",
+        "timestamp": "2026-09-24T09:52:18.218605+00:00",
+        "raw": {
+          "property": "EnableInsecureGuestLogons"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-2",
+          "IA-2"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-SMB-004",
+      "title": "SMB encryption is enabled where supported",
+      "description": "SMB traffic to/from this server is encrypted (AES-GCM/CCM), not merely signed.\n",
+      "os": "windows",
+      "category": "legacy_protocols",
+      "severity": "low",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "SMB encryption is NOT enabled by default in any current release -- verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security",
+      "rationale": "Verified research confirms SMB encryption is opt-in, not a Windows default, on every currently supported release. This is an optional hardening step (low severity: a mismatch reports WARNING, not FAIL) -- enabling it is a deliberate choice with real compatibility/performance trade-offs, not a \"should always be on\" baseline expectation.\n",
+      "expected_value": true,
+      "possible_impact": "Rejects clients that do not support SMB 3.x encryption once RejectUnencryptedAccess is also in effect; adds modest CPU overhead.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "Get-SmbServerConfiguration",
+        "timestamp": "2026-09-24T09:52:20.433932+00:00",
+        "raw": {
+          "property": "EncryptData"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SC-8",
+          "SC-13"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-SMB-005",
+      "title": "SMB client NTLM blocking is considered (informational)",
+      "description": "Reports whether the SMB client's \"Block NTLM\" capability is enabled, which prevents the SMB client from falling back to NTLM authentication.\n",
+      "os": "windows",
+      "category": "legacy_protocols",
+      "severity": "info",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "Feature available from Windows Server 2025 / Windows 11 24H2; opt-in, not default -- verified via docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-ntlm-blocking",
+      "rationale": "This is a brand-new (2025/2026) opt-in capability, not yet a default or a mature baseline expectation, and enabling it can break legitimate non-domain-joined SMB servers that still require NTLM. AuditForge reports it as informational context only (severity=info -> WARNING, never FAIL) rather than a hardening requirement.\n",
+      "expected_value": true,
+      "possible_impact": "Breaks SMB connections to any non-domain-joined or legacy SMB server that requires NTLM authentication. Review the exception-list mechanism before enabling broadly.\n",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "WARNING",
+      "message": "Expected True, found False",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": true,
+        "source": "Get-SmbClientConfiguration",
+        "timestamp": "2026-09-24T09:52:22.843292+00:00",
+        "raw": {
+          "property": "BlockNTLM"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [
+          "SMB NTLM blocking"
+        ],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-UAC-001",
+      "title": "User Account Control is enabled",
+      "description": "UAC (EnableLUA) must be enabled so administrative operations require explicit elevation.\n",
+      "os": "windows",
+      "category": "uac",
+      "severity": "high",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/",
+      "rationale": "Disabling UAC removes the split-token elevation model entirely, causing all processes (including malware) to inherit full administrative rights by default when run by an admin account.\n",
+      "expected_value": 1,
+      "possible_impact": "Legacy applications assuming always-elevated execution may misbehave until UAC virtualization/compatibility shims kick in.",
+      "reboot_required": true,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 1,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA",
+        "timestamp": "2026-09-24T09:52:22.843292+00:00",
+        "raw": {
+          "exists": true,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-6",
+          "CM-7"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-UAC-002",
+      "title": "UAC elevation prompts use the secure desktop",
+      "description": "UAC consent/credential prompts should switch to the secure desktop, preventing other processes on the interactive desktop from interacting with or spoofing the elevation prompt.\n",
+      "os": "windows",
+      "category": "uac",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/",
+      "rationale": "Without the secure desktop, a malicious process running as the same user could in principle simulate input to an elevation prompt.\n",
+      "expected_value": 1,
+      "possible_impact": "Screen dims briefly during elevation prompts; some remote-control/accessibility tools have historically had trouble interacting with the secure desktop.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": 1,
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\PromptOnSecureDesktop",
+        "timestamp": "2026-09-24T09:52:22.844297+00:00",
+        "raw": {
+          "exists": true,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-6"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-UAC-003",
+      "title": "UAC prompts administrators for consent on elevation",
+      "description": "Administrators in Admin Approval Mode should be prompted for consent (or credentials) before an operation runs elevated, rather than elevating silently.\n",
+      "os": "windows",
+      "category": "uac",
+      "severity": "medium",
+      "benchmark": "Microsoft Security Baseline",
+      "benchmark_version": "see docs/SOURCES.md",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/",
+      "rationale": "Setting ConsentPromptBehaviorAdmin to \"silently elevate\" (0) defeats the purpose of UAC by letting any process request admin rights with no user interaction at all.\n",
+      "expected_value": {
+        "min": 1
+      },
+      "possible_impact": "Administrators will see a consent/credential prompt on elevation instead of silent elevation; workflows relying on unattended elevation will break.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": true,
+      "status": "MANAGED_BY_ORGANIZATION",
+      "message": "Managed via Registry Policy key (SOFTWARE\\Policies)",
+      "evidence": {
+        "detected_value": 0,
+        "expected_value": {
+          "min": 1
+        },
+        "source": "registry:HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\ConsentPromptBehaviorAdmin",
+        "timestamp": "2026-09-24T09:52:22.844297+00:00",
+        "raw": {
+          "exists": true,
+          "policy_source": "Registry Policy key (SOFTWARE\\Policies)"
+        }
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "AC-6"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-UPD-001",
+      "title": "No stale pending-reboot state (informational)",
+      "description": "Reports whether the machine has update-related changes waiting on a reboot to complete.\n",
+      "os": "windows",
+      "category": "updates",
+      "severity": "low",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/deployment/update/",
+      "rationale": "A long-pending reboot means recently patched vulnerabilities may not be fully mitigated yet. AuditForge never reboots a machine automatically -- that scheduling decision belongs to the administrator.\n",
+      "expected_value": false,
+      "possible_impact": "Read-only; no remediation is attempted -- rebooting is always an explicit administrator action.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "PASS",
+      "message": "Compliant",
+      "evidence": {
+        "detected_value": false,
+        "expected_value": false,
+        "source": "registry reboot-pending flags",
+        "timestamp": "2026-09-24T09:52:24.392657+00:00",
+        "raw": {}
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": null,
+      "frameworks": {
+        "nist_800_53": [
+          "SI-2"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    },
+    {
+      "control_id": "AF-WIN-UPD-002",
+      "title": "No outstanding software updates (audit only)",
+      "description": "Counts software updates the Windows Update Agent reports as not yet installed.\n",
+      "os": "windows",
+      "category": "updates",
+      "severity": "medium",
+      "benchmark": "AuditForge Baseline",
+      "benchmark_version": "0.1.0",
+      "external_reference": "https://learn.microsoft.com/en-us/windows/deployment/update/",
+      "rationale": "Unpatched software is one of the most common real-world attack vectors. AuditForge deliberately does not auto-install updates unattended (that requires reboot orchestration and change-control outside this tool's scope) -- this is audit-only, surfaced for manual patching action.\n",
+      "expected_value": {
+        "max": 0
+      },
+      "possible_impact": "Read-only; no remediation is attempted. On WSUS/Intune-managed machines this search may be blocked by policy and report ERROR rather than a count -- that is expected, not a bug.",
+      "reboot_required": false,
+      "service_restart_required": false,
+      "remediation_available": false,
+      "status": "ERROR",
+      "message": "Windows Update Agent search failed or was blocked by policy",
+      "evidence": {
+        "detected_value": null,
+        "expected_value": {
+          "max": 0
+        },
+        "source": "win_pending_updates",
+        "timestamp": "2026-09-24T09:52:24.890110+00:00",
+        "raw": {}
+      },
+      "remediation_applied": false,
+      "remediation_status": null,
+      "error": "Windows Update Agent search failed or was blocked by policy",
+      "frameworks": {
+        "nist_800_53": [
+          "SI-2"
+        ],
+        "nist_800_171": [],
+        "nist_800_63b": [],
+        "disa_stig": [],
+        "cis": [],
+        "microsoft_baseline": [],
+        "apple_guidance": []
+      }
+    }
+  ]
+}

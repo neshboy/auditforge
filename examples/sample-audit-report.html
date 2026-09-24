@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AuditForge Report -- MYCSOC</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:      #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --status-good:     #0ca30c;
+    --status-warning:  #fab219;
+    --status-serious:  #ec835a;
+    --status-critical: #d03b3b;
+    --status-manual:   #2a78d6;
+    --status-managed:  #4a3aa7;
+    --sev-info:   #898781;
+    --sev-low:    #86b6ef;
+    --sev-medium: #eda100;
+    --sev-high:   #eb6834;
+    --sev-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:      #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --status-good:     #0ca30c;
+      --status-warning:  #fab219;
+      --status-serious:  #ec835a;
+      --status-critical: #e66767;
+      --status-manual:   #3987e5;
+      --status-managed:  #9085e9;
+      --sev-info:   #898781;
+      --sev-low:    #5598e7;
+      --sev-medium: #c98500;
+      --sev-high:   #d95926;
+      --sev-critical: #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  .af-report { max-width: 980px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.af-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--gridline); padding-bottom: 16px; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 8px;
+  }
+  header.af-header h1 { font-size: 20px; margin: 0; letter-spacing: 0.02em; }
+  header.af-header .meta { color: var(--text-secondary); font-size: 13px; text-align: right; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; margin-bottom: 20px;
+  }
+  h2.section-title { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-secondary); margin: 0 0 16px; }
+  .exec-summary { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .hero-score { text-align: center; min-width: 140px; }
+  .hero-score .num {
+    font-size: 56px; font-weight: 700; line-height: 1;
+    font-variant-numeric: proportional-nums;
+  }
+  .hero-score .num.band-good { color: var(--status-good); }
+  .hero-score .num.band-warning { color: var(--status-warning); }
+  .hero-score .num.band-critical { color: var(--status-critical); }
+  .hero-score .num.band-unknown { color: var(--text-muted); }
+  .hero-score .label { color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .stat-tiles { display: flex; gap: 16px; flex: 1; flex-wrap: wrap; }
+  .stat-tile { min-width: 88px; }
+  .stat-tile .value { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-tile .label { color: var(--text-secondary); font-size: 12px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; font-size: 13px; }
+  .meta-grid dt { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .meta-grid dd { margin: 2px 0 0; }
+  .category-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+  .category-row .cat-name { width: 200px; flex-shrink: 0; font-size: 13px; }
+  .category-row .bar-track { flex: 1; height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .category-row .bar-fill { height: 100%; border-radius: 5px; }
+  .category-row .bar-fill.band-good { background: var(--status-good); }
+  .category-row .bar-fill.band-warning { background: var(--status-warning); }
+  .category-row .bar-fill.band-critical { background: var(--status-critical); }
+  .category-row .bar-fill.band-unknown { background: var(--text-muted); }
+  .category-row .cat-score { width: 48px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .badge-PASS { color: var(--status-good); background: color-mix(in srgb, var(--status-good) 12%, transparent); }
+  .badge-PASS::before { background: var(--status-good); }
+  .badge-FAIL { color: var(--status-critical); background: color-mix(in srgb, var(--status-critical) 12%, transparent); }
+  .badge-FAIL::before { background: var(--status-critical); }
+  .badge-WARNING { color: var(--text-primary); background: color-mix(in srgb, var(--status-warning) 22%, transparent); }
+  .badge-WARNING::before { background: var(--status-warning); }
+  .badge-NOT_APPLICABLE { color: var(--text-muted); background: color-mix(in srgb, var(--text-muted) 12%, transparent); }
+  .badge-NOT_APPLICABLE::before { background: var(--text-muted); }
+  .badge-MANUAL_REVIEW { color: var(--status-manual); background: color-mix(in srgb, var(--status-manual) 12%, transparent); }
+  .badge-MANUAL_REVIEW::before { background: var(--status-manual); }
+  .badge-MANAGED_BY_ORGANIZATION { color: var(--status-managed); background: color-mix(in srgb, var(--status-managed) 12%, transparent); }
+  .badge-MANAGED_BY_ORGANIZATION::before { background: var(--status-managed); }
+  .badge-ERROR { color: var(--text-primary); background: var(--gridline); border: 1px dashed var(--text-muted); }
+  .badge-ERROR::before { background: var(--text-muted); }
+  .sev-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; padding: 2px 7px; border-radius: 3px; color: var(--text-primary); }
+  .sev-info { background: color-mix(in srgb, var(--sev-info) 20%, transparent); }
+  .sev-low { background: color-mix(in srgb, var(--sev-low) 30%, transparent); }
+  .sev-medium { background: color-mix(in srgb, var(--sev-medium) 30%, transparent); }
+  .sev-high { background: color-mix(in srgb, var(--sev-high) 30%, transparent); }
+  .sev-critical { background: color-mix(in srgb, var(--sev-critical) 30%, transparent); }
+  .finding { border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 10px; }
+  .finding-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .finding-head .control-id { font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace; font-size: 12px; color: var(--text-muted); }
+  .finding-head .title { font-weight: 600; font-size: 14px; }
+  .finding dl.details { display: grid; grid-template-columns: 120px 1fr; gap: 4px 12px; font-size: 13px; margin: 8px 0 0; }
+  .finding dl.details dt { color: var(--text-muted); }
+  .finding dl.details dd { margin: 0; }
+  table.plain { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.plain th { text-align: left; color: var(--text-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
+  table.plain td { padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
+  details.appendix summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; padding: 8px 0; }
+  footer.disclaimer { color: var(--text-muted); font-size: 12px; margin-top: 32px; border-top: 1px solid var(--gridline); padding-top: 16px; }
+  .empty-state { color: var(--text-muted); font-size: 13px; padding: 12px 0; }
+</style>
+</head>
+<body>
+<div class="af-report">
+
+  <header class="af-header">
+    <h1>AUDITFORGE &mdash; Security Assessment</h1>
+    <div class="meta">2026-09-24T09:52:24.890110+00:00<br>profile: audit_only</div>
+  </header>
+
+  <div class="card">
+    <h2 class="section-title">Executive Summary</h2>
+    <div class="exec-summary">
+      <div class="hero-score">
+        <div class="num band-critical">58.8%</div>
+        <div class="label">Overall Posture</div>
+      </div>
+      <div class="stat-tiles">
+        
+        <div class="stat-tile">
+          <div class="value">30</div>
+          <div class="label">PASS</div>
+        </div>
+        
+        <div class="stat-tile">
+          <div class="value">14</div>
+          <div class="label">FAIL</div>
+        </div>
+        
+        <div class="stat-tile">
+          <div class="value">7</div>
+          <div class="label">WARNING</div>
+        </div>
+        
+        <div class="stat-tile">
+          <div class="value">1</div>
+          <div class="label">MANUAL REVIEW</div>
+        </div>
+        
+        <div class="stat-tile">
+          <div class="value">8</div>
+          <div class="label">MANAGED BY ORGANIZATION</div>
+        </div>
+        
+        <div class="stat-tile">
+          <div class="value">1</div>
+          <div class="label">NOT APPLICABLE</div>
+        </div>
+        
+        <div class="stat-tile">
+          <div class="value">1</div>
+          <div class="label">ERROR</div>
+        </div>
+        
+      </div>
+    </div>
+    <dl class="meta-grid">
+      <div><dt>Hostname</dt><dd>MYCSOC</dd></div>
+      <div><dt>Operating System</dt><dd>Microsoft Windows 11 Enterprise N 25H2</dd></div>
+      <div><dt>Architecture</dt><dd>AMD64</dd></div>
+      <div><dt>Assessment Date</dt><dd>2026-09-24T09:52:24.890110+00:00</dd></div>
+      <div><dt>Profile</dt><dd>audit_only</dd></div>
+      <div><dt>Centrally Managed</dt><dd>No</dd></div>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Categories</h2>
+    
+    <div class="category-row">
+      <div class="cat-name">Logging</div>
+      <div class="bar-track"><div class="bar-fill band-critical" style="width: 20.0%;"></div></div>
+      <div class="cat-score">20.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Encryption</div>
+      <div class="bar-track"><div class="bar-fill band-critical" style="width: 33.3%;"></div></div>
+      <div class="cat-score">33.3%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Remote Access</div>
+      <div class="bar-track"><div class="bar-fill band-critical" style="width: 50.0%;"></div></div>
+      <div class="cat-score">50.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Authentication</div>
+      <div class="bar-track"><div class="bar-fill band-critical" style="width: 57.1%;"></div></div>
+      <div class="cat-score">57.1%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Attack Surface</div>
+      <div class="bar-track"><div class="bar-fill band-critical" style="width: 60.0%;"></div></div>
+      <div class="cat-score">60.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Legacy Protocols</div>
+      <div class="bar-track"><div class="bar-fill band-critical" style="width: 60.0%;"></div></div>
+      <div class="cat-score">60.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Malware Protection</div>
+      <div class="bar-track"><div class="bar-fill band-warning" style="width: 75.0%;"></div></div>
+      <div class="cat-score">75.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Firewall</div>
+      <div class="bar-track"><div class="bar-fill band-warning" style="width: 75.0%;"></div></div>
+      <div class="cat-score">75.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Accounts</div>
+      <div class="bar-track"><div class="bar-fill band-good" style="width: 100.0%;"></div></div>
+      <div class="cat-score">100.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">Updates</div>
+      <div class="bar-track"><div class="bar-fill band-good" style="width: 100.0%;"></div></div>
+      <div class="cat-score">100.0%</div>
+    </div>
+    
+    <div class="category-row">
+      <div class="cat-name">User Account Control</div>
+      <div class="bar-track"><div class="bar-fill band-unknown" style="width: 0%;"></div></div>
+      <div class="cat-score">n/a</div>
+    </div>
+    
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Findings (23)</h2>
+    
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-high">high</span>
+        <span class="control-id">AF-WIN-ACCT-006</span>
+        <span class="title">Minimum local password length meets current NIST guidance (>=15 characters)</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>0</dd>
+        <dt>Expected</dt><dd>>= 15</dd>
+        <dt>Why</dt><dd>NIST SP 800-63B-4 Sec. 3.1.1.1-3.1.1.2 (verified by direct PDF read, see docs/SOURCES.md) SHALL requires verifiers to enforce a minimum of 15 characters for passwords used as a single authentication factor (8 characters minimum is only acceptable when the password is one factor of MFA), SHOULD support at least 64 characters, and explicitly SHALL NOT impose composition/complexity rules beyond a compromised-password blocklist check. This supersedes the older, widely-cited "8-14 chars plus complexity" guidance -- see section 3 of the project spec ("do not blindly implement old hardening advice") and AF-WIN-ACCT-007's notes.
+</dd>
+        <dt>Reference</dt><dd>NIST SP 800-63B-4 &mdash; <a href="https://csrc.nist.gov/pubs/sp/800/63/b/4/final" rel="noopener noreferrer">https://csrc.nist.gov/pubs/sp/800/63/b/4/final</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Users with shorter existing passwords must change them at next reset, not immediately.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-high">high</span>
+        <span class="control-id">AF-WIN-AUTH-002</span>
+        <span class="title">LAN Manager authentication level restricts legacy LM/NTLMv1</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>3</dd>
+        <dt>Expected</dt><dd>>= 5</dd>
+        <dt>Why</dt><dd>LM and NTLMv1 use weak, crackable challenge/response schemes. Requiring NTLMv2-only (and refusing the legacy variants) removes an easy downgrade target, while stopping short of Microsoft's broader in-progress NTLM deprecation roadmap (see docs/SOURCES.md), which is not yet default-on for currently supported releases and is out of scope for this control.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Breaks authentication to very old (pre-Windows 2000/legacy SMB/NAS) systems that only understand LM or NTLMv1.
+</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-high">high</span>
+        <span class="control-id">AF-WIN-ENC-001</span>
+        <span class="title">BitLocker volume protection is on (audit only)</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>Off</dd>
+        <dt>Expected</dt><dd>On</dd>
+        <dt>Why</dt><dd>Full-disk encryption protects data at rest from offline access if a device is lost or stolen. AuditForge deliberately never enables encryption automatically -- per section 6 of the project spec, doing so without first protecting the recovery key (e.g. in AD/Entra or a printed recovery sheet) risks irrecoverable data loss.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/operating-system-security/data-protection/bitlocker/</a></dd>
+        <dt>Remediation</dt><dd>Manual review only</dd>
+        <dt>Possible Impact</dt><dd>Read-only; no remediation is attempted for this control. Enabling BitLocker is a deliberate administrator action requiring a recovery-key escrow plan first.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-high">high</span>
+        <span class="control-id">AF-WIN-ENC-002</span>
+        <span class="title">Secure Boot is enabled (audit only)</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>Secure Boot is foundational to the modern Windows boot-integrity chain (and a prerequisite for several VBS-based protections). AuditForge cannot change firmware settings and does not attempt to.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-secure-boot" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-secure-boot</a></dd>
+        <dt>Remediation</dt><dd>Manual review only</dd>
+        <dt>Possible Impact</dt><dd>Read-only; changing this requires a firmware/UEFI settings change, which AuditForge does not perform.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-high">high</span>
+        <span class="control-id">AF-WIN-FW-004</span>
+        <span class="title">Public profile default inbound action is Block</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>0</dd>
+        <dt>Expected</dt><dd>one of: Block</dd>
+        <dt>Why</dt><dd>Default-block for unsolicited inbound traffic on untrusted networks is a foundational network-exposure control.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/operating-system-security/network-security/windows-firewall/</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Any inbound-listening application without an explicit allow rule will stop being reachable from the network while on a Public profile.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-ACCT-005</span>
+        <span class="title">Account lockout duration is at least 15 minutes</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>10</dd>
+        <dt>Expected</dt><dd>>= 15</dd>
+        <dt>Why</dt><dd>A very short lockout duration provides little throttling benefit against automated guessing; 15+ minutes is a widely used minimum baseline.
+</dd>
+        <dt>Reference</dt><dd>NIST SP 800-63B &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Locked-out users wait longer before automatic unlock.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-ASR-004</span>
+        <span class="title">Print Spooler is disabled where printing is not required</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>Automatic</dd>
+        <dt>Expected</dt><dd>Disabled</dd>
+        <dt>Why</dt><dd>The Print Spooler has repeatedly been a source of critical remote/local privilege-escalation vulnerabilities (PrintNightmare and related CVEs). Servers and workstations that do not print have no reason to run it.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/print" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/print</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>HIGH IMPACT: breaks all local and network printing from this machine, including if it hosts shared printers for others. Do not apply on print servers or workstations whose users print directly.
+</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-AUTH-006</span>
+        <span class="title">Cached domain logon count is limited</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>10</dd>
+        <dt>Expected</dt><dd><= 4</dd>
+        <dt>Why</dt><dd>Cached logon credential material is a target for offline cracking on lost/stolen devices. A small cache (e.g. 4) still allows normal offline laptop use while limiting exposure.
+</dd>
+        <dt>Reference</dt><dd>AuditForge Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Users who roam across many domain controllers with no connectivity may need to be online more often to authenticate.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-AUTH-008</span>
+        <span class="title">LAPS (local administrator password management) is present</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>Without LAPS, local administrator passwords are often identical across many machines, so compromising one grants lateral movement to many others. AuditForge only detects LAPS presence; deploying LAPS requires AD schema/Entra configuration decisions outside this tool's scope.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview</a></dd>
+        <dt>Remediation</dt><dd>Manual review only</dd>
+        <dt>Possible Impact</dt><dd>Read-only; no remediation is attempted for this control.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-DEF-004</span>
+        <span class="title">Controlled Folder Access is enabled or auditing</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>0</dd>
+        <dt>Expected</dt><dd>one of: Enabled, AuditMode</dd>
+        <dt>Why</dt><dd>Controlled Folder Access blocks unrecognized processes from modifying files in protected folders, a strong mitigation against ransomware encryption behavior.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/defender-endpoint/controlled-folders" rel="noopener noreferrer">https://learn.microsoft.com/en-us/defender-endpoint/controlled-folders</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>In Enabled/Block mode, legitimate applications not on the allow-list may be blocked from writing to protected folders (Documents, Desktop, etc.). AuditForge defaults remediation to AuditMode (log-only) rather than Block to avoid breaking applications sight-unseen; move to Enabled manually once you've reviewed the audit log.
+</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-DEF-005</span>
+        <span class="title">Defender Network Protection is enabled or auditing</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>0</dd>
+        <dt>Expected</dt><dd>one of: Enabled, AuditMode</dd>
+        <dt>Why</dt><dd>Network Protection stops connections to malicious domains/IPs (phishing, C2, exploit-hosting sites) even if a malicious process is not yet detected by signature/behavior analysis.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/defender-endpoint/network-protection" rel="noopener noreferrer">https://learn.microsoft.com/en-us/defender-endpoint/network-protection</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>In Enabled/Block mode, may block legitimate but unusual outbound connections; AuditForge defaults to AuditMode for review before enforcing.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-LOG-002</span>
+        <span class="title">Security event log has adequate maximum size</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>20971520</dd>
+        <dt>Expected</dt><dd>>= 201326592</dd>
+        <dt>Why</dt><dd>A too-small Security log can wrap and lose evidence within hours on a busy system, especially once auditing is turned up (see AF-WIN-LOG-001, 004-006). This control uses the modern Get-WinEvent/EventLogConfiguration API rather than the legacy, no-longer-authoritative HKLM\...\EventLog\Security\MaxSize registry value (see the primitive's own docstring) -- using that legacy key would itself be exactly the kind of stale hardening myth the project spec warns against.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/win32/wes/eventlog-key" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/win32/wes/eventlog-key</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Consumes more disk space for log storage (192 MB minimum here); negligible on modern disks.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-LOG-004</span>
+        <span class="title">Process Creation auditing is enabled</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>Without this audit subcategory enabled, no 4688 process-creation events are generated regardless of the command-line-inclusion setting.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/component-updates/command-line-process-auditing</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Increases Security event log volume, particularly on hosts that spawn many short-lived processes.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-FAIL">FAIL</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-LOG-006</span>
+        <span class="title">Account Lockout auditing is enabled</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>Lockout events are a strong signal of active password-guessing attempts against one or more accounts.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-account-logon-events" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-account-logon-events</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Minor increase in Security event log volume.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-ERROR">ERROR</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-UPD-002</span>
+        <span class="title">No outstanding software updates (audit only)</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>None</dd>
+        <dt>Expected</dt><dd><= 0</dd>
+        <dt>Why</dt><dd>Unpatched software is one of the most common real-world attack vectors. AuditForge deliberately does not auto-install updates unattended (that requires reboot orchestration and change-control outside this tool's scope) -- this is audit-only, surfaced for manual patching action.
+</dd>
+        <dt>Reference</dt><dd>AuditForge Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/deployment/update/" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/deployment/update/</a></dd>
+        <dt>Remediation</dt><dd>Manual review only</dd>
+        <dt>Possible Impact</dt><dd>Read-only; no remediation is attempted. On WSUS/Intune-managed machines this search may be blocked by policy and report ERROR rather than a count -- that is expected, not a bug.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-low">low</span>
+        <span class="control-id">AF-WIN-ACCT-007</span>
+        <span class="title">Password history remembers at least 5 previous passwords</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>0</dd>
+        <dt>Expected</dt><dd>>= 5</dd>
+        <dt>Why</dt><dd>A small password-history requirement stops the common "change it and change it right back" workaround without imposing NIST 800-63B's discouraged practice of frequent forced rotation.
+</dd>
+        <dt>Reference</dt><dd>AuditForge Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/security-policy-settings</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Users cannot immediately reuse a recent password.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-low">low</span>
+        <span class="control-id">AF-WIN-ASR-003</span>
+        <span class="title">NetBIOS over TCP/IP is disabled where not required</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>NetBIOS is a legacy name-resolution protocol superseded by DNS; leaving it enabled widens the same credential-relay attack surface as LLMNR.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/security/kerberos/preventing-pth-attacks</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Breaks name resolution on networks that still rely on NetBIOS/WINS rather than DNS for some legacy hosts.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-low">low</span>
+        <span class="control-id">AF-WIN-LOG-003</span>
+        <span class="title">PowerShell operational log has adequate maximum size</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>15728640</dd>
+        <dt>Expected</dt><dd>>= 67108864</dd>
+        <dt>Why</dt><dd>Script Block Logging is only useful if the log capacity is large enough to retain events long enough to be reviewed or shipped to a SIEM.
+</dd>
+        <dt>Reference</dt><dd>AuditForge Baseline &mdash; <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows" rel="noopener noreferrer">https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Consumes more disk space for log storage (64 MB minimum here).</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-low">low</span>
+        <span class="control-id">AF-WIN-RDP-003</span>
+        <span class="title">Remote Assistance is disabled unless needed</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>1</dd>
+        <dt>Expected</dt><dd>0</dd>
+        <dt>Why</dt><dd>Remote Assistance adds another remote-control surface; if a help-desk workflow doesn't use it, it should be off.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Breaks help-desk workflows that specifically rely on Windows Remote Assistance (distinct from RDP or third-party tools).</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-low">low</span>
+        <span class="control-id">AF-WIN-SMB-004</span>
+        <span class="title">SMB encryption is enabled where supported</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>Verified research confirms SMB encryption is opt-in, not a Windows default, on every currently supported release. This is an optional hardening step (low severity: a mismatch reports WARNING, not FAIL) -- enabling it is a deliberate choice with real compatibility/performance trade-offs, not a "should always be on" baseline expectation.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Rejects clients that do not support SMB 3.x encryption once RejectUnencryptedAccess is also in effect; adds modest CPU overhead.
+</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-info">info</span>
+        <span class="control-id">AF-WIN-RDP-002</span>
+        <span class="title">Remote Desktop exposure is reviewed (informational)</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>0</dd>
+        <dt>Expected</dt><dd>1</dd>
+        <dt>Why</dt><dd>Per the project's false-positive policy, "RDP enabled" is a REVIEW signal, not an automatic FAIL -- see section 34 of the project spec. Severity is deliberately "info" so a mismatch here reports WARNING, and remediation is gated behind --allow-high-impact plus a live-session guard.
+</dd>
+        <dt>Reference</dt><dd>AuditForge Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remote-desktop-services-overview</a></dd>
+        <dt>Remediation</dt><dd>Available &middot; service restart required</dd>
+        <dt>Possible Impact</dt><dd>HIGH IMPACT: disables all Remote Desktop access to this machine, including your own if you rely on it and are not physically present.</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-WARNING">WARNING</span>
+        <span class="sev-badge sev-info">info</span>
+        <span class="control-id">AF-WIN-SMB-005</span>
+        <span class="title">SMB client NTLM blocking is considered (informational)</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>False</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>This is a brand-new (2025/2026) opt-in capability, not yet a default or a mature baseline expectation, and enabling it can break legitimate non-domain-joined SMB servers that still require NTLM. AuditForge reports it as informational context only (severity=info -> WARNING, never FAIL) rather than a hardening requirement.
+</dd>
+        <dt>Reference</dt><dd>Microsoft Security Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-ntlm-blocking" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-ntlm-blocking</a></dd>
+        <dt>Remediation</dt><dd>Available</dd>
+        <dt>Possible Impact</dt><dd>Breaks SMB connections to any non-domain-joined or legacy SMB server that requires NTLM authentication. Review the exception-list mechanism before enabling broadly.
+</dd>
+      </dl>
+    </div>
+    
+    <div class="finding">
+      <div class="finding-head">
+        <span class="badge badge-MANUAL_REVIEW">MANUAL REVIEW</span>
+        <span class="sev-badge sev-medium">medium</span>
+        <span class="control-id">AF-WIN-ACCT-002</span>
+        <span class="title">Local Administrators group membership review</span>
+      </div>
+      <dl class="details">
+        <dt>Observed</dt><dd>3</dd>
+        <dt>Expected</dt><dd>True</dd>
+        <dt>Why</dt><dd>Excess or stale administrator accounts widen the blast radius of any single compromised credential. This is intentionally a MANUAL_REVIEW finding, not an automatic FAIL, per the project's false-positive policy.
+</dd>
+        <dt>Reference</dt><dd>AuditForge Baseline &mdash; <a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts" rel="noopener noreferrer">https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts</a></dd>
+        <dt>Remediation</dt><dd>Manual review only</dd>
+        <dt>Possible Impact</dt><dd>Read-only; no remediation is attempted for this control.</dd>
+      </dl>
+    </div>
+    
+  </div>
+
+  <details class="appendix">
+    <summary>Passed controls (30)</summary>
+    <table class="plain">
+      <tr><th>Control</th><th>Title</th><th>Category</th></tr>
+      
+      <tr><td>AF-WIN-ACCT-001</td><td>Guest account is disabled</td><td>accounts</td></tr>
+      
+      <tr><td>AF-WIN-ACCT-003</td><td>Built-in Administrator account is disabled</td><td>accounts</td></tr>
+      
+      <tr><td>AF-WIN-ACCT-004</td><td>Account lockout threshold is configured</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-ACCT-008</td><td>Maximum password age is not misconfigured (informational)</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-ACCT-009</td><td>Passwords are never stored using reversible encryption</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-AUTH-001</td><td>LAN Manager password hash storage is disabled</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-AUTH-003</td><td>WDigest credential caching is disabled</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-AUTH-004</td><td>LSASS runs as a protected process (Additional LSA Protection)</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-AUTH-005</td><td>Credential Guard is running (audit only)</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-AUTH-007</td><td>Automatic logon is disabled</td><td>authentication</td></tr>
+      
+      <tr><td>AF-WIN-DEF-001</td><td>Microsoft Defender real-time protection is enabled</td><td>malware_protection</td></tr>
+      
+      <tr><td>AF-WIN-DEF-002</td><td>Microsoft Defender cloud-delivered protection is enabled</td><td>malware_protection</td></tr>
+      
+      <tr><td>AF-WIN-DEF-003</td><td>Potentially Unwanted Application (PUA) protection is enabled</td><td>malware_protection</td></tr>
+      
+      <tr><td>AF-WIN-DEF-006</td><td>Defender behavior monitoring is enabled</td><td>malware_protection</td></tr>
+      
+      <tr><td>AF-WIN-DEF-007</td><td>Defender Tamper Protection is enabled (audit only)</td><td>malware_protection</td></tr>
+      
+      <tr><td>AF-WIN-DEF-008</td><td>An antivirus engine is active (audit only)</td><td>malware_protection</td></tr>
+      
+      <tr><td>AF-WIN-ENC-003</td><td>A ready TPM is present (audit only)</td><td>encryption</td></tr>
+      
+      <tr><td>AF-WIN-FW-001</td><td>Windows Firewall is enabled for the Domain profile</td><td>firewall</td></tr>
+      
+      <tr><td>AF-WIN-FW-002</td><td>Windows Firewall is enabled for the Private profile</td><td>firewall</td></tr>
+      
+      <tr><td>AF-WIN-FW-003</td><td>Windows Firewall is enabled for the Public profile</td><td>firewall</td></tr>
+      
+      <tr><td>AF-WIN-LOG-005</td><td>Logon auditing is enabled</td><td>logging</td></tr>
+      
+      <tr><td>AF-WIN-PS-004</td><td>PowerShell execution policy is reviewed (informational, not a security boundary)</td><td>attack_surface</td></tr>
+      
+      <tr><td>AF-WIN-RDP-001</td><td>RDP requires Network Level Authentication</td><td>remote_access</td></tr>
+      
+      <tr><td>AF-WIN-REMOTE-001</td><td>WinRM service exposure is reviewed (informational)</td><td>remote_access</td></tr>
+      
+      <tr><td>AF-WIN-REMOTE-002</td><td>Remote Registry service is disabled</td><td>attack_surface</td></tr>
+      
+      <tr><td>AF-WIN-REMOTE-003</td><td>WPAD auto-proxy discovery service is reviewed (informational)</td><td>attack_surface</td></tr>
+      
+      <tr><td>AF-WIN-SMB-001</td><td>SMBv1 protocol is disabled</td><td>legacy_protocols</td></tr>
+      
+      <tr><td>AF-WIN-SMB-002</td><td>SMB server signing is required</td><td>legacy_protocols</td></tr>
+      
+      <tr><td>AF-WIN-SMB-003</td><td>Insecure SMB guest logons are disabled</td><td>legacy_protocols</td></tr>
+      
+      <tr><td>AF-WIN-UPD-001</td><td>No stale pending-reboot state (informational)</td><td>updates</td></tr>
+      
+    </table>
+  </details>
+
+  <details class="appendix">
+    <summary>Not applicable / managed by organization (9)</summary>
+    <table class="plain">
+      <tr><th>Control</th><th>Title</th><th>Status</th><th>Message</th></tr>
+      
+      <tr><td>AF-WIN-ASR-001</td><td>AutoRun/AutoPlay is disabled for all drive types</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-ASR-002</td><td>LLMNR is disabled</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-LOG-001</td><td>Process creation command-line auditing is enabled</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-PS-001</td><td>The legacy PowerShell v2 engine is removed</td><td>NOT_APPLICABLE</td><td>optional feature 'MicrosoftWindowsPowerShellV2Root' does not exist on this Windows SKU/edition</td></tr>
+      
+      <tr><td>AF-WIN-PS-002</td><td>PowerShell Script Block Logging is enabled</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-PS-003</td><td>PowerShell Module Logging is enabled</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-UAC-001</td><td>User Account Control is enabled</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-UAC-002</td><td>UAC elevation prompts use the secure desktop</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+      <tr><td>AF-WIN-UAC-003</td><td>UAC prompts administrators for consent on elevation</td><td>MANAGED_BY_ORGANIZATION</td><td>Managed via Registry Policy key (SOFTWARE\Policies)</td></tr>
+      
+    </table>
+  </details>
+
+  <footer class="disclaimer">
+    Generated by AuditForge. This report reflects the state of MYCSOC at 2026-09-24T09:52:24.890110+00:00
+    and is not a substitute for professional security assessment. A FAIL or WARNING does not automatically mean
+    remediation is safe to apply blindly -- review possible impact before hardening, especially for controls
+    marked high-impact. See docs/CONTROLS.md and docs/HARDENING.md for AuditForge's safety philosophy.
+  </footer>
+
+</div>
+</body>
+</html>
