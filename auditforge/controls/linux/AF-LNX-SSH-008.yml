@@ -1,0 +1,36 @@
+control_id: AF-LNX-SSH-008
+title: SSH login grace time is bounded
+description: >
+  LoginGraceTime should be a bounded, reasonably short value so
+  half-open/unauthenticated connections cannot be held open indefinitely,
+  which contributes to connection-slot exhaustion (a lightweight DoS
+  vector against the SSH daemon).
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: low
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  A very long or unlimited (0 = disabled/never) login grace time lets
+  unauthenticated connections consume connection slots for a long time.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: logingracetime
+expected_value: {"max": 60}
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: logingracetime
+    value: 30
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Very slow authentication flows (e.g. hardware token entry, multi-step 2FA prompts) could time out if the value is set too aggressively."
+frameworks:
+  nist_800_53: ["SC-5"]
+management_detection: false
+high_impact: false
+tags: ["ssh"]
+notes: "logingracetime unit is seconds; sshd -T reports plain seconds regardless of how it was expressed in config (e.g. '2m')."

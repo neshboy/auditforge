@@ -1,0 +1,35 @@
+control_id: AF-LNX-KRN-007
+title: Kernel pointer addresses are hidden from unprivileged users
+description: >
+  kernel.kptr_restrict should be at least 1 so /proc kernel pointer values
+  are hidden from unprivileged users, hindering kernel exploit development
+  that relies on leaking kernel addresses.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/sysctl/kernel.txt"
+rationale: >
+  Kernel address leaks are a common building block for defeating KASLR
+  during local privilege-escalation exploit chains.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: kernel.kptr_restrict
+expected_value: {"min": 1}
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: kernel.kptr_restrict
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Kernel debugging/tracing tools that read raw pointer values from /proc for unprivileged users will no longer be able to."
+frameworks:
+  nist_800_53: ["SI-16"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "hardening"]
+notes: ""

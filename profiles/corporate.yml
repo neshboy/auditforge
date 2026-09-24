@@ -1,0 +1,13 @@
+name: corporate
+display_name: "Corporate Workstation"
+description: >
+  A managed, organization-owned workstation. Assumes centralized management
+  (AD/Entra/Intune/MDM/config-management) may already own many settings --
+  AuditForge will report those as MANAGED_BY_ORGANIZATION rather than
+  fighting the management platform.
+allow_high_impact: false
+audit_only: false
+exclude_categories: []
+exclude_controls: []
+severity_floor: low
+notes: "Remote-access controls (RDP/WinRM/SSH) still require --allow-high-impact; corporate fleets should evaluate those via their management platform, not per-device automated hardening."

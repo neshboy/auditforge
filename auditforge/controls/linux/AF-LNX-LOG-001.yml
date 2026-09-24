@@ -1,0 +1,33 @@
+control_id: AF-LNX-LOG-001
+title: journald uses persistent log storage
+description: >
+  systemd-journald should be configured for persistent storage
+  (/var/log/journal) so logs survive a reboot, rather than volatile
+  in-memory-only storage.
+os: linux
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.freedesktop.org/software/systemd/man/journald.conf.html"
+rationale: >
+  Volatile-only journal storage loses all log history on every reboot,
+  which is a serious gap for incident investigation and general
+  forensics.
+audit:
+  primitive: linux_journald_persistent
+  params: {}
+expected_value: true
+remediation:
+  primitive: linux_journald_persistent
+  params: {}
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Consumes disk space under /var/log/journal for retained logs (subject to journald's own size/retention limits)."
+frameworks:
+  nist_800_53: ["AU-4", "AU-9", "AU-11"]
+management_detection: false
+high_impact: false
+tags: ["logging", "journald"]
+notes: "Managed via /etc/systemd/journald.conf.d/90-auditforge.conf, never editing the main journald.conf directly."

@@ -1,0 +1,34 @@
+control_id: AF-LNX-SVC-001
+title: Telnet service is not enabled
+description: >
+  The telnet service (plaintext remote login) should not be enabled.
+os: linux
+applies_to: ["all"]
+category: services
+severity: critical
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man8/telnetd.8.html"
+rationale: >
+  Telnet transmits credentials and all session data in plaintext. This is
+  the canonical "obviously legacy/insecure" service the project spec calls
+  out by name (alongside rsh/rexec/FTP).
+audit:
+  primitive: linux_systemd_unit
+  params:
+    unit: telnet.socket
+expected_value: {"one_of": ["disabled", "masked"]}
+remediation:
+  primitive: linux_systemd_unit
+  params:
+    unit: telnet.socket
+    value: disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks any workflow that still depends on telnet (extremely rare and itself a finding worth investigating)."
+frameworks:
+  nist_800_53: ["CM-7", "SC-8"]
+management_detection: false
+high_impact: false
+tags: ["services", "legacy-protocols"]
+notes: "Reports NOT_APPLICABLE (not FAIL) if telnet is not installed at all, which is the common/expected case on current distributions -- AuditForge never installs or removes packages, only manages state of units that exist."

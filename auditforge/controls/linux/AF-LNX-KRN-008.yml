@@ -1,0 +1,35 @@
+control_id: AF-LNX-KRN-008
+title: dmesg output is restricted to privileged users
+description: >
+  kernel.dmesg_restrict should be 1 so unprivileged users cannot read the
+  kernel log buffer, which can contain addresses and other information
+  useful for exploitation.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/sysctl/kernel.txt"
+rationale: >
+  The kernel log can leak addresses, driver/hardware details, and crash
+  information useful to a local attacker.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: kernel.dmesg_restrict
+expected_value: 1
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: kernel.dmesg_restrict
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Unprivileged users/monitoring tools that read dmesg directly (rather than via a service with elevated rights) will lose access."
+frameworks:
+  nist_800_53: ["SI-16"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "hardening"]
+notes: ""

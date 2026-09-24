@@ -1,0 +1,42 @@
+control_id: AF-LNX-AUTH-004
+title: Account lockout threshold is configured (pam_faillock)
+description: >
+  pam_faillock's deny threshold should be set (between 1 and 10 failed
+  attempts) to throttle online password-guessing, consistent with NIST
+  SP 800-63B-4's rate-limiting requirement.
+os: linux
+applies_to: ["rhel", "rocky", "almalinux"]
+category: authentication
+severity: high
+benchmark: "NIST SP 800-63B-4"
+benchmark_version: "SP 800-63B-4, final, July 2025 -- verified via docs/SOURCES.md"
+external_reference: "https://man7.org/linux/man-pages/man5/faillock.conf.5.html"
+rationale: >
+  pam_faillock is the modern lockout/throttling mechanism on RHEL-family
+  distributions (wired in via authselect). Ubuntu/Debian ship the
+  pam_faillock module in libpam-modules but do not enable it in the
+  default PAM stack, so this control targets RHEL-family systems where it
+  is the standard mechanism (applies_to is scoped accordingly).
+audit:
+  primitive: linux_faillock
+  params:
+    key: deny
+    default_if_absent: 0
+expected_value: {"min": 1, "max": 10}
+remediation:
+  primitive: linux_faillock
+  params:
+    key: deny
+    value: 5
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Legitimate users who mistype a password repeatedly will be locked out until unlock_time expires."
+frameworks:
+  nist_800_53: ["IA-5", "AC-7"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "lockout"]
+notes: >
+  This only sets the faillock.conf value; it does not verify pam_faillock
+  is actually wired into /etc/pam.d -- if not, the value has no effect.
+  Verifying the live PAM stack wiring is a roadmap item.

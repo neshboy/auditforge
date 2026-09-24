@@ -1,0 +1,34 @@
+control_id: AF-LNX-KRN-005
+title: TCP SYN cookies are enabled
+description: >
+  net.ipv4.tcp_syncookies should be 1 to mitigate SYN-flood denial-of-
+  service attacks against the TCP stack.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt"
+rationale: >
+  SYN cookies let the kernel handle a SYN flood without exhausting the
+  connection backlog queue.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.tcp_syncookies
+expected_value: 1
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.tcp_syncookies
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this is the modern kernel default on virtually all current distributions."
+frameworks:
+  nist_800_53: ["SC-5"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "network", "dos-mitigation"]
+notes: ""

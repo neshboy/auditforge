@@ -1,0 +1,33 @@
+control_id: AF-LNX-FS-004
+title: /var/tmp has the sticky bit set
+description: >
+  The world-writable shared /var/tmp directory must have the sticky bit
+  set, for the same reason as /tmp (AF-LNX-FS-003).
+os: linux
+applies_to: ["all"]
+category: filesystem
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man1/chmod.1p.html"
+rationale: >
+  Without the sticky bit, /var/tmp being world-writable would let any
+  local user delete or rename any other user's temporary files.
+audit:
+  primitive: linux_sticky_bit
+  params:
+    path: /var/tmp
+expected_value: true
+remediation:
+  primitive: linux_sticky_bit
+  params:
+    path: /var/tmp
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this is the standard, correct configuration."
+frameworks:
+  nist_800_53: ["AC-3"]
+management_detection: false
+high_impact: false
+tags: ["filesystem"]
+notes: ""

@@ -1,0 +1,34 @@
+control_id: AF-LNX-KRN-003
+title: Source-routed packets are rejected
+description: >
+  net.ipv4.conf.all.accept_source_route should be 0.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt"
+rationale: >
+  Source routing lets the sender specify the path a packet takes, which
+  can be used to bypass network security controls or reach internal
+  addresses indirectly.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.accept_source_route
+expected_value: 0
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.accept_source_route
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; source routing is essentially never required for legitimate traffic today."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "network"]
+notes: ""

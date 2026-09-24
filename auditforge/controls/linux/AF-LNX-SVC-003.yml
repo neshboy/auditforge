@@ -1,0 +1,38 @@
+control_id: AF-LNX-SVC-003
+title: vsftpd (FTP) is not enabled unless explicitly required
+description: >
+  Plain FTP transmits credentials and data in the clear. If a file-
+  transfer service is required, SFTP (over SSH) or FTPS should be
+  preferred; this control checks whether the common vsftpd service is
+  enabled.
+os: linux
+applies_to: ["all"]
+category: services
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://security.appspot.com/vsftpd.html"
+rationale: >
+  Plain FTP is explicitly named in the project spec as a legacy/insecure
+  service to review. Severity is high rather than critical because a
+  properly firewalled, non-anonymous FTP deployment is sometimes still a
+  deliberate operational choice -- this is a REVIEW signal.
+audit:
+  primitive: linux_systemd_unit
+  params:
+    unit: vsftpd
+expected_value: {"one_of": ["disabled", "masked"]}
+remediation:
+  primitive: linux_systemd_unit
+  params:
+    unit: vsftpd
+    value: disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks FTP service for any client that depends on it."
+frameworks:
+  nist_800_53: ["CM-7", "SC-8"]
+management_detection: false
+high_impact: false
+tags: ["services", "legacy-protocols"]
+notes: "Only checks the vsftpd unit name; other FTP daemons (proftpd, pure-ftpd) are not yet covered (roadmap item). Reports NOT_APPLICABLE if vsftpd is not installed."

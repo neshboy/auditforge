@@ -1,0 +1,43 @@
+control_id: AF-LNX-SSH-001
+title: SSH root login is restricted
+description: >
+  PermitRootLogin should not be "yes" (unrestricted). "prohibit-password"
+  (key-only) or "no" are both acceptable depending on operational need.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: high
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md for current STIG versions per distro"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  Unrestricted root login over SSH removes the audit trail that comes from
+  requiring a named user account plus sudo, and gives brute-force attempts
+  a known, fixed target username.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: permitrootlogin
+expected_value: {"one_of": ["no", "prohibit-password", "without-password"]}
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: permitrootlogin
+    value: prohibit-password
+    guard: ssh_session
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  Breaks any workflow that logs in as root over SSH using a password. Key-
+  based root login (prohibit-password) continues to work.
+frameworks:
+  nist_800_53: ["AC-6", "IA-2"]
+management_detection: false
+high_impact: false
+tags: ["ssh", "root"]
+notes: >
+  Written via a dedicated /etc/ssh/sshd_config.d/00-auditforge.conf
+  drop-in; the distro's main sshd_config is never edited directly.
+  "without-password" is `sshd -T`'s legacy-name output for the same
+  setting as "prohibit-password" on some OpenSSH versions -- both are
+  accepted as compliant.

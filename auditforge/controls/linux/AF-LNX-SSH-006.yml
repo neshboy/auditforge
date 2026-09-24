@@ -1,0 +1,34 @@
+control_id: AF-LNX-SSH-006
+title: SSH idle sessions are timed out
+description: >
+  ClientAliveInterval combined with ClientAliveCountMax should terminate
+  unresponsive/idle SSH sessions rather than leaving them open indefinitely.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: low
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  An idle, unattended, still-authenticated SSH session is a standing risk
+  if the client machine is compromised or left unlocked.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: clientaliveinterval
+expected_value: {"min": 1, "max": 900}
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: clientaliveinterval
+    value: 300
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Long-running interactive sessions with no keyboard activity but legitimate background output may be affected depending on ClientAliveCountMax; tune per environment."
+frameworks:
+  nist_800_53: ["AC-11", "AC-12"]
+management_detection: false
+high_impact: false
+tags: ["ssh"]
+notes: ""

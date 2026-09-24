@@ -1,0 +1,20 @@
+name: developer
+display_name: "Developer Workstation"
+description: >
+  A workstation used for software development. Excludes controls that
+  routinely conflict with developer workflows (broad PowerShell execution
+  policy tightening beyond the informational check, aggressive Controlled
+  Folder Access enforcement, disabling remote administration tools
+  developers rely on for local VM/container work).
+allow_high_impact: false
+audit_only: false
+exclude_categories: []
+exclude_controls: []
+severity_floor: low
+notes: >
+  Deliberately conservative for v0.1: rather than guessing which specific
+  controls conflict with any given developer's toolchain (Docker, WSL, VM
+  hypervisors, local reverse proxies binding to privileged ports, etc.),
+  this profile currently matches "corporate" and relies on
+  --allow-high-impact gating plus --dry-run review before applying
+  anything. Expected to grow more opinionated as real usage feedback comes in.

@@ -1,0 +1,36 @@
+control_id: AF-LNX-KRN-010
+title: Protected hardlinks are enabled
+description: >
+  fs.protected_hardlinks should be 1, preventing a user from creating a
+  hardlink to a file they do not own in situations that could be abused
+  for privilege escalation or data-tampering races.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/sysctl/fs.txt"
+rationale: >
+  Prevents a class of hardlink-based TOCTOU and privilege-escalation
+  tricks against setuid binaries and files in shared/world-writable
+  directories.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: fs.protected_hardlinks
+expected_value: 1
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: fs.protected_hardlinks
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this has been the kernel default for years on virtually all current distributions."
+frameworks:
+  nist_800_53: ["SI-16", "AC-6"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "filesystem", "hardening"]
+notes: ""

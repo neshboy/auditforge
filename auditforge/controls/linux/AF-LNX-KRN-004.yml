@@ -1,0 +1,35 @@
+control_id: AF-LNX-KRN-004
+title: Sending ICMP redirects is disabled (unless this host is a router)
+description: >
+  net.ipv4.conf.all.send_redirects should be 0 on a host that is not
+  deliberately acting as a router.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt"
+rationale: >
+  Sending ICMP redirects is only meaningful for a router. As with
+  AF-LNX-KRN-001, severity is deliberately "low" since AuditForge cannot
+  auto-detect a router role; exclude via profile if this host IS a router.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.send_redirects
+expected_value: 0
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.send_redirects
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "HIGH IMPACT ON ROUTERS: disables a routing optimization mechanism for hosts that legitimately route traffic."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "network"]
+notes: ""

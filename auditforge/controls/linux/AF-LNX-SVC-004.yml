@@ -1,0 +1,31 @@
+control_id: AF-LNX-SVC-004
+title: rpcbind exposure is reviewed
+description: >
+  rpcbind is required for NFS and some legacy RPC services but has a
+  history of being exposed unnecessarily on hosts that do not actually
+  need it.
+os: linux
+applies_to: ["all"]
+category: services
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man8/rpcbind.8.html"
+rationale: >
+  Per the project's false-positive policy, rpcbind is not automatically
+  wrong -- it is legitimately required by NFS servers/clients. Severity is
+  low (WARNING, not FAIL) so this surfaces for review rather than being
+  auto-remediated, since AuditForge cannot tell whether this host needs
+  NFS.
+audit:
+  primitive: linux_systemd_unit
+  params:
+    unit: rpcbind
+expected_value: {"one_of": ["disabled", "masked"]}
+possible_impact: "Read-only; no remediation is applied since disabling rpcbind on an NFS server/client would break that service."
+frameworks:
+  nist_800_53: ["CM-7"]
+management_detection: false
+high_impact: false
+tags: ["services", "informational"]
+notes: "Reports NOT_APPLICABLE if not installed."

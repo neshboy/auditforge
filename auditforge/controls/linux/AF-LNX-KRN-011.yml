@@ -1,0 +1,35 @@
+control_id: AF-LNX-KRN-011
+title: Protected symlinks are enabled
+description: >
+  fs.protected_symlinks should be 1, preventing the kernel from following
+  a symlink in specific attacker-controlled, world-writable-directory
+  scenarios that could otherwise be abused for privilege escalation.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/sysctl/fs.txt"
+rationale: >
+  Complements AF-LNX-KRN-010 to close a related class of symlink-based
+  TOCTOU/privilege-escalation tricks.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: fs.protected_symlinks
+expected_value: 1
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: fs.protected_symlinks
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this has been the kernel default for years on virtually all current distributions."
+frameworks:
+  nist_800_53: ["SI-16", "AC-6"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "filesystem", "hardening"]
+notes: ""

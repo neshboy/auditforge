@@ -1,0 +1,36 @@
+control_id: AF-LNX-AUTH-002
+title: Password quality policy also applies to root
+description: >
+  pwquality's enforce_for_root should be enabled so the root account is not
+  silently exempt from the same password-length policy as other accounts.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: authentication
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man5/pwquality.conf.5.html"
+rationale: >
+  By default pwquality does not apply its checks to the root account;
+  enforcing it closes an inconsistency where root could have a weaker
+  password than every other account.
+audit:
+  primitive: linux_pwquality
+  params:
+    key: enforce_for_root
+    default_if_absent: 0
+expected_value: 1
+remediation:
+  primitive: linux_pwquality
+  params:
+    key: enforce_for_root
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Root password changes will now also be subject to the pwquality policy."
+frameworks:
+  nist_800_53: ["IA-5"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy", "root"]
+notes: ""

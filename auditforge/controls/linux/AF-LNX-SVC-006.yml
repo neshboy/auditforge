@@ -1,0 +1,40 @@
+control_id: AF-LNX-SVC-006
+title: auditd is enabled
+description: >
+  The Linux Audit Daemon should be enabled and running to provide kernel-
+  level audit event logging (syscalls, file access, authentication).
+os: linux
+applies_to: ["all"]
+category: logging
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man8/auditd.8.html"
+rationale: >
+  auditd is the standard mechanism for detailed, tamper-resistant security
+  event logging on Linux, used by both CIS and DISA STIG baselines for
+  Ubuntu/RHEL.
+audit:
+  primitive: linux_systemd_unit
+  params:
+    unit: auditd
+expected_value: enabled
+remediation:
+  primitive: linux_systemd_unit
+  params:
+    unit: auditd
+    value: enabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Adds modest CPU/disk overhead for audit event generation and storage; audit rule volume should be tuned per environment."
+frameworks:
+  nist_800_53: ["AU-2", "AU-12"]
+management_detection: false
+high_impact: false
+tags: ["logging", "auditd"]
+notes: >
+  Reports NOT_APPLICABLE if auditd is not installed -- AuditForge never
+  installs packages automatically (section 7 of the project spec). In
+  containerized/minimal environments auditd frequently cannot start at all
+  (no netlink audit support without host kernel access); this is an
+  environment limitation, not an AuditForge bug.

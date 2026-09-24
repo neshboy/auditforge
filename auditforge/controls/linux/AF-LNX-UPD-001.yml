@@ -1,0 +1,28 @@
+control_id: AF-LNX-UPD-001
+title: No outstanding package updates (audit only)
+description: >
+  Counts packages with an available upgrade via the system's own package
+  manager (apt/dnf/yum), without installing anything.
+os: linux
+applies_to: ["all"]
+category: updates
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://manpages.debian.org/apt-get"
+rationale: >
+  Unpatched packages are one of the most common real-world attack vectors.
+  AuditForge deliberately does not auto-install updates unattended (change
+  control and reboot orchestration are outside this tool's scope) -- this
+  is audit-only, surfaced for manual patching action.
+audit:
+  primitive: linux_pending_updates
+  params: {}
+expected_value: {"max": 0}
+possible_impact: "Read-only; no remediation is attempted. Uses apt-get -s (simulate) or dnf/yum -q check-update, neither of which installs or removes anything."
+frameworks:
+  nist_800_53: ["SI-2"]
+management_detection: false
+high_impact: false
+tags: ["updates"]
+notes: ""

@@ -1,0 +1,29 @@
+control_id: AF-LNX-SSH-007
+title: SSH public-key authentication is available
+description: >
+  PubkeyAuthentication should remain enabled ("yes") -- this is a
+  regression check to make sure key-based auth hasn't been accidentally
+  disabled, especially important on hosts where AF-LNX-SSH-002 has
+  disabled password authentication.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  If both password authentication and public-key authentication are
+  disabled, SSH becomes unusable for interactive login entirely.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: pubkeyauthentication
+expected_value: "yes"
+possible_impact: "Read-only; no remediation is applied since disabling this is never something AuditForge should do."
+frameworks:
+  nist_800_53: ["IA-2"]
+management_detection: false
+high_impact: false
+tags: ["ssh", "authentication"]
+notes: ""

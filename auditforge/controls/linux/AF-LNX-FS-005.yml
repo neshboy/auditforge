@@ -1,0 +1,29 @@
+control_id: AF-LNX-FS-005
+title: SUID binary inventory (manual review)
+description: >
+  Enumerates SUID binaries on the root filesystem for manual review.
+  Baseline counts vary significantly by distro and installed packages, so
+  this is intentionally MANUAL_REVIEW, not a pass/fail against a fixed
+  number.
+os: linux
+applies_to: ["all"]
+category: filesystem
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man1/find.1.html"
+rationale: >
+  SUID binaries run with the file owner's privileges regardless of who
+  invokes them, making them a common privilege-escalation target if any
+  are unexpected, unnecessary, or vulnerable.
+audit:
+  primitive: linux_suid_binary_count
+  params: {}
+expected_value: true
+possible_impact: "Read-only; the scan is bounded to the root filesystem (-xdev) with a 60-second timeout and does not attempt to remove any SUID bit automatically."
+frameworks:
+  nist_800_53: ["AC-6", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["filesystem", "manual-review"]
+notes: "Always reports MANUAL_REVIEW; see evidence for the full path list (truncated to 200 entries)."

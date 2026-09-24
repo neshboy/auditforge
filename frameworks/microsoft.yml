@@ -1,0 +1,74 @@
+framework: microsoft
+display_name: "Microsoft Security Baselines & Guidance"
+organization: "Microsoft"
+last_verified: "2026-09-24"
+source_document: "docs/SOURCES.md"
+publications:
+  - id: ms_baseline_windows_11
+    title: "Windows 11 Security Baseline (Security Compliance Toolkit)"
+    version: "Windows 11, version 25H2 baseline"
+    published: "2025-09-30"
+    url: "https://techcommunity.microsoft.com/blog/microsoft-security-baselines/windows-11-version-25h2-security-baseline/4456231"
+    status: CURRENT
+    notes: "learn.microsoft.com's SCT overview page still shows 24H2 as newest as of its last edit (2025-08-18) -- that page lags the actual release; the TechCommunity post and Download Center are authoritative."
+  - id: ms_baseline_server_2022
+    title: "Windows Server 2022 Security Baseline"
+    version: "Original release; no confirmed subsequent revision found"
+    published: "2021-09-08"
+    url: "https://techcommunity.microsoft.com/blog/microsoft-security-baselines/windows-server-2022-security-baseline/2724685"
+    status: UPDATE_AVAILABLE
+    notes: "Unlike Server 2025, no numbered revision was found via search -- absence of a newer post is provisional, not conclusive."
+  - id: ms_baseline_server_2025
+    title: "Windows Server 2025 Security Baseline"
+    version: "v2602 (February 2026 revision)"
+    published: "2026-02-23 (v2602); prior v2506 2025-06-25; original 2025-01-31"
+    url: "https://techcommunity.microsoft.com/blog/microsoft-security-baselines/security-baseline-for-windows-server-2025-version-2602/4496468"
+    status: CURRENT
+    notes: "Baselines for this OS are versioned by year/month (yymm) and updated periodically."
+  - id: ms_sct_toolkit
+    title: "Security Compliance Toolkit (download hub)"
+    version: "Toolkit v1.0"
+    published: "Download Center page last updated 2026-08-24"
+    url: "https://www.microsoft.com/download/details.aspx?id=55319"
+    status: CURRENT
+  - id: ms_smb_signing
+    title: "SMB signing defaults"
+    version: "n/a"
+    published: "2025-08-13 / 2025-09-15"
+    url: "https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-signing"
+    status: CURRENT
+    notes: "Win11 24H2 Ent/Pro/Edu require signing both directions by default; Server 2025 requires outbound only by default; Home does not require it either direction."
+  - id: ms_lsa_protection
+    title: "Additional LSA Protection (RunAsPPL)"
+    version: "n/a"
+    published: "2026-02-16"
+    url: "https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection"
+    status: CURRENT
+    notes: "Default-on (no UEFI lock) since Windows 11 22H2 on clean-install, enterprise-joined, HVCI-capable systems."
+  - id: ms_credential_guard
+    title: "Credential Guard default enablement"
+    version: "n/a"
+    published: "2026-04-27"
+    url: "https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/"
+    status: CURRENT
+    notes: "Default-on (no UEFI lock) from Windows 11 22H2 / Windows Server 2025 on qualifying domain-joined, non-DC systems."
+  - id: ms_defender_realtime
+    title: "Defender real-time protection guidance"
+    version: "n/a"
+    published: "2026-09-02, updated 2026-09-11"
+    url: "https://learn.microsoft.com/en-us/defender-endpoint/configure-real-time-protection-microsoft-defender-antivirus"
+    status: CURRENT
+  - id: ms_defender_tamper_protection
+    title: "Defender Tamper Protection"
+    version: "n/a"
+    published: "2026-09-09, updated 2026-09-11"
+    url: "https://learn.microsoft.com/en-us/defender-endpoint/tamper-protection-overview"
+    status: CURRENT
+    notes: "Now on by default for enterprise/managed customers; cannot be changed via registry or GPO by design."
+  - id: ms_powershell_logging
+    title: "PowerShell security logging guidance"
+    version: "PowerShell 7.6 current"
+    published: "2026-01-18 (7.6); 2025-09-29 (5.1)"
+    url: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows"
+    status: CURRENT
+    notes: "None of Script Block Logging, Module Logging, or Transcription are on by default in any current release."

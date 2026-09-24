@@ -1,0 +1,35 @@
+control_id: AF-LNX-FS-002
+title: /etc/passwd is not world-writable
+description: >
+  /etc/passwd should be exactly 644 (world-readable, root-writable only).
+  It does not contain password hashes on modern systems, so it is meant to
+  be world-readable, but must never be group- or world-writable.
+os: linux
+applies_to: ["all"]
+category: filesystem
+severity: critical
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man5/passwd.5.html"
+rationale: >
+  A world- or group-writable /etc/passwd lets any user with write access
+  add or modify accounts, which is a direct path to privilege escalation.
+audit:
+  primitive: linux_file_permissions
+  params:
+    path: /etc/passwd
+expected_value: "644"
+remediation:
+  primitive: linux_file_permissions
+  params:
+    path: /etc/passwd
+    value: "644"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; 644 is the standard, correct permission for this file."
+frameworks:
+  nist_800_53: ["AC-3", "CM-6"]
+management_detection: false
+high_impact: false
+tags: ["filesystem", "credentials"]
+notes: ""

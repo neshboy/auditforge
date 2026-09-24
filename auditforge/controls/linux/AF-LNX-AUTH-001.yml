@@ -1,0 +1,39 @@
+control_id: AF-LNX-AUTH-001
+title: Minimum password length meets current NIST guidance (>=15 characters)
+description: >
+  PAM pwquality's minlen should require at least 15 characters for
+  passwords used as a single (non-MFA) authentication factor.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: authentication
+severity: high
+benchmark: "NIST SP 800-63B-4"
+benchmark_version: "SP 800-63B-4, final, July 2025 -- verified via docs/SOURCES.md"
+external_reference: "https://csrc.nist.gov/pubs/sp/800/63/b/4/final"
+rationale: >
+  NIST SP 800-63B-4 Sec. 3.1.1.1-3.1.1.2 (verified by direct PDF read, see
+  docs/SOURCES.md) SHALL requires a minimum of 15 characters for
+  single-factor passwords (8 if MFA is also in use) and SHALL NOT impose
+  composition/complexity rules beyond a compromised-password blocklist
+  check. AuditForge deliberately does not audit dcredit/ucredit/ocredit/
+  lcredit complexity-credit settings -- see section 3 of the project spec.
+audit:
+  primitive: linux_pwquality
+  params:
+    key: minlen
+    default_if_absent: 8
+expected_value: {"min": 15}
+remediation:
+  primitive: linux_pwquality
+  params:
+    key: minlen
+    value: 15
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Users must choose longer passwords going forward; does not force existing passwords to change."
+frameworks:
+  nist_800_63b: ["3.1.1.1"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy"]
+notes: "NOT_APPLICABLE is reported if libpam-pwquality/pam_pwquality is not installed at all (pwquality.conf absent)."

@@ -1,0 +1,33 @@
+control_id: AF-LNX-SSH-003
+title: SSH empty passwords are prohibited
+description: >
+  PermitEmptyPasswords must be "no" so accounts with a blank password
+  cannot log in over SSH.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: critical
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  A blank password is equivalent to no authentication at all.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: permitemptypasswords
+expected_value: "no"
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: permitemptypasswords
+    value: "no"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; blank passwords should never be relied upon."
+frameworks:
+  nist_800_53: ["IA-5"]
+management_detection: false
+high_impact: false
+tags: ["ssh", "authentication"]
+notes: ""

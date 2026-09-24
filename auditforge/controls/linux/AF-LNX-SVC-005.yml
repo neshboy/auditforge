@@ -1,0 +1,37 @@
+control_id: AF-LNX-SVC-005
+title: Avahi (mDNS) exposure is reviewed
+description: >
+  Avahi provides mDNS/DNS-SD ("zero-configuration networking") service
+  discovery, useful on trusted LANs but unnecessary attack surface on
+  servers and untrusted networks.
+os: linux
+applies_to: ["all"]
+category: services
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man8/avahi-daemon.8.html"
+rationale: >
+  Like LLMNR on Windows, mDNS responds to unauthenticated broadcast/
+  multicast queries. Low severity: this is a REVIEW signal, not an
+  automatic FAIL, since many desktop/workstation use cases legitimately
+  rely on it (network printer/AirPlay-style discovery).
+audit:
+  primitive: linux_systemd_unit
+  params:
+    unit: avahi-daemon
+expected_value: {"one_of": ["disabled", "masked"]}
+remediation:
+  primitive: linux_systemd_unit
+  params:
+    unit: avahi-daemon
+    value: disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks local network service/printer discovery features that rely on mDNS."
+frameworks:
+  nist_800_53: ["CM-7", "SC-7"]
+management_detection: false
+high_impact: false
+tags: ["services", "network"]
+notes: "Reports NOT_APPLICABLE if not installed, which is the common case for servers."

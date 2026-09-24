@@ -1,0 +1,48 @@
+framework: apple
+display_name: "Apple Platform Security & Deployment Guidance"
+organization: "Apple"
+last_verified: "2026-09-24"
+source_document: "docs/SOURCES.md"
+publications:
+  - id: apple_platform_security
+    title: "Apple Platform Security guide"
+    version: "n/a (continuously revised guide)"
+    published: "Revision history top entry: 2026-08"
+    url: "https://support.apple.com/guide/security/welcome/web"
+    status: CURRENT
+    notes: >
+      Actively revised overall, but individual long-standing topic pages
+      (System Integrity Protection, Firewall security in macOS) still carry
+      older per-page "Published Date" footers (2021-02-18) -- not every
+      topic is touched each cycle.
+  - id: apple_platform_deployment
+    title: "Apple Platform Deployment guide"
+    version: "n/a (continuously revised guide)"
+    published: "Revision history top entry: 2026-09-17"
+    url: "https://support.apple.com/guide/deployment/welcome/web"
+    status: CURRENT
+  - id: apple_mscp
+    title: "macOS Security Compliance Project (mSCP)"
+    version: "release_27.0 (\"mSCP 2.0, Release 27.0\")"
+    published: "tag 2026-09-11; latest commit 2026-09-18"
+    url: "https://github.com/usnistgov/macos_security"
+    status: CURRENT
+    notes: >
+      Joint NIST/NASA/DISA/LANL project implementing NIST SP 800-219 Rev. 2
+      (draft), deriving rules from SP 800-53 Rev. 5. Verified via GitHub
+      API. AuditForge does not yet consume mSCP's machine-readable content
+      directly (roadmap item) and has no macOS test environment to validate
+      such integration against.
+  - id: apple_macos_current
+    title: "Current macOS release"
+    version: "macOS Golden Gate 27 (Apple Silicon); macOS Tahoe 26.7 and macOS Sequoia 15.8 continue servicing Intel/older-silicon lines"
+    published: "2026-09-14 (all three)"
+    url: "https://support.apple.com/en-us/100100"
+    status: CURRENT
+notes_on_gaps: >
+  socketfilterfw's exact current CLI flags/behavior are not documented on
+  support.apple.com (only in the local man page, inaccessible during
+  research) -- AuditForge's macos_alf_state/macos_alf_stealth primitives
+  are implemented from community/man-page knowledge, not verified Apple
+  documentation, and have not been tested on real hardware. See
+  docs/TEST_MATRIX.md.

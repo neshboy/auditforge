@@ -1,0 +1,35 @@
+control_id: AF-LNX-SSH-005
+title: SSH authentication attempts per connection are bounded
+description: >
+  MaxAuthTries should be a small number so a single connection cannot
+  attempt unlimited authentication guesses.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: low
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  Bounding authentication attempts per TCP connection slows down brute-
+  force attempts and reduces log noise, complementing (not replacing)
+  network-level rate limiting/fail2ban-style tooling.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: maxauthtries
+expected_value: {"max": 4}
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: maxauthtries
+    value: 4
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Users with many configured SSH keys attempted in sequence could exhaust attempts before reaching a working key; not a common issue in practice."
+frameworks:
+  nist_800_53: ["AC-7"]
+management_detection: false
+high_impact: false
+tags: ["ssh"]
+notes: ""

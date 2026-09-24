@@ -1,0 +1,16 @@
+name: workstation
+display_name: "Home Workstation"
+description: >
+  A personally-owned, single-user workstation. Favors usability and avoids
+  changes that commonly break home use (printing, local file sharing to
+  other devices on the LAN, remote-desktop access the owner may rely on).
+allow_high_impact: false
+audit_only: false
+exclude_categories: []
+exclude_controls:
+  - AF-WIN-ASR-004   # Print Spooler -- home users print directly
+severity_floor: low
+notes: >
+  High-impact controls (RDP disable, WinRM disable, etc.) still require
+  --allow-high-impact even under this profile -- this list only pre-excludes
+  a control known to commonly break normal home use outright.

@@ -1,0 +1,28 @@
+control_id: AF-LNX-BOOT-001
+title: UEFI Secure Boot is enabled (audit only)
+description: >
+  Reports whether UEFI Secure Boot is enabled, where the platform supports
+  it and mokutil is installed.
+os: linux
+applies_to: ["all"]
+category: boot_integrity
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man1/mokutil.1.html"
+rationale: >
+  Secure Boot helps ensure only signed bootloaders/kernels run before the
+  OS takes over. AuditForge cannot change firmware settings and does not
+  attempt to -- this control is audit-only, matching the Windows Secure
+  Boot control's posture.
+audit:
+  primitive: linux_secure_boot_status
+  params: {}
+expected_value: true
+possible_impact: "Read-only; changing this requires a firmware/UEFI settings change, which AuditForge does not perform."
+frameworks:
+  nist_800_53: ["SI-7", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["boot-integrity", "manual-review"]
+notes: "Reports NOT_APPLICABLE if mokutil is not installed or the system is not UEFI/Secure-Boot-capable (e.g. legacy BIOS or most cloud VM images)."

@@ -1,0 +1,33 @@
+control_id: AF-LNX-FS-003
+title: /tmp has the sticky bit set
+description: >
+  The world-writable shared /tmp directory must have the sticky bit set so
+  users cannot delete or rename files they do not own.
+os: linux
+applies_to: ["all"]
+category: filesystem
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man1/chmod.1p.html"
+rationale: >
+  Without the sticky bit, /tmp being world-writable would let any local
+  user delete or rename any other user's temporary files.
+audit:
+  primitive: linux_sticky_bit
+  params:
+    path: /tmp
+expected_value: true
+remediation:
+  primitive: linux_sticky_bit
+  params:
+    path: /tmp
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected; this is the standard, correct configuration for a shared /tmp."
+frameworks:
+  nist_800_53: ["AC-3"]
+management_detection: false
+high_impact: false
+tags: ["filesystem"]
+notes: "NOT_APPLICABLE only if /tmp does not exist at all; a tmpfs-mounted /tmp is still checked the same way since the sticky-bit requirement applies regardless of the underlying filesystem."

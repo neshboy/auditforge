@@ -1,0 +1,81 @@
+framework: disa
+display_name: "DISA Security Technical Implementation Guides (STIGs)"
+organization: "Defense Information Systems Agency"
+last_verified: "2026-09-24"
+source_document: "docs/SOURCES.md"
+licensing_note: >
+  Every STIG below downloads anonymously with no login from
+  dl.dod.cyber.mil. The exact printed distribution-statement text was NOT
+  verified verbatim during research (public.cyber.mil rendered only an
+  empty JS shell to the fetch tooling); the belief that STIGs are U.S.
+  Government works outside U.S. copyright (17 U.S.C. Sec 105) is recorded
+  as background knowledge, not a confirmed quote. AuditForge does not
+  redistribute STIG content and does not yet map individual controls to
+  specific STIG Vuln-ID/Rule-ID values (see docs/CONTROLS.md limitations)
+  to avoid fabricating IDs that were not verified against the actual STIG
+  XCCDF/SCAP content.
+publications:
+  - id: disa_stig_windows_11
+    title: "Microsoft Windows 11 STIG"
+    version: "STIG V2R9 (SCAP benchmark packaged as V2R10 -- a version mismatch observed in the same upload batch, not further resolved)"
+    published: "2026-08-17"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_Windows_11_V2R9_STIG.zip"
+    status: CURRENT
+    scap_available: true
+  - id: disa_stig_windows_server_2022
+    title: "Microsoft Windows Server 2022 STIG"
+    version: "V2R10"
+    published: "2026-08-17"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_Windows_Server_2022_V2R10_STIG.zip"
+    status: CURRENT
+    scap_available: true
+  - id: disa_stig_windows_server_2025
+    title: "Microsoft Windows Server 2025 STIG"
+    version: "STIG V1R3 (final); SCAP benchmark V1R1"
+    published: "2026-08-17 (STIG); 2026-08-20 (SCAP)"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_MS_Windows_Server_2025_V1R3_STIG.zip"
+    status: CURRENT
+    scap_available: true
+  - id: disa_stig_ubuntu_2204
+    title: "Canonical Ubuntu 22.04 LTS STIG"
+    version: "STIG V2R9; SCAP last refreshed V2R7"
+    published: "2026-07-10"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_CAN_Ubuntu_22-04_LTS_V2R9_STIG.zip"
+    status: CURRENT
+    scap_available: true
+  - id: disa_stig_ubuntu_2404
+    title: "Canonical Ubuntu 24.04 LTS STIG"
+    version: "STIG V1R6; SCAP last refreshed V1R5"
+    published: "2026-07-10"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_CAN_Ubuntu_24-04_LTS_V1R6_STIG.zip"
+    status: CURRENT
+    scap_available: true
+  - id: disa_stig_rhel_8
+    title: "Red Hat Enterprise Linux 8 STIG"
+    version: "V2R8"
+    published: "2026-07-10"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_8_V2R8_STIG.zip"
+    status: CURRENT
+    scap_available: true
+  - id: disa_stig_rhel_9
+    title: "Red Hat Enterprise Linux 9 STIG"
+    version: "V2R8"
+    published: "2026-04-28"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R8_STIG.zip"
+    status: UPDATE_AVAILABLE
+    scap_available: true
+    notes: "Notably older release date than the other STIGs in this table; check for a newer revision before relying on this date."
+  - id: disa_stig_macos_26
+    title: "Apple macOS 26 STIG"
+    version: "V1R3"
+    published: "2026-07-10"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Apple_macOS_26_V1R3_STIG.zip"
+    status: CURRENT
+    scap_available: false
+  - id: disa_stig_macos_15
+    title: "Apple macOS 15 (Sequoia) STIG"
+    version: "V1R7"
+    published: "2026-04-28"
+    url: "https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Apple_macOS_15_V1R7_STIG.zip"
+    status: CURRENT
+    scap_available: false

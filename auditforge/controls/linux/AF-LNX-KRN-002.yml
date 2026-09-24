@@ -1,0 +1,35 @@
+control_id: AF-LNX-KRN-002
+title: ICMP redirect acceptance is disabled
+description: >
+  net.ipv4.conf.all.accept_redirects should be 0 to prevent the kernel
+  from accepting ICMP redirect messages that could alter its routing
+  table based on unauthenticated network input.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt"
+rationale: >
+  Accepting ICMP redirects allows an on-path or spoofing attacker to
+  manipulate routing decisions.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.accept_redirects
+expected_value: 0
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.accept_redirects
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected for typical hosts; some legacy network designs relying on ICMP redirects for routing optimization would stop benefiting from them."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "network"]
+notes: ""

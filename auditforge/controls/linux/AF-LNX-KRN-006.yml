@@ -1,0 +1,35 @@
+control_id: AF-LNX-KRN-006
+title: Reverse path filtering is enabled
+description: >
+  net.ipv4.conf.all.rp_filter should be 1 (strict) or 2 (loose) so the
+  kernel drops packets whose source address could not plausibly have
+  arrived via the interface it came in on.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt"
+rationale: >
+  Reverse path filtering is a standard, low-cost mitigation against
+  source-address spoofing.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.rp_filter
+expected_value: {"min": 1}
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.conf.all.rp_filter
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Multi-homed hosts with genuinely asymmetric routing may need rp_filter=2 (loose) rather than 1 (strict); AuditForge's remediation uses strict mode, review if this host has asymmetric routing."
+frameworks:
+  nist_800_53: ["SC-7"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "network"]
+notes: ""

@@ -1,0 +1,34 @@
+control_id: AF-LNX-SVC-002
+title: rsh/rlogin services are not enabled
+description: >
+  The legacy BSD "r-services" (rsh, rlogin, rexec) should not be enabled.
+os: linux
+applies_to: ["all"]
+category: services
+severity: critical
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man8/rshd.8.html"
+rationale: >
+  rsh/rlogin/rexec authenticate via trust files (.rhosts) or plaintext
+  passwords with no encryption at all, and are explicitly named in the
+  project spec as an example of an obviously legacy/insecure service.
+audit:
+  primitive: linux_systemd_unit
+  params:
+    unit: rsh.socket
+expected_value: {"one_of": ["disabled", "masked"]}
+remediation:
+  primitive: linux_systemd_unit
+  params:
+    unit: rsh.socket
+    value: disabled
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks any workflow still depending on rsh (extremely rare)."
+frameworks:
+  nist_800_53: ["CM-7", "SC-8"]
+management_detection: false
+high_impact: false
+tags: ["services", "legacy-protocols"]
+notes: "Reports NOT_APPLICABLE if not installed, which is the common/expected case."

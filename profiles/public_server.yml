@@ -1,0 +1,17 @@
+name: public_server
+display_name: "Public-Facing Server"
+description: >
+  A server with some services reachable from the internet. Applies the
+  same baseline as "server" but treats legacy-protocol and network-exposure
+  findings as higher priority, since this class of host faces continuous
+  automated scanning/attack traffic.
+allow_high_impact: false
+audit_only: false
+exclude_categories: []
+exclude_controls:
+  - AF-WIN-ASR-004
+severity_floor: info
+notes: >
+  severity_floor is "info" (evaluate everything, including informational
+  checks) because on an internet-facing host even low-severity findings
+  are worth surfacing. This does NOT change what --allow-high-impact gates.

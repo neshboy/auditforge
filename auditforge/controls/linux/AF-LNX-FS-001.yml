@@ -1,0 +1,34 @@
+control_id: AF-LNX-FS-001
+title: /etc/shadow is not readable by unprivileged users
+description: >
+  /etc/shadow (password hashes) must not be world- or group-readable
+  beyond what the distro's own shadow-group convention requires.
+os: linux
+applies_to: ["all"]
+category: filesystem
+severity: critical
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man5/shadow.5.html"
+rationale: >
+  Password hashes in /etc/shadow are a direct offline-cracking target if
+  readable by unprivileged users.
+audit:
+  primitive: linux_file_permissions
+  params:
+    path: /etc/shadow
+expected_value: {"one_of": ["600", "640", "000"]}
+remediation:
+  primitive: linux_file_permissions
+  params:
+    path: /etc/shadow
+    value: "640"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "None expected under normal circumstances; a small number of legacy tools that read /etc/shadow as a non-root, non-shadow-group process would break (rare and generally itself a finding)."
+frameworks:
+  nist_800_53: ["AC-3", "IA-5"]
+management_detection: false
+high_impact: false
+tags: ["filesystem", "credentials"]
+notes: ""

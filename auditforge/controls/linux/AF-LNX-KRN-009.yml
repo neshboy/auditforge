@@ -1,0 +1,36 @@
+control_id: AF-LNX-KRN-009
+title: ptrace scope is restricted
+description: >
+  kernel.yama.ptrace_scope should be at least 1, restricting which
+  processes a user can ptrace-attach to (limiting it to child processes by
+  default rather than any process owned by the same user).
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/admin-guide/LSM/Yama.txt"
+rationale: >
+  Unrestricted ptrace lets a compromised low-privilege process attach to
+  and read the memory of other processes owned by the same user (e.g. a
+  browser holding session cookies, an SSH agent holding key material).
+audit:
+  primitive: linux_sysctl
+  params:
+    key: kernel.yama.ptrace_scope
+expected_value: {"min": 1}
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: kernel.yama.ptrace_scope
+    value: 1
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks debuggers/profilers that need to attach to arbitrary same-user processes (not their own children) without elevated privileges; developers may need to grant CAP_SYS_PTRACE for specific tools."
+frameworks:
+  nist_800_53: ["AC-6", "SI-16"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "hardening"]
+notes: "Not present/writable on kernels built without the Yama LSM; reports ERROR (probe failure) rather than NOT_APPLICABLE in that case -- a known simplification (roadmap item)."

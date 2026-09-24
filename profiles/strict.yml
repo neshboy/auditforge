@@ -1,0 +1,18 @@
+name: strict
+display_name: "High Security"
+description: >
+  Maximum AuditForge-supported hardening. Still respects the tool's hard
+  safety limits (no blind SSH/RDP/WinRM disablement, no unattended disk
+  encryption, no sudoers auto-editing) but allows every other control,
+  including high-impact ones, to be applied without extra per-control
+  confirmation once --allow-high-impact is also passed on the command line.
+allow_high_impact: true
+audit_only: false
+exclude_categories: []
+exclude_controls: []
+severity_floor: info
+notes: >
+  This profile does NOT bypass the CLI's --allow-high-impact flag or the
+  per-session RDP/SSH connectivity guards -- "strict" changes what the
+  profile permits, not what the engine's hard safety checks permit. Always
+  run --dry-run first, even here, especially the first time on a given host.

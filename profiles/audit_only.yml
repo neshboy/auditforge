@@ -1,0 +1,11 @@
+name: audit_only
+display_name: "Audit Only"
+description: >
+  Never applies any remediation, regardless of CLI flags. Use this profile
+  for the very first run on any machine, especially production systems.
+allow_high_impact: false
+audit_only: true
+exclude_categories: []
+exclude_controls: []
+severity_floor: info
+notes: "Even `auditforge harden --profile audit_only` will only ever produce a dry-run-style plan and refuse to apply changes."

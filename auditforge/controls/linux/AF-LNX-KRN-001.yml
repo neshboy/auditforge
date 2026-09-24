@@ -1,0 +1,37 @@
+control_id: AF-LNX-KRN-001
+title: IP forwarding is disabled (unless this host is a router/gateway)
+description: >
+  net.ipv4.ip_forward should be 0 on a host that is not deliberately acting
+  as a router, NAT gateway, or VPN concentrator.
+os: linux
+applies_to: ["all"]
+category: kernel
+severity: low
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt"
+rationale: >
+  IP forwarding is only needed for router/gateway roles. Severity is
+  deliberately "low" (a mismatch reports WARNING, not FAIL) because
+  AuditForge cannot detect a router/gateway role automatically -- see
+  section 7 of the project spec ("routers obviously require different
+  settings"). Exclude this control via a profile if this host IS a router.
+audit:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.ip_forward
+expected_value: 0
+remediation:
+  primitive: linux_sysctl
+  params:
+    key: net.ipv4.ip_forward
+    value: 0
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "HIGH IMPACT ON ROUTERS/GATEWAYS: disables IP forwarding entirely, breaking routing/NAT for any traffic passing through this host."
+frameworks:
+  nist_800_53: ["SC-7", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["kernel", "network"]
+notes: "Managed via /etc/sysctl.d/90-auditforge.conf, a dedicated drop-in that never touches other sysctl config files."

@@ -1,0 +1,31 @@
+control_id: AF-LNX-AUTH-005
+title: Passwordless sudo entries are reviewed
+description: >
+  Scans /etc/sudoers and /etc/sudoers.d for NOPASSWD entries. This is a
+  MANUAL_REVIEW finding, not an automatic FAIL -- passwordless sudo is
+  routinely legitimate for automation/service accounts.
+os: linux
+applies_to: ["all"]
+category: authentication
+severity: medium
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://man7.org/linux/man-pages/man5/sudoers.5.html"
+rationale: >
+  Passwordless sudo for an interactively-used human account materially
+  weakens the value of that account's password; passwordless sudo for a
+  scoped automation account (e.g. a specific command a monitoring agent
+  runs) is often fine. AuditForge never edits sudoers automatically --
+  see section 13 of the project spec ("never lock administrators out");
+  a malformed automated edit here can disable sudo entirely.
+audit:
+  primitive: linux_sudoers_nopasswd_scan
+  params: {}
+expected_value: true
+possible_impact: "Read-only; sudoers is never modified by AuditForge under any profile or flag."
+frameworks:
+  nist_800_53: ["AC-6"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "sudo", "manual-review"]
+notes: "Always reports MANUAL_REVIEW; see evidence for the exact file:line matches found."

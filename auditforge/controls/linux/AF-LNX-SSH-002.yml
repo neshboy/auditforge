@@ -1,0 +1,39 @@
+control_id: AF-LNX-SSH-002
+title: SSH password authentication is disabled in favor of keys
+description: >
+  PasswordAuthentication should be "no" once key-based authentication is
+  set up for all users who need SSH access.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: medium
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  Public-key authentication is far more resistant to brute-force and
+  credential-stuffing attacks than passwords. This is HIGH IMPACT: applying
+  it before every intended user has a working key installed will lock
+  password-only users out entirely.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: passwordauthentication
+expected_value: "no"
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: passwordauthentication
+    value: "no"
+    guard: ssh_session
+  reboot_required: false
+  service_restart_required: false
+possible_impact: >
+  HIGH IMPACT: any account without a working SSH key already installed
+  will be completely unable to log in over SSH after this change.
+frameworks:
+  nist_800_53: ["IA-2", "IA-5"]
+management_detection: false
+high_impact: true
+tags: ["ssh", "authentication"]
+notes: "Verify at least one admin account has a working key-based login BEFORE applying this control."

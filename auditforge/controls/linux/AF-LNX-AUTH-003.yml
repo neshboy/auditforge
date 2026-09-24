@@ -1,0 +1,31 @@
+control_id: AF-LNX-AUTH-003
+title: Password maximum age is not misconfigured (informational)
+description: >
+  Reports the default PASS_MAX_DAYS for newly created accounts. Current
+  NIST SP 800-63B-4 guidance recommends against mandatory periodic
+  password rotation for the sake of rotation alone.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: authentication
+severity: info
+benchmark: "NIST SP 800-63B-4"
+benchmark_version: "SP 800-63B-4, final, July 2025 -- verified via docs/SOURCES.md"
+external_reference: "https://csrc.nist.gov/pubs/sp/800/63/b/4/final"
+rationale: >
+  NIST SP 800-63B-4 Sec. 3.1.1.2 states verifiers SHALL NOT require
+  periodic password changes without cause. AuditForge reports this value
+  for organizational awareness rather than penalizing a long/unlimited
+  (99999) value as a failure -- see section 3 of the project spec.
+audit:
+  primitive: linux_login_defs
+  params:
+    key: PASS_MAX_DAYS
+    default_if_absent: 99999
+expected_value: {"max": 99999}
+possible_impact: "Read-only; no remediation is applied for this control."
+frameworks:
+  nist_800_63b: ["3.1.1.2"]
+management_detection: false
+high_impact: false
+tags: ["authentication", "password-policy", "informational"]
+notes: "This only governs the default applied to NEWLY created accounts via useradd; existing accounts are set individually via chage."

@@ -1,0 +1,31 @@
+control_id: AF-LNX-SVC-007
+title: A firewall manager is active (informational)
+description: >
+  Detects whether ufw, firewalld, or a populated nftables ruleset is
+  currently active. This is informational/MANUAL_REVIEW context for the
+  more specific AF-LNX-SVC-008 (ufw) and AF-LNX-SVC-009 (firewalld)
+  controls -- AuditForge never flushes or replaces existing firewall
+  rules.
+os: linux
+applies_to: ["all"]
+category: firewall
+severity: high
+benchmark: "AuditForge Baseline"
+benchmark_version: "0.1.0"
+external_reference: "https://wiki.nftables.org/"
+rationale: >
+  Some form of host-based firewall/packet filtering should be active. This
+  control only detects and reports; it never chooses a firewall manager
+  for you or modifies existing rules -- see section 7 and section 25 of
+  the project spec ("never flush existing firewall rules blindly").
+audit:
+  primitive: linux_firewall_manager_detect
+  params: {}
+expected_value: true
+possible_impact: "Read-only; no remediation is attempted by this control."
+frameworks:
+  nist_800_53: ["SC-7", "CM-7"]
+management_detection: false
+high_impact: false
+tags: ["firewall", "manual-review"]
+notes: "Reports MANUAL_REVIEW when no manager is detected active, rather than an automatic FAIL, since a custom raw-iptables setup might exist without ufw/firewalld/a populated default nft table."

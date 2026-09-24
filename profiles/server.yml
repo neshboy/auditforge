@@ -1,0 +1,19 @@
+name: server
+display_name: "Production Server"
+description: >
+  A server providing one or more specific network services. Excludes
+  controls that assume a general-purpose client (AutoRun/AutoPlay is
+  already irrelevant on headless servers but harmless to check) and treats
+  remote-administration controls (RDP/WinRM/SSH) as especially sensitive
+  since a lockout here has a larger blast radius than a single workstation.
+allow_high_impact: false
+audit_only: false
+exclude_categories: []
+exclude_controls:
+  - AF-WIN-ASR-004   # Print Spooler -- explicitly excluded; print servers legitimately need it
+severity_floor: low
+notes: >
+  Server administrators should identify this server's actual role (file
+  server, print server, web server, etc.) and further customize
+  exclude_controls locally -- a one-size-fits-all server profile cannot
+  know what this specific server is for.

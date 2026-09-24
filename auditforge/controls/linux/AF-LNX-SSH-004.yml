@@ -1,0 +1,35 @@
+control_id: AF-LNX-SSH-004
+title: SSH X11 forwarding is disabled
+description: >
+  X11Forwarding should be disabled unless X11 forwarding over SSH is
+  actually needed; it expands the remote attack surface onto the local X
+  display when it is not in use.
+os: linux
+applies_to: ["ubuntu_22.04", "ubuntu_24.04", "debian_12", "debian_13", "rhel", "rocky", "almalinux"]
+category: ssh
+severity: low
+benchmark: "DISA STIG / CIS Benchmark (reference by control ID; no benchmark text reproduced)"
+benchmark_version: "see docs/SOURCES.md"
+external_reference: "https://man.openbsd.org/sshd_config"
+rationale: >
+  X11 forwarding is rarely needed on servers and headless workstations, and
+  has a history of X-protocol-related vulnerabilities.
+audit:
+  primitive: linux_sshd_option
+  params:
+    option: x11forwarding
+expected_value: "no"
+remediation:
+  primitive: linux_sshd_option
+  params:
+    option: x11forwarding
+    value: "no"
+  reboot_required: false
+  service_restart_required: false
+possible_impact: "Breaks `ssh -X`/`ssh -Y` workflows for users who forward graphical applications over SSH."
+frameworks:
+  nist_800_53: ["CM-7", "SC-7"]
+management_detection: false
+high_impact: false
+tags: ["ssh"]
+notes: ""
