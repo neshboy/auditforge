@@ -368,9 +368,8 @@ class LoginDefsPrimitive(Primitive):
     def apply(self, params: dict, expected_value: Any) -> ApplyOutcome:
         key = validate_token(params["key"], r"^[A-Z][A-Z0-9_]*$")
         target = params.get("value", expected_value)
-        existed = _login_defs_get(key) is not None
         before = self.probe(params)
-        prev_recorded = before.value if existed else dict(_ABSENT)
+        prev_recorded = before.value if before.raw.get("exists") else dict(_ABSENT)
         _login_defs_set(key, str(target))
         return ApplyOutcome(previous_value=prev_recorded, new_value=target)
 
@@ -413,6 +412,21 @@ def _kv_conf_set(path: str, key: str, value: str) -> None:
     _atomic_write(path, "\n".join(out) + "\n", mode=0o644)
 
 
+def _kv_conf_remove(path: str, key: str) -> None:
+    lines = _read_lines(path)
+    out = [
+        line
+        for line in lines
+        if not (
+            line.strip()
+            and not line.strip().startswith("#")
+            and "=" in line.strip()
+            and line.strip().split("=", 1)[0].strip() == key
+        )
+    ]
+    _atomic_write(path, "\n".join(out) + "\n", mode=0o644)
+
+
 class _KvConfPrimitive(Primitive):
     conf_path = ""
 
@@ -435,12 +449,16 @@ class _KvConfPrimitive(Primitive):
         key = validate_token(params["key"], r"^[a-zA-Z][a-zA-Z0-9_]*$")
         target = params.get("value", expected_value)
         before = self.probe(params)
+        prev_recorded = before.value if before.raw.get("exists") else dict(_ABSENT)
         _kv_conf_set(self.conf_path, key, str(target))
-        return ApplyOutcome(previous_value=before.value, new_value=target)
+        return ApplyOutcome(previous_value=prev_recorded, new_value=target)
 
     def rollback(self, params: dict, change) -> bool:
         key = validate_token(params["key"], r"^[a-zA-Z][a-zA-Z0-9_]*$")
         prev = change.previous_value
+        if isinstance(prev, dict) and prev.get("__absent__"):
+            _kv_conf_remove(self.conf_path, key)
+            return True
         if prev is None:
             return True
         _kv_conf_set(self.conf_path, key, str(prev))
@@ -464,13 +482,14 @@ class FaillockPrimitive(_KvConfPrimitive):
 # ---------------------------------------------------------------------------
 
 
-def _safe_listdir_paths(base: str) -> list:
+def _safe_listdir_paths(base: str) -> tuple:
+    """Return (paths, unreadable) for a directory, listing it at most once."""
     if not os.path.isdir(base):
-        return []
+        return [], False
     try:
-        return [os.path.join(base, f) for f in os.listdir(base)]
+        return [os.path.join(base, f) for f in os.listdir(base)], False
     except OSError:
-        return []
+        return [], True
 
 
 @register
@@ -481,12 +500,12 @@ class SudoersNopasswdScanPrimitive(Primitive):
         hits = []
         unreadable = []
         for base in ("/etc/sudoers", "/etc/sudoers.d"):
-            if os.path.isdir(base):
-                try:
-                    os.listdir(base)
-                except OSError:
+            if os.path.isfile(base):
+                paths = [base]
+            else:
+                paths, dir_unreadable = _safe_listdir_paths(base)
+                if dir_unreadable:
                     unreadable.append(base)
-            paths = [base] if os.path.isfile(base) else _safe_listdir_paths(base)
             for path in paths:
                 try:
                     with open(path, encoding="utf-8", errors="replace") as fh:
