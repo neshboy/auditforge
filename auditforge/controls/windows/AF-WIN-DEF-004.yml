@@ -19,6 +19,7 @@ audit:
   primitive: win_defender_preference
   params:
     pref_property: EnableControlledFolderAccess
+    value_type: string_enum
 expected_value: {"one_of": ["Enabled", "AuditMode"]}
 remediation:
   primitive: win_defender_preference

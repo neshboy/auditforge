@@ -129,6 +129,7 @@ class PlannedChange:
 class HardenPlan:
     to_apply: list  # list[PlannedChange]
     skipped: list  # list[PlannedChange] with reason_skipped set
+    pre_audit: AuditReport  # full audit (every control) computed once during planning
 
     def to_dict(self) -> dict:
         def item(p: PlannedChange) -> dict:
@@ -153,16 +154,17 @@ def plan_harden(
     management: ManagementInfo,
     allow_high_impact: bool = False,
 ) -> HardenPlan:
-    to_apply, skipped = [], []
+    to_apply, skipped, all_results = [], [], []
     for control in controls:
         result = evaluate_control(control, management)
+        all_results.append(result)
+        if result.status == Status.MANAGED_BY_ORGANIZATION:
+            skipped.append(PlannedChange(control, result, "managed by organization; not overriding policy"))
+            continue
         if result.status not in (Status.FAIL, Status.WARNING):
             continue
         if not control.remediation_available:
             skipped.append(PlannedChange(control, result, "no automated remediation (manual review only)"))
-            continue
-        if result.status == Status.MANAGED_BY_ORGANIZATION:
-            skipped.append(PlannedChange(control, result, "managed by organization; not overriding policy"))
             continue
         if control.high_impact and not allow_high_impact:
             skipped.append(
@@ -170,7 +172,13 @@ def plan_harden(
             )
             continue
         to_apply.append(PlannedChange(control, result))
-    return HardenPlan(to_apply=to_apply, skipped=skipped)
+    # Build the full pre-audit here since we already evaluated every control above --
+    # this lets apply_harden() reuse it instead of re-probing the whole system again.
+    # profile is filled in by apply_harden() once it knows it.
+    pre_audit = AuditReport(
+        environment=environment, management=management, profile="", generated_at=_now(), results=all_results
+    )
+    return HardenPlan(to_apply=to_apply, skipped=skipped, pre_audit=pre_audit)
 
 
 @dataclasses.dataclass
@@ -207,7 +215,11 @@ def apply_harden(
     tx_manager = tx_manager or TransactionManager()
     tx = tx_manager.begin(profile=profile, os_name=environment.os.value, os_version=environment.os_version)
 
-    pre_audit = run_audit(all_controls, environment, management, profile)
+    # plan_harden() already evaluated every control while building the plan; reuse that
+    # result instead of re-probing the whole system a second time (probes commonly shell
+    # out, so this used to double the real subprocess cost of every `harden` invocation).
+    pre_audit = plan.pre_audit
+    pre_audit.profile = profile
     tx.pre_audit_summary = pre_audit.summary()
 
     applied: list[ApplyResultItem] = []

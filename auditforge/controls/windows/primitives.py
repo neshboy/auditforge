@@ -38,6 +38,13 @@ _HIVES = {
 
 _ABSENT = {"__absent__": True}
 
+# Several nominally "enum" Get-MpPreference properties (EnableControlledFolderAccess,
+# EnableNetworkProtection, ...) are typed as a plain System.Byte, not a real .NET enum --
+# unlike Get-Service/Get-NetFirewallProfile, a .ToString() on the property does not
+# recover the string name, so we map the known integer values back to the names
+# Set-MpPreference (and the control YAML's expected_value) use.
+_DEFENDER_ENABLE_ENUM = {0: "Disabled", 1: "Enabled", 2: "AuditMode"}
+
 
 def _require_winreg():
     if winreg is None:
@@ -245,10 +252,24 @@ def _secedit_parse(text: str) -> dict:
     return values
 
 
-def _secedit_apply(key: str, new_value: str) -> None:
+def _secedit_lookup(key: str, export_text: str) -> tuple:
+    """Parse already-exported secedit text and return (value, raw_str)
+    for `key`, or (None, None) if the key is not present in the export."""
+    values = _secedit_parse(export_text)
+    if key not in values:
+        return None, None
+    raw = values[key]
+    try:
+        value: Any = int(raw)
+    except ValueError:
+        value = raw
+    return value, raw
+
+
+def _secedit_apply(key: str, new_value: str, export_text: Optional[str] = None) -> None:
     validate_token(key, _IDENT)
     validate_token(str(new_value), r"^[A-Za-z0-9,]+$")
-    text = _secedit_export()
+    text = export_text if export_text is not None else _secedit_export()
     lines = text.splitlines()
     found = False
     for i, line in enumerate(lines):
@@ -286,25 +307,28 @@ class SeceditPolicyPrimitive(Primitive):
     def probe(self, params: dict) -> ProbeResult:
         key = validate_token(params["key"], _IDENT)
         try:
-            values = _secedit_parse(_secedit_export())
+            export_text = _secedit_export()
         except Exception as exc:  # noqa: BLE001
             return ProbeResult(value=None, error=str(exc))
-        if key not in values:
+        value, raw = _secedit_lookup(key, export_text)
+        if raw is None:
             return ProbeResult(value=None, error=f"key '{key}' not present in exported security policy")
-        raw = values[key]
-        try:
-            value: Any = int(raw)
-        except ValueError:
-            value = raw
         return ProbeResult(value=value, source="secedit /export", raw={"key": key, "raw": raw})
 
     def apply(self, params: dict, expected_value: Any) -> ApplyOutcome:
-        if params["key"] not in _SECEDIT_KEYS:
-            raise ValueError(f"'{params['key']}' is not in the secedit allowlist")
-        before = self.probe(params)
+        key = params["key"]
+        if key not in _SECEDIT_KEYS:
+            raise ValueError(f"'{key}' is not in the secedit allowlist")
+        key = validate_token(key, _IDENT)
         target = params.get("value", expected_value)
-        _secedit_apply(params["key"], str(target))
-        return ApplyOutcome(previous_value=before.value, new_value=target)
+        # Export the current policy once and reuse it both to determine the
+        # previous value and (inside _secedit_apply) to build the patched
+        # .inf -- secedit /export spawns a process and does temp-file I/O,
+        # so this halves that cost versus exporting twice for one apply().
+        export_text = _secedit_export()
+        previous_value, _raw = _secedit_lookup(key, export_text)
+        _secedit_apply(key, str(target), export_text=export_text)
+        return ApplyOutcome(previous_value=previous_value, new_value=target)
 
     def rollback(self, params: dict, change) -> bool:
         try:
@@ -377,7 +401,16 @@ class FirewallProfilePrimitive(Primitive):
     def probe(self, params: dict) -> ProbeResult:
         profile = validate_token(params["profile"], _IDENT)
         prop = validate_token(params["property"], _IDENT)
-        data, err = _ps_json(f"Get-NetFirewallProfile -Profile {profile} | Select-Object -ExpandProperty {prop}")
+        value_type = params.get("value_type", "bool")
+        if value_type == "string_enum":
+            # DefaultInboundAction/DefaultOutboundAction are real .NET enums,
+            # but -ExpandProperty | ConvertTo-Json serializes the underlying
+            # int, not the name -- force .ToString() so the result compares
+            # correctly against string expected_value (e.g. "Block").
+            expr = f"(Get-NetFirewallProfile -Profile {profile}).{prop}.ToString()"
+        else:
+            expr = f"Get-NetFirewallProfile -Profile {profile} | Select-Object -ExpandProperty {prop}"
+        data, err = _ps_json(expr)
         if err:
             return ProbeResult(value=None, error=err)
         return ProbeResult(value=data, source="Get-NetFirewallProfile", raw={"profile": profile, "property": prop})
@@ -533,11 +566,14 @@ class DefenderPreferencePrimitive(Primitive):
     def probe(self, params: dict) -> ProbeResult:
         prop = validate_token(params["pref_property"], _IDENT)
         invert = bool(params.get("invert", False))
+        value_type = params.get("value_type", "bool")
         data, err = _ps_json(f"Get-MpPreference | Select-Object -ExpandProperty {prop}")
         if err:
             return ProbeResult(
                 value=None, not_applicable=True, not_applicable_reason="Microsoft Defender not present/queryable"
             )
+        if value_type == "string_enum" and isinstance(data, int) and not isinstance(data, bool):
+            data = _DEFENDER_ENABLE_ENUM.get(data, data)
         value = (not data) if (invert and isinstance(data, bool)) else data
         return ProbeResult(value=value, source="Get-MpPreference", raw={"property": prop})
 
